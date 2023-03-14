@@ -2,6 +2,7 @@ const express = require('express');
 const sidebar = require('./components/Sidebar/sidebar');
 const display = require('./components/Display/display');
 const logInput = require('./components/LogInput/LogInput');
+const mongoDB = require('./components/MongoDB/MongoDB');
 const app = express();
 const port = 8383;
 
@@ -21,6 +22,8 @@ app.get('/logs/:dynamic', (req, res) => {
     res.status(200).json(logInput.fetchLogInput(dynamic))
 });
 
-app.listen(port, () => console.log('startup'));
+app.listen(port, () => {
+    console.log('NodeJS startup')
+});
 
 
