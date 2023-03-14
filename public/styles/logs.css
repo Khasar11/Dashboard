@@ -1,0 +1,114 @@
+
+.form img {
+    resize: both;
+    overflow: auto;
+  }
+
+  .form input, .form button {
+    border: 3px solid #d5d5d5;
+    -webkit-transition: 0.1s;
+    transition: 0.1s;
+    outline: transparent;
+}
+
+.form input:focus, .form button::selection {
+    border: 3px solid #555;
+}
+
+#logs-div {
+    position: absolute;
+    display:block;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.1s, opacity 0.1s linear;
+    resize:both;
+    overflow: auto;
+    z-index: 50;
+    top: 25vh;
+    left: 25vw;
+    font-family: arial;
+    border: 1px solid rgba(255, 136, 0, 0.142);
+    box-shadow: 5px 10px rgba(122, 89, 24, 0.207);
+    backdrop-filter: blur(2px);
+    background-color:rgba(255, 255, 255, 0.441)
+}
+
+#logs {
+    height: auto;
+    width: auto;
+}
+
+#logs-div-header {
+    padding: 1rem;
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    background-color: #ff7732;
+    text-align: center;
+}
+
+#logs-div-moveable {
+    cursor: move;
+    z-index: 5;
+    filter:blur(0.025rem);
+    offset-position: auto;
+    height: 1rem;
+    width: 1rem;
+}
+
+
+
+#logs-div-X {
+    position: absolute;
+    top: 2.5rem;
+    right: 0rem;
+}
+
+#logs-div-Xout {
+    position: absolute;
+    top: 0rem;
+    right: 0.05rem;
+    filter: blur(0.33px);
+    user-select: none;
+}
+
+#logs-div-Xout:hover {
+    cursor: crosshair;
+}
+
+#logs-div-id {
+    position: absolute;
+    top: 0.1rem;
+    left: 1rem;
+    font-size: 0.8rem;
+    color: rgba(0,0,0,0.5);
+}
+
+
+#logs-body, #logs-input {
+    height: auto;
+    min-height: 25vh;
+    width: auto;
+    padding: 0.5rem;
+    outline: 1px dotted gray;
+}
+
+#logs-input img {
+    max-width: 60vw;
+    max-height: 60vh;
+}
+
+#logs-date, #logs-header-text {
+    cursor: text;
+    z-index: 50;
+}
+
+#logs-footer {
+    padding: 1rem;
+    text-align: center;
+    background-color: #dcdcdc;
+}
+
+[contentEditable=true]:empty:not(:focus):before {
+    content: attr(data-text);
+    color: rgba(0,0,0,0.5);
+  }

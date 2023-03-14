@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="./styles/style.css" type="text/css">
+        <link rel="stylesheet" href="./styles/sidebar.css" type="text/css">
+        <link rel="stylesheet" href="./styles/logs.css" type="text/css">
+        <link href='./lib/froala/froala_editor.pkgd.min.css' rel='stylesheet' type='text/css' />
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div class="form" id="logs-div">
+            <div id="logs">
+                <section id="logs-div-header" class="outlined">
+                    <input type="date" id="logs-date" name="log" required>
+                    <input id="logs-header-text" class="outlined" type="text" placeholder="Title" required>
+                    <input id="logs-header-written-by" class="outlined" type="text" placeholder="Writer" required>
+                    <div id="logs-div-X"><img id="logs-div-moveable" src="./move.png"></img></div>
+                    <div id="logs-div-id">null</div>
+                    <div id="logs-div-Xout">✖</div>
+                </section>
+                <section id="logs-body" class="outlined">
+                    <div id="logs-input" contenteditable="true" data-text="Input text/image(s)"></div>
+                </section>
+                <section id="logs-footer" class="outlined">
+                    <button id="logs-submit">Save log</button>
+                </section>
+            </div>
+        </div>
+        <svg>
+            <g class="links"></g>
+            <g class="nodes"></g>
+        </svg>
+        <script src="./lib/d3/d3.v7.min.js"></script>
+        <script src="./lib/froala/froala_editor.pkgd.min.js"></script>
+        <script src="./scripts/fetcher.js"></script>
+        <script src="./scripts/script.js"></script>
+        <script src="./scripts/Logs/logs.js"></script> 
+        <script src="./scripts//Sidebar/sidebar.js"></script>  
+        <script src="./scripts/Display/display.js"></script>  
+    </body>
+</html>
