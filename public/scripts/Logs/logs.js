@@ -24,9 +24,23 @@ async function showLog(logId) {
   logDiv.style.opacity = 1;
 }
 
+function emptyLog() {
+  let dateTimePicker = document.getElementById('logs-date')
+  let header = document.getElementById('logs-header-text')
+  let writtenBy = document.getElementById('logs-header-written-by')
+  let dataField = document.getElementById('logs-input')
+  let idField = document.getElementById('logs-div-id')
+  dateTimePicker.value = String(new Date()).split('T')[0]
+  header.value = ''
+  dataField.innerHTML = ''
+  writtenBy.value = ''
+  idField.value = ''
+}
+
 document.getElementById("logs-div-Xout").addEventListener("click", function() {
     document.getElementById('logs-div').style.visibility = 'hidden';
     document.getElementById('logs-div').style.opacity = 0;
+    emptyLog();
   });
 
 // Make the DIV element draggable:
