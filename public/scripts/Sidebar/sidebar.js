@@ -1,21 +1,33 @@
 
 function JSONResolver(element) { // parse sidebar element to html element
   if (element.type == '0') {
-    var newElement = document.createElement('li');
-    var title = document.createElement('span');
-    title.className = 'title';
+    let newElement = document.createElement('li');
+    let title = document.createElement('span');
+    title.classList = 'title'
     title.textContent = element.name;
     newElement.append(title)
     newElement.id = element.id;
+    if (element.id.split('-')[1] == 'logs' || element.id.split('-')[1] == 'log') {
+      let addButton = document.createElement('button');
+      let remButton = document.createElement('button');
+      addButton.innerHTML = '+'
+      remButton.innerHTML = '-'
+      remButton.className = 'remButton'
+      addButton.className = 'addButton'
+      addButton.onclick = function() { addLogAtLocation(newElement.id) }
+      remButton.onclick = function() { remLogAtLocation(newElement.id) }
+      newElement.append(addButton)
+      newElement.append(remButton)
+    }
     newElement.className = 'folder';
-    var nestedElement = document.createElement('ul');
+    let nestedElement = document.createElement('ul');
     nestedElement.className = 'nested';
     element.data.forEach(value => 
       nestedElement.append(JSONResolver(value)))
     newElement.append(nestedElement)
     return newElement;
   }
-  var newElement = document.createElement('li');
+  let newElement = document.createElement('li');
   newElement.id = element.id;
   newElement.className = 'file';
   newElement.innerHTML = element.name;
@@ -41,7 +53,7 @@ async function getSidebar() { // get sidebar from server side
   // on click of file
   Array.from(document.getElementsByClassName('file')).forEach(file => 
     file.addEventListener('click', function() {
-      peekClick(file.id);
+      peekFile(file.id);
     }))
 
     // add collapsability to title elements
@@ -54,7 +66,7 @@ async function getSidebar() { // get sidebar from server side
 
 getSidebar();
 
-function peekClick(id) {
+function peekFile(id) {
   let postDash = id.split('-')[1];
   if (postDash == 'display') {
     getDisplay(id.split('-')[0]);
@@ -65,4 +77,12 @@ function peekClick(id) {
   if (postDash == 'oee') {
     
   }
+}
+
+function addLogAtLocation(id) {
+  console.log(id)
+}
+
+function remLogAtLocation(id) {
+  console.log(id)
 }

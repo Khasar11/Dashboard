@@ -1,6 +1,10 @@
 
+var currentLogInput;
+
 async function showLog(logId) {
   const baseUrl = `http://localhost:8383/logs/${logId}`
+
+  currentLogInput = logId;
 
   let data = await fetch(baseUrl, {
     method: 'GET'
@@ -30,6 +34,7 @@ function emptyLog() {
   let writtenBy = document.getElementById('logs-header-written-by')
   let dataField = document.getElementById('logs-input')
   let idField = document.getElementById('logs-div-id')
+  currentLogInput = null;
   dateTimePicker.value = String(new Date()).split('T')[0]
   header.value = ''
   dataField.innerHTML = ''
