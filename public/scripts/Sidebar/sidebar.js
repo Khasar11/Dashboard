@@ -47,6 +47,7 @@ async function getSidebar() { // get sidebar from server side
   sidebar.id = 'main-sidebar'
 
   const returnData = JSON.parse(data);
+  console.log(returnData);
   returnData.forEach(element => sidebar.append(JSONResolver(element)))
   document.body.prepend(sidebar)
 
