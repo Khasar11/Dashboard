@@ -1,7 +1,10 @@
 
 var currentLogInput;
+var addingLogInputTo;
+var removingLogInput;
 
 async function showLog(logId) {
+
   const baseUrl = `http://localhost:8383/logs/${logId}`
 
   currentLogInput = logId;
@@ -91,3 +94,11 @@ function dragElement(elmnt) {
     document.onmousemove = null;
   }
 }
+
+document.getElementById("new-logs-singular").addEventListener('click', function () {
+  document.getElementById("new-logs-value").innerHTML = 'Singular'
+})
+
+document.getElementById("new-logs-collection").addEventListener('click', function () {
+  document.getElementById("new-logs-value").innerHTML = 'Collection'
+})

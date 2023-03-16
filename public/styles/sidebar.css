@@ -13,7 +13,7 @@ ul, #main-sidebar {
     top: 0;
     background-color:rgba(73, 87, 115, 0.677);
     backdrop-filter: blur(2px);
-    font-family: arial;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
     color: white;
     border-right: 1px solid black;
     
@@ -35,16 +35,20 @@ ul, #main-sidebar {
   }
 
 .file span {
-  position:relative;
+  position:absolute;
   background-color:rgba(50, 70, 111, 0.634);
-  outline: 1px solid black;
+  box-shadow: 3px 3px rgba(0, 0, 0, 0.207);
   padding: 0.33rem;
   border-radius: 2px;
-  margin-left: -5.5vw;
-  top: 6vh;
-  top: 6dvh;
+  margin-left: 5vw;
+  width: auto;
+  top: 1vh;
+  top: 1dvh;
   visibility: hidden;
   opacity: 0;
+  backdrop-filter: blur(3px);
+  color: white;
+  z-index: 1;
 }
 
 .file {

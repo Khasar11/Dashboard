@@ -100,6 +100,10 @@
     z-index: 50;
 }
 
+#new-logs-entry * {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+
 #logs-footer {
     padding: 1rem;
     text-align: center;
@@ -110,3 +114,37 @@
     content: attr(data-text);
     color: rgba(0,0,0,0.5);
   }
+
+  #new-logs {
+    top: 40vh;
+    position: relative;
+    left: 50vw;
+    display: inline-block;
+  }
+  
+  #new-logs-type-dropdown {
+    display: none;
+    position: absolute;
+    background-color: #ebebeb;
+    left: 0.5vw;
+    min-width: 100px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 0;
+    margin: 0;
+    height: auto;
+  }
+
+  #new-logs:hover #new-logs-type-dropdown {
+    display: block;
+  }
+
+.background-on-hover:hover {
+    transition: background-color 0.2s, opacity 0.1s linear;
+    background-color: #d0d0d0;
+}
+
+.background-on-hover {
+     padding: 1vh;
+     border-top: 1px dotted black;
+     border-bottom: 1px dotted black;
+}

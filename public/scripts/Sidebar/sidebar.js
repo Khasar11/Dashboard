@@ -1,5 +1,6 @@
 
 var undefined = NaN
+const stopParentEventClick = 'event.cancelBubble = true; if (event.stopPropagation) event.stopPropagation();  return false;'
 
 function JSONResolver(element) { // parse sidebar element to html element
   if (element.type == '0') {
@@ -10,7 +11,8 @@ function JSONResolver(element) { // parse sidebar element to html element
     newElement.append(title)
     newElement.id = element.id;
     if (element.id.split('-')[1] == 'logs' || element.id.split('-')[1] == 'log') {
-      addRemoveButtons(newElement)
+      addButton('+', `addLogAtLocation('${newElement.id}', 'folder')`, newElement)
+      addButton('-', `remLogAtLocation('${newElement.id}', 'folder')`, newElement)
     }
     newElement.className = 'folder';
     let nestedElement = document.createElement('ul');
@@ -24,7 +26,10 @@ function JSONResolver(element) { // parse sidebar element to html element
   newElement.id = element.id;
   newElement.className = 'file';
   newElement.innerHTML = element.name;
-  if (newElement.id.includes('-log-') && isNaN(newElement.id.split('-')[3])) addRemoveButtons(newElement);
+  if (newElement.id.includes('-log-') && isNaN(newElement.id.split('-')[3])) {
+    addButton('+', `addLogAtLocation('${newElement.id}', 'file')`, newElement)
+    addButton('-', `remLogAtLocation('${newElement.id}', 'file')`, newElement)
+  }
   if (element.hover != '') {
     let hoverElement = document.createElement('span');
     hoverElement.innerHTML = element.hover;
@@ -43,17 +48,12 @@ function JSONResolver(element) { // parse sidebar element to html element
   return newElement;
 }
 
-function addRemoveButtons(htmlElement) {
-  let addButton = document.createElement('button');
-  let remButton = document.createElement('button');
-  addButton.innerHTML = '+'
-  remButton.innerHTML = '-'
-  remButton.className = 'remButton'
-  addButton.className = 'addButton'
-  addButton.onclick = function() { addLogAtLocation(htmlElement.id) }
-  remButton.onclick = function() { remLogAtLocation(htmlElement.id) }
-  htmlElement.append(addButton)
-  htmlElement.append(remButton)
+function addButton(inner, onclick, appendTo) {
+  let btn = document.createElement('button');
+  btn.innerHTML = inner;
+  btn.className = inner+'-button';
+  btn.setAttribute('onclick', `${onclick}; ${stopParentEventClick}`)
+  appendTo.append(btn)
 }
 
 async function getSidebar() { // get sidebar from server side
@@ -73,10 +73,8 @@ async function getSidebar() { // get sidebar from server side
   document.body.prepend(sidebar)
 
   // on click of file
-  Array.from(document.getElementsByClassName('file')).forEach(file => 
-    file.addEventListener('click', function() {
-      peekFile(file.id);
-    }))
+  Array.from(document.getElementsByClassName('file')).forEach(file => {
+    file.setAttribute('onclick', `peekFile('${file.id}'); ${stopParentEventClick}`) })
 
     // add collapsability to title elements
   Array.from(document.getElementsByClassName("title")).forEach(toggler =>
@@ -101,10 +99,12 @@ function peekFile(id) {
   }
 }
 
-function addLogAtLocation(id) {
-  console.log(id)
+function addLogAtLocation(id, currentType) {
+  addingLogInputTo = id;
+  showAddLogPrompt()
 }
 
-function remLogAtLocation(id) {
-  console.log(id)
+function remLogAtLocation(id, currentType) {
+  removingLogInput = id;
+  showRemoveLogPrompt()
 }
