@@ -21,18 +21,17 @@ export class LogInput {
     }
 
     toSidebarData() {
-        return new SidebarData(String(this.date).split('T')[0], this.id, ValueType.file, undefined);
+        return new SidebarData(String(this.date).split('T')[0], this.id, this.header, ValueType.file, undefined);
     }
 }
 
 export function fetchLogInput(id: string) {
-    client.connect();
     return new LogInput('undefined','undefined', 'undefined', 'undefined', 'undefined');
 }
 
 export function upsertLogInput(log: LogInput) {
-    const update = { $set: { id: log.id }};
+    /*const update = { $set: { id: log.id }};
     const options = { upsert: true };
-    logs.updateOne(log, update, options);
+    logs.updateOne(log, update, options); */
 }
 

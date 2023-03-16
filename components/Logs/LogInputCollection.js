@@ -4,20 +4,27 @@ exports.LogInputCollection = void 0;
 var sidebar_1 = require("../Sidebar/sidebar");
 var LogInputCollection = /** @class */ (function () {
     function LogInputCollection(id, date, logs) {
+        this.date = '';
+        this.id = '';
         this.date = date;
         this.logs = logs;
         this.id = id;
     }
     LogInputCollection.prototype.toSidebarData = function () {
-        return new sidebar_1.SidebarData(String(this.date).split('T')[0], this.id, sidebar_1.ValueType.folder, logInputSetToSidebarData(this.logs));
+        if (Array.isArray(this.logs))
+            return new sidebar_1.SidebarData(this.date, this.id, this.id, sidebar_1.ValueType.folder, logInputsToSidebarData(this.logs));
+        return this.logs.toSidebarData();
     };
     return LogInputCollection;
 }());
 exports.LogInputCollection = LogInputCollection;
-function logInputSetToSidebarData(logs) {
-    var data = [];
-    logs.forEach(function (element) {
-        data.push(element.toSidebarData());
-    });
-    return data;
+function logInputsToSidebarData(logs) {
+    if (Array.isArray(logs)) {
+        var data_1 = [];
+        logs.forEach(function (element) {
+            data_1.push(element.toSidebarData());
+        });
+        return data_1;
+    }
+    return [logs.toSidebarData()];
 }

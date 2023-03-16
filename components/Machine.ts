@@ -1,3 +1,4 @@
+import { LogInput } from "./Logs/LogInput";
 import { LogInputCollection } from "./Logs/LogInputCollection";
 import { SidebarData, ValueType } from "./Sidebar/sidebar";
 
@@ -7,9 +8,9 @@ export class Machine {
     id: string;
     createdBy: string;
     creationDate: string;
-    logs: LogInputCollection;
+    logs: LogInputCollection[];
 
-    constructor(name: string, id: string, createdBy: string, creationDate: string, logs: LogInputCollection) {
+    constructor(name: string, id: string, createdBy: string, creationDate: string, logs: LogInputCollection[]) {
         this.name = name;
         this.id = id;
         this.createdBy = createdBy;
@@ -19,10 +20,16 @@ export class Machine {
 }
 
 export function toSidebarData(machine: Machine) {
-    return new SidebarData(machine.name, machine.id, ValueType.folder,
+
+    let logData: SidebarData[] = [];
+
+    machine.logs.forEach(element => 
+        logData.push(element.toSidebarData()));
+
+    return new SidebarData(machine.name, machine.id, machine.creationDate, ValueType.folder,
         [
-            new SidebarData('OEE', machine.id+'-oee', ValueType.file),
-            new SidebarData('Display', machine.id+'-display', ValueType.file),
-            new SidebarData('Logs', machine.id+'-logs', ValueType.folder, [machine.logs.toSidebarData()])
+            new SidebarData('OEE', machine.id+'-oee', '', ValueType.file),
+            new SidebarData('Display', machine.id+'-display', '', ValueType.file),
+            new SidebarData('Logs', machine.id+'-logs', 'Log inputs', ValueType.folder, logData)
         ]);
 }

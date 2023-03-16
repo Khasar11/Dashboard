@@ -2,29 +2,35 @@ import { SidebarData, ValueType } from "../Sidebar/sidebar";
 import { LogInput } from "./LogInput";
 
 export class LogInputCollection {
-    date: string;
-    id: string;
-    logs: LogInput[];
+    date: string = '';
+    id: string = '';
+    logs: (LogInput[] | LogInput);
 
-    constructor(id: string, date: string, logs: LogInput[]) {
+    constructor(id: string, date: string, logs: (LogInput[] | LogInput)) {
         this.date = date;
         this.logs = logs;
         this.id = id;
     }
 
     toSidebarData() {
-        return new SidebarData(
-            String(this.date).split('T')[0], 
-            this.id, 
-            ValueType.folder, 
-            logInputSetToSidebarData(this.logs))
+        if (Array.isArray(this.logs))
+            return new SidebarData(
+                this.date, 
+                this.id, 
+                this.id, 
+                ValueType.folder, 
+                logInputsToSidebarData(this.logs))
+        return this.logs.toSidebarData();
     }
 }
 
-function logInputSetToSidebarData(logs: LogInput[]) {
-    let data: SidebarData[] = [];
-    logs.forEach(element => {
-        data.push(element.toSidebarData())
-    });
-    return data;
+function logInputsToSidebarData(logs: (LogInput[] | LogInput)): SidebarData[] {
+    if (Array.isArray(logs)) {
+        let data: SidebarData[] = [];
+        logs.forEach(element => {
+            data.push(element.toSidebarData())
+        });
+        return data;
+    }
+    return [logs.toSidebarData()];
 }

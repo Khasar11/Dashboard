@@ -14,10 +14,14 @@ var Machine = /** @class */ (function () {
 }());
 exports.Machine = Machine;
 function toSidebarData(machine) {
-    return new sidebar_1.SidebarData(machine.name, machine.id, sidebar_1.ValueType.folder, [
-        new sidebar_1.SidebarData('OEE', machine.id + '-oee', sidebar_1.ValueType.file),
-        new sidebar_1.SidebarData('Display', machine.id + '-display', sidebar_1.ValueType.file),
-        new sidebar_1.SidebarData('Logs', machine.id + '-logs', sidebar_1.ValueType.folder, [machine.logs.toSidebarData()])
+    var logData = [];
+    machine.logs.forEach(function (element) {
+        return logData.push(element.toSidebarData());
+    });
+    return new sidebar_1.SidebarData(machine.name, machine.id, machine.creationDate, sidebar_1.ValueType.folder, [
+        new sidebar_1.SidebarData('OEE', machine.id + '-oee', '', sidebar_1.ValueType.file),
+        new sidebar_1.SidebarData('Display', machine.id + '-display', '', sidebar_1.ValueType.file),
+        new sidebar_1.SidebarData('Logs', machine.id + '-logs', 'Log inputs', sidebar_1.ValueType.folder, logData)
     ]);
 }
 exports.toSidebarData = toSidebarData;

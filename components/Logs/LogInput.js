@@ -14,19 +14,18 @@ var LogInput = /** @class */ (function () {
         this.writtenBy = writtenBy;
     }
     LogInput.prototype.toSidebarData = function () {
-        return new sidebar_1.SidebarData(String(this.date).split('T')[0], this.id, sidebar_1.ValueType.file, undefined);
+        return new sidebar_1.SidebarData(String(this.date).split('T')[0], this.id, this.header, sidebar_1.ValueType.file, undefined);
     };
     return LogInput;
 }());
 exports.LogInput = LogInput;
 function fetchLogInput(id) {
-    MongoDB_1.client.connect();
     return new LogInput('undefined', 'undefined', 'undefined', 'undefined', 'undefined');
 }
 exports.fetchLogInput = fetchLogInput;
 function upsertLogInput(log) {
-    var update = { $set: { id: log.id } };
-    var options = { upsert: true };
-    logs.updateOne(log, update, options);
+    /*const update = { $set: { id: log.id }};
+    const options = { upsert: true };
+    logs.updateOne(log, update, options); */
 }
 exports.upsertLogInput = upsertLogInput;

@@ -34,13 +34,27 @@ ul, #main-sidebar {
     margin-right: 5px;
   }
 
+.file span {
+  position:relative;
+  background-color:rgba(50, 70, 111, 0.634);
+  outline: 1px solid black;
+  padding: 0.33rem;
+  border-radius: 2px;
+  margin-left: -5.5vw;
+  top: 6vh;
+  top: 6dvh;
+  visibility: hidden;
+  opacity: 0;
+}
 
 .file {
     user-select: none;
 }
 
   .file:hover, .title:hover {
-    color:rgba(255, 255, 255, 0.7)
+    transition: color 0.25s ease;
+    color:rgba(255, 255, 255, 0.7);
+
   }
   
   /* Hide the nested list */
@@ -52,3 +66,7 @@ ul, #main-sidebar {
   .active {
     display: block;
   }
+
+.file:hover {
+
+}

@@ -31,6 +31,21 @@ function JSONResolver(element) { // parse sidebar element to html element
   newElement.id = element.id;
   newElement.className = 'file';
   newElement.innerHTML = element.name;
+  if (element.hover != '') {
+    let hoverElement = document.createElement('span');
+    hoverElement.innerHTML = element.hover;
+    hoverElement.style.opacity = 0;
+    hoverElement.style.visibility = 'hidden';
+    newElement.addEventListener("mouseover", () => {
+      hoverElement.style.opacity = 1;
+      hoverElement.style.visibility = 'visible';
+    });
+    newElement.addEventListener('mouseout', () => {
+      hoverElement.style.opacity = 0;
+      hoverElement.style.visibility = '';
+    })
+    newElement.append(hoverElement);
+  }
   return newElement;
 }
 
@@ -47,7 +62,6 @@ async function getSidebar() { // get sidebar from server side
   sidebar.id = 'main-sidebar'
 
   const returnData = JSON.parse(data);
-  console.log(returnData);
   returnData.forEach(element => sidebar.append(JSONResolver(element)))
   document.body.prepend(sidebar)
 
