@@ -25,10 +25,10 @@ function getSidebar() {
         (0, Machine_1.toSidebarData)(new Machine_1.Machine('knuser', 'knuser', 'warben', '03/15/2023', [
             new LogInputCollection_1.LogInputCollection('knuser-log-0', '01/15/2023', [new LogInput_1.LogInput('knuser-log-0-1', 'yep', '03/15/2023', 'header yep', 'warben'),
                 new LogInput_1.LogInput('knuser-log-0-2', 'yep2', '02/15/2023', 'header yep2', 'warben')]),
-            new LogInputCollection_1.LogInputCollection('knuser-log-1', '01/15/2023', new LogInput_1.LogInput('knuser-log-1-1', 'yep', '03/15/2023', 'header yep', 'warben'))
+            new LogInputCollection_1.LogInputCollection('knuser-log-1', '01/15/2023', new LogInput_1.LogInput('knuser-log-1', 'yep', '03/15/2023', 'header yep', 'warben'))
         ])),
         (0, Machine_1.toSidebarData)(new Machine_1.Machine('b2', 'b2', 'warben', '03/15/2023', [
-            new LogInputCollection_1.LogInputCollection('b2-log-0', '03/15/2023', new LogInput_1.LogInput('b2-log-0-1', 'yep b2', '03/15/2023', 'header yep b2', 'warben'))
+            new LogInputCollection_1.LogInputCollection('b2-log-0', '03/15/2023', new LogInput_1.LogInput('b2-log-0', 'yep b2', '03/15/2023', 'header yep b2', 'warben'))
         ]))
     ];
 }

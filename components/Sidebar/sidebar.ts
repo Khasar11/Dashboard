@@ -31,11 +31,11 @@ export function getSidebar() {
             new LogInput('knuser-log-0-2', 'yep2', '02/15/2023', 'header yep2', 'warben')]
             ),
         new LogInputCollection('knuser-log-1', '01/15/2023', 
-            new LogInput('knuser-log-1-1', 'yep', '03/15/2023', 'header yep', 'warben')
+            new LogInput('knuser-log-1', 'yep', '03/15/2023', 'header yep', 'warben')
             )])), 
         toSidebarData(new Machine('b2', 'b2', 'warben', '03/15/2023', [
         new LogInputCollection('b2-log-0', '03/15/2023', 
-            new LogInput('b2-log-0-1', 'yep b2', '03/15/2023', 'header yep b2', 'warben')
+            new LogInput('b2-log-0', 'yep b2', '03/15/2023', 'header yep b2', 'warben')
             )]))
         ];
 }

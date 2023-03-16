@@ -1,4 +1,6 @@
 
+var undefined = NaN
+
 function JSONResolver(element) { // parse sidebar element to html element
   if (element.type == '0') {
     let newElement = document.createElement('li');
@@ -8,16 +10,7 @@ function JSONResolver(element) { // parse sidebar element to html element
     newElement.append(title)
     newElement.id = element.id;
     if (element.id.split('-')[1] == 'logs' || element.id.split('-')[1] == 'log') {
-      let addButton = document.createElement('button');
-      let remButton = document.createElement('button');
-      addButton.innerHTML = '+'
-      remButton.innerHTML = '-'
-      remButton.className = 'remButton'
-      addButton.className = 'addButton'
-      addButton.onclick = function() { addLogAtLocation(newElement.id) }
-      remButton.onclick = function() { remLogAtLocation(newElement.id) }
-      newElement.append(addButton)
-      newElement.append(remButton)
+      addRemoveButtons(newElement)
     }
     newElement.className = 'folder';
     let nestedElement = document.createElement('ul');
@@ -31,6 +24,7 @@ function JSONResolver(element) { // parse sidebar element to html element
   newElement.id = element.id;
   newElement.className = 'file';
   newElement.innerHTML = element.name;
+  if (newElement.id.includes('-log-') && isNaN(newElement.id.split('-')[3])) addRemoveButtons(newElement);
   if (element.hover != '') {
     let hoverElement = document.createElement('span');
     hoverElement.innerHTML = element.hover;
@@ -47,6 +41,19 @@ function JSONResolver(element) { // parse sidebar element to html element
     newElement.append(hoverElement);
   }
   return newElement;
+}
+
+function addRemoveButtons(htmlElement) {
+  let addButton = document.createElement('button');
+  let remButton = document.createElement('button');
+  addButton.innerHTML = '+'
+  remButton.innerHTML = '-'
+  remButton.className = 'remButton'
+  addButton.className = 'addButton'
+  addButton.onclick = function() { addLogAtLocation(htmlElement.id) }
+  remButton.onclick = function() { remLogAtLocation(htmlElement.id) }
+  htmlElement.append(addButton)
+  htmlElement.append(remButton)
 }
 
 async function getSidebar() { // get sidebar from server side
