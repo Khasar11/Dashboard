@@ -117,16 +117,51 @@
 
   #new-logs {
     top: 40vh;
-    position: relative;
-    left: 50vw;
+    left: 45vw;
     display: inline-block;
   }
   
+#new-logs-entry {
+    position: absolute;
+    backdrop-filter: blur(3px);
+    visibility: hidden;
+    opacity: 0;
+    left: 45vw;
+    top: 40vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 5px 8px 5px 2px rgba(0,0,0,0.2);
+    border-top: 1px solid rgba(0, 0, 0, 0.148);
+    border-left: 1px solid rgba(0, 0, 0, 0.158);
+}
+
+#new-log-continue {
+    margin-top: 6vh;
+    margin-bottom: 2vh;
+    margin-left: 1vw;
+    margin-right: 1vw;
+}
+
+#collection-date {
+    visibility: hidden;
+    opacity: 0;
+}
+
+#new-logs-value {
+    color:#fffad0;
+    font-weight: bold;
+}
+
+#new-logs-selected-adder-id {
+    text-align: center;
+    margin-top: 1vh;
+}
+
   #new-logs-type-dropdown {
     display: none;
     position: absolute;
     background-color: #ebebeb;
-    left: 0.5vw;
+    left: 1.5vw;
     min-width: 100px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     padding: 0;
@@ -147,4 +182,11 @@
      padding: 1vh;
      border-top: 1px dotted black;
      border-bottom: 1px dotted black;
+}
+
+#new-logs {
+    background-color:#ff7732;
+    color: white;
+    padding: 1rem;
+    min-width: 13rem;
 }

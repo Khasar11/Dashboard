@@ -3,7 +3,12 @@
 ul, #main-sidebar {
     list-style-type: none;
   }
-  
+
+#main-sidebar button:first-child {
+  margin-top: 1vh;
+  align-self: center;
+}
+
   /* Remove margins and padding from the parent ul */
   #main-sidebar {
     margin: 0 0 0 0;
@@ -16,7 +21,6 @@ ul, #main-sidebar {
     font-family:Verdana, Geneva, Tahoma, sans-serif;
     color: white;
     border-right: 1px solid black;
-    
     z-index: 2;
   }
   

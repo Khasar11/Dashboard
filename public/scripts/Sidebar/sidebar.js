@@ -14,6 +14,9 @@ function JSONResolver(element) { // parse sidebar element to html element
       addButton('+', `addLogAtLocation('${newElement.id}', 'folder')`, newElement)
       addButton('-', `remLogAtLocation('${newElement.id}', 'folder')`, newElement)
     }
+    if (element.id.split('-')[1] == undefined) {
+      addButton('-', `remMachine(${element.id})`, newElement)
+    }
     newElement.className = 'folder';
     let nestedElement = document.createElement('ul');
     nestedElement.className = 'nested';
@@ -26,10 +29,6 @@ function JSONResolver(element) { // parse sidebar element to html element
   newElement.id = element.id;
   newElement.className = 'file';
   newElement.innerHTML = element.name;
-  if (newElement.id.includes('-log-') && isNaN(newElement.id.split('-')[3])) {
-    addButton('+', `addLogAtLocation('${newElement.id}', 'file')`, newElement)
-    addButton('-', `remLogAtLocation('${newElement.id}', 'file')`, newElement)
-  }
   if (element.hover != '') {
     let hoverElement = document.createElement('span');
     hoverElement.innerHTML = element.hover;
@@ -68,6 +67,13 @@ async function getSidebar() { // get sidebar from server side
   var sidebar = document.createElement('ul')
   sidebar.id = 'main-sidebar'
 
+  addButton('+', 'newMachine()', sidebar)
+
+  var addMachineBtn = document.createElement('button')
+  var delMachineBtn = document.createElement('button')
+
+  addMachineBtn.id = 'add-machine-to-tree'
+
   const returnData = JSON.parse(data);
   returnData.forEach(element => sidebar.append(JSONResolver(element)))
   document.body.prepend(sidebar)
@@ -99,9 +105,13 @@ function peekFile(id) {
   }
 }
 
-function addLogAtLocation(id, currentType) {
+function addLogAtLocation(id) {
   addingLogInputTo = id;
-  showAddLogPrompt()
+  newLogInputCollection = new LogInputCollection()
+  newLogInputCollection.id = addingLogInputTo+'-'+makeid(10)
+  if (document.getElementById(id).className == 'file') showAddLogPrompt(id, false)
+  if (id.split('-')[1] == 'logs') showAddLogPrompt(id, true)
+  if (id.split('-')[1] == 'log') showAddLogPrompt(id, false)
 }
 
 function remLogAtLocation(id, currentType) {

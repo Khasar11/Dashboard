@@ -1,7 +1,37 @@
 
+class LogInputCollection {
+  date = '';
+  id = '';
+  logs;
+
+  constructor(id, date, logs) {
+      this.date = date;
+      this.logs = logs;
+      this.id = id;
+  }
+}
+
+class LogInput {
+  id;
+  data;
+  date;
+  header;
+  writtenBy;
+
+  constructor(id,  data, date, header, writtenBy) {
+      this.id = id;
+      this.data = data;
+      this.date = date;
+      this.header = header;
+      this.writtenBy = writtenBy;
+  }
+}
+
 var currentLogInput;
 var addingLogInputTo;
 var removingLogInput;
+
+var newLogInputCollection;
 
 async function showLog(logId) {
 
@@ -42,12 +72,22 @@ function emptyLog() {
   header.value = ''
   dataField.innerHTML = ''
   writtenBy.value = ''
-  idField.value = ''
+  idField.innerHTML = ''
+  let logDiv = document.getElementById('logs-div')
+  logDiv.style.visibility = 'hidden'
+  logDiv.style.opacity = 0;
+}
+
+function emptyNew() {
+  let newLogsEntry = document.getElementById('new-logs-entry')
+  newLogsEntry.style.visibility = 'hidden'
+  newLogsEntry.style.opacity = 0
 }
 
 document.getElementById("logs-div-Xout").addEventListener("click", function() {
-    document.getElementById('logs-div').style.visibility = 'hidden';
-    document.getElementById('logs-div').style.opacity = 0;
+    let logsDiv = document.getElementById('logs-div')
+    logsDiv.style.visibility = 'hidden';
+    logsDiv.style.opacity = 0;
     emptyLog();
   });
 
@@ -95,10 +135,83 @@ function dragElement(elmnt) {
   }
 }
 
+function showAddLogPrompt(id, showCollection) {
+  let logDiv = document.getElementById('logs-div')
+  if (showCollection) {
+    document.getElementById('new-logs-entry').style.visibility = 'visible'
+    document.getElementById('new-logs-entry').style.opacity = 1
+    document.getElementById('new-logs-selected-adder-id').innerHTML = id
+    emptyLog()
+    return
+  }
+  logDiv.style.visibility = 'visible'
+  logDiv.style.opacity = 1;
+  emptyNew()
+}
+
 document.getElementById("new-logs-singular").addEventListener('click', function () {
   document.getElementById("new-logs-value").innerHTML = 'Singular'
+  let coldate = document.getElementById('collection-date')
+  coldate.style.visibility = 'hidden'
+  coldate.style.opacity = 0
 })
 
 document.getElementById("new-logs-collection").addEventListener('click', function () {
   document.getElementById("new-logs-value").innerHTML = 'Collection'
+  let coldate = document.getElementById('collection-date')
+  coldate.style.visibility = 'visible'
+  coldate.style.opacity = 1
 })
+
+document.getElementById('new-log-continue').addEventListener('click', function() {
+  document.getElementById('new-logs-entry').style.visibility = 'hidden'
+  document.getElementById('new-logs-entry').style.opacity = 0
+  let val = document.getElementById("new-logs-value").innerHTML
+  if (val == 'Collection') {
+    newLogInputCollection.logs = []
+    console.log('new collection')
+    submitLogCollection(newLogInputCollection)
+  }
+  if (val == 'Singular') {
+    newLogInputCollection.logs = new LogInput()
+    newLogInputCollection.logs.id = newLogInputCollection.id
+    console.log(newLogInputCollection.logs)
+    updateLogInputUI(newLogInputCollection.logs)
+    let logDiv = document.getElementById('logs-div')
+    logDiv.style.visibility = 'visible'
+    logDiv.style.opacity = 1;
+  }
+})
+
+document.getElementById('logs-submit').addEventListener(('click'), function() {
+  let dateTimePicker = document.getElementById('logs-date')
+  let header = document.getElementById('logs-header-text')
+  let writtenBy = document.getElementById('logs-header-written-by')
+  let dataField = document.getElementById('logs-input')
+  let idField = document.getElementById('logs-div-id')
+  newLogInputCollection.logs.header = header.value
+  newLogInputCollection.logs.writtenBy = writtenBy.value
+  newLogInputCollection.logs.data = dataField.innerHTML
+  newLogInputCollection.logs.id = idField.innerHTML
+  let nowDate = new Date()
+  formatted = nowDate.getFullYear() + '-' + ('0' + (nowDate.getMonth()+1)).slice(-2) + '-' + ('0' + nowDate.getDate()).slice(-2);
+  newLogInputCollection.date = formatted
+  newLogInputCollection.logs.date = dateTimePicker.value == '' ? formatted : dateTimePicker.value
+})
+
+function submitLogCollection() {
+
+}
+
+function updateLogInputUI(logInput) {
+  let dateTimePicker = document.getElementById('logs-date')
+  let header = document.getElementById('logs-header-text')
+  let writtenBy = document.getElementById('logs-header-written-by')
+  let dataField = document.getElementById('logs-input')
+  let idField = document.getElementById('logs-div-id')
+  dateTimePicker.value = String(new Date()).split('T')[0]
+  header.value = logInput.header === undefined ? null : logInput.header
+  dataField.innerHTML = logInput.data === undefined ? null : logInput.data
+  writtenBy.value = logInput.writtenBy === undefined ? null : logInput.writtenBy
+  idField.innerHTML = logInput.id === undefined ? null : logInput.id+'-'+makeid(6)
+}
