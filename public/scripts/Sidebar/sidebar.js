@@ -68,6 +68,9 @@ async function getSidebar() { // get sidebar from server side
   var sidebar = document.createElement('ul')
   sidebar.id = 'main-sidebar'
 
+  let label = document.createElement('text');
+  label.innerHTML= 'Machines'
+  sidebar.append(label)
   addButton('+', 'newMachine()', sidebar)
 
   var addMachineBtn = document.createElement('button')
