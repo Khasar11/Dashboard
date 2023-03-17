@@ -243,3 +243,10 @@ function submitLogCollection() {
   console.log('log collection submit')
   emptyLog()
 }
+
+function remEntry(id) {
+  if (confirm(`Do you really want to delete '${id}'?`) == true) {
+      console.log('remove entry with id ' + id)
+      return;
+  }
+}

@@ -12,10 +12,10 @@ function JSONResolver(element) { // parse sidebar element to html element
     newElement.id = element.id;
     if (element.id.split('-')[1] == 'logs' || element.id.split('-')[1] == 'log') {
       addButton('+', `addLogAtLocation('${newElement.id}', 'folder')`, newElement)
-      addButton('-', `remLogAtLocation('${newElement.id}', 'folder')`, newElement)
+      if (element.id.split('-')[1] == 'log') addButton('-', `remEntry('${newElement.id}')`, newElement)
     }
     if (element.id.split('-')[1] == undefined) {
-      addButton('-', `remMachine(${element.id})`, newElement)
+      addButton('-', `remEntry('${element.id}')`, newElement)
     }
     newElement.className = 'folder';
     let nestedElement = document.createElement('ul');
@@ -29,6 +29,7 @@ function JSONResolver(element) { // parse sidebar element to html element
   newElement.id = element.id;
   newElement.className = 'file';
   newElement.innerHTML = element.name;
+  if (element.id.split('-')[1] == 'log') addButton('-', `remEntry('${newElement.id}')`, newElement)
   if (element.hover != '') {
     let hoverElement = document.createElement('span');
     hoverElement.innerHTML = element.hover;
