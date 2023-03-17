@@ -1,43 +1,37 @@
-
-
 ul, #main-sidebar {
-    list-style-type: none;
-  }
-
+  list-style-type: none;
+}
 #main-sidebar button:first-child {
   margin-top: 1vh;
   align-self: center;
 }
-
-  /* Remove margins and padding from the parent ul */
-  #main-sidebar {
-    margin: 0 0 0 0;
-    padding: 0 1rem 0 1rem;
-    position: absolute;
-    height: 100%;
-    top: 0;
-    background-color:rgba(73, 87, 115, 0.677);
-    backdrop-filter: blur(2px);
-    font-family:Verdana, Geneva, Tahoma, sans-serif;
-    color: white;
-    border-right: 1px solid black;
-    z-index: 2;
-  }
-  
-  /* Style the caret/arrow */
-  .title {
-    cursor: pointer;
-    user-select: none; /* Prevent text selection */
-  }
-  
-  /* Create the caret/arrow with a unicode, and style it */
-  .title::before {
-    content: "┗";
-    display: inline-block;
-    padding: 0;
-    margin-right: 5px;
-  }
-
+/* Remove margins and padding from the parent ul */
+#main-sidebar {
+  margin: 0 0 0 0;
+  padding: 0 1rem 0 1rem;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  background-color:rgba(73, 87, 115, 0.677);
+  backdrop-filter: blur(2px);
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  color: white;
+  border-right: 1px solid black;
+  z-index: 2;
+}
+/* Style the caret/arrow */
+.title {
+  cursor: pointer;
+  user-select: none;
+ /* Prevent text selection */
+}
+/* Create the caret/arrow with a unicode, and style it */
+.title::before {
+  content: "┗";
+  display: inline-block;
+  padding: 0;
+  margin-right: 5px;
+}
 .file span {
   position:absolute;
   background-color:rgba(50, 70, 111, 0.634);
@@ -54,23 +48,18 @@ ul, #main-sidebar {
   color: white;
   z-index: 1;
 }
-
 .file {
-    user-select: none;
+  user-select: none;
 }
-
-  .file:hover, .title:hover {
-    transition: color 0.25s ease;
-    color:rgba(255, 255, 255, 0.7);
-
-  }
-  
-  /* Hide the nested list */
-  .nested {
-    display: none;
-  }
-  
-  /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
-  .active {
-    display: block;
-  }
+.file:hover, .title:hover {
+  transition: color 0.25s ease;
+  color:rgba(255, 255, 255, 0.7);
+}
+/* Hide the nested list */
+.nested {
+  display: none;
+}
+/* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+.active {
+  display: block;
+}
