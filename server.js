@@ -22,6 +22,11 @@ app.get('/logs/:dynamic', (req, res) => {
     res.status(200).json(logInput.fetchLogInput(dynamic))
 });
 
+app.get('/idfy/:dynamic', (req, res) => {
+    let {dynamic} = req.params;
+    res.status(200).json({'id': dynamic.replaceAll('-', '_')})
+});
+
 app.listen(port, () => {
     console.log('NodeJS startup')
 });

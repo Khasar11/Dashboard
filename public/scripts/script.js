@@ -9,3 +9,7 @@ function makeid(length) {
     }
     return result;
 }
+
+function formattedYYYYMMDD(nowDate) {
+  return nowDate.getFullYear() + '-' + ('0' + (nowDate.getMonth()+1)).slice(-2) + '-' + ('0' + nowDate.getDate()).slice(-2);
+}

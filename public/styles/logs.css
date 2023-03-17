@@ -186,6 +186,7 @@
 
 #new-logs {
     background-color:#ff7732;
+    transition: visibility 0.1s, opacity 0.1s linear;
     color: white;
     padding: 1rem;
     min-width: 13rem;

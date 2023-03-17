@@ -33,7 +33,7 @@
                     <div id="logs-input" contenteditable="true" data-text="Input text/image(s)"></div>
                 </section>
                 <section id="logs-footer" class="outlined">
-                    <button id="logs-submit">Save log</button>
+                    <button id="logs-submit">Submit log</button>
                 </section>
             </div>
         </div>
@@ -51,6 +51,15 @@
             <input type="date" id="collection-date">
             <button id="new-log-continue">Continue</button>
         </div>
+
+        <form id="new-machine">
+            <div id="new-machine-header">New machine</div>
+            <div id="new-machine-Xout">✖</div>
+            <input id="new-machine-name" type="text" placeholder="Machine name" required>
+            <input id="new-machine-creation-date" type="date" required>
+            <input id="new-machine-created-by" type="text" placeholder="Created by" required>
+            <button id="new-machine-submit" type="button">Submit machine</button>
+        </form>
 
         <svg>
             <g class="links"></g>

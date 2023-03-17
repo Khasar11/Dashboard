@@ -68,7 +68,7 @@ function emptyLog() {
   let dataField = document.getElementById('logs-input')
   let idField = document.getElementById('logs-div-id')
   currentLogInput = null;
-  dateTimePicker.value = String(new Date()).split('T')[0]
+  dateTimePicker.value = formattedYYYYMMDD(new Date())
   header.value = ''
   dataField.innerHTML = ''
   writtenBy.value = ''
@@ -169,13 +169,11 @@ document.getElementById('new-log-continue').addEventListener('click', function()
   let val = document.getElementById("new-logs-value").innerHTML
   if (val == 'Collection') {
     newLogInputCollection.logs = []
-    console.log('new collection')
     submitLogCollection(newLogInputCollection)
   }
   if (val == 'Singular') {
     newLogInputCollection.logs = new LogInput()
     newLogInputCollection.logs.id = newLogInputCollection.id
-    console.log(newLogInputCollection.logs)
     updateLogInputUI(newLogInputCollection.logs)
     let logDiv = document.getElementById('logs-div')
     logDiv.style.visibility = 'visible'
@@ -193,9 +191,8 @@ document.getElementById('logs-submit').addEventListener(('click'), function() {
   newLogInputCollection.logs.writtenBy = writtenBy.value
   newLogInputCollection.logs.data = dataField.innerHTML
   newLogInputCollection.logs.id = idField.innerHTML
-  let nowDate = new Date()
-  formatted = nowDate.getFullYear() + '-' + ('0' + (nowDate.getMonth()+1)).slice(-2) + '-' + ('0' + nowDate.getDate()).slice(-2);
-  newLogInputCollection.date = formatted
+  if (dataField.innerHTML == '' || header.value == '' || writtenBy.value == '' || idField.innerHTML == '') { alert('Missing inputs'); return }
+  newLogInputCollection.date = formattedYYYYMMDD(new Date())
   newLogInputCollection.logs.date = dateTimePicker.value == '' ? formatted : dateTimePicker.value
 })
 
@@ -209,7 +206,7 @@ function updateLogInputUI(logInput) {
   let writtenBy = document.getElementById('logs-header-written-by')
   let dataField = document.getElementById('logs-input')
   let idField = document.getElementById('logs-div-id')
-  dateTimePicker.value = String(new Date()).split('T')[0]
+  dateTimePicker.value = formattedYYYYMMDD(new Date())
   header.value = logInput.header === undefined ? null : logInput.header
   dataField.innerHTML = logInput.data === undefined ? null : logInput.data
   writtenBy.value = logInput.writtenBy === undefined ? null : logInput.writtenBy
