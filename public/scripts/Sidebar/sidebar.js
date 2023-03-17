@@ -114,8 +114,3 @@ function addLogAtLocation(id) {
   if (id.split('-')[1] == 'logs') showAddLogPrompt(id, true)
   if (id.split('-')[1] == 'log') showAddLogPrompt(id, false)
 }
-
-function remLogAtLocation(id, currentType) {
-  removingLogInput = id;
-  showRemoveLogPrompt()
-}
