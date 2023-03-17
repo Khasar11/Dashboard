@@ -108,7 +108,7 @@ function peekFile(id) {
 function addLogAtLocation(id) {
   addingLogInputTo = id;
   newLogInputCollection = new LogInputCollection()
-  newLogInputCollection.id = addingLogInputTo+'-'+makeid(10)
+  newLogInputCollection.id = addingLogInputTo+'-'+makeid(6)
   if (document.getElementById(id).className == 'file') showAddLogPrompt(id, false)
   if (id.split('-')[1] == 'logs') showAddLogPrompt(id, true)
   if (id.split('-')[1] == 'log') showAddLogPrompt(id, false)

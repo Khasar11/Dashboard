@@ -61,7 +61,7 @@
     right: 0rem;
 }
 
-#logs-div-Xout {
+#logs-div-Xout, #new-logs-div-Xout {
     position: absolute;
     top: 0rem;
     right: 0.05rem;
@@ -69,7 +69,7 @@
     user-select: none;
 }
 
-#logs-div-Xout:hover {
+#logs-div-Xout:hover, #new-logs-div-Xout:hover {
     cursor: crosshair;
 }
 

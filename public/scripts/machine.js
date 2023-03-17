@@ -22,7 +22,9 @@ function newMachine() {
     machineBox.style.opacity = 1;
 }
 
-document.getElementById('new-machine-Xout').addEventListener('click', function() {
+document.getElementById('new-machine-Xout').addEventListener('click', function() {clearNewMachine()})
+
+function clearNewMachine() {
     let newMachine = document.getElementById('new-machine')
     newMachine.style.opacity = 0
     newMachine.style.visibility = 'hidden'
@@ -30,17 +32,21 @@ document.getElementById('new-machine-Xout').addEventListener('click', function()
         element.value = null
     })
     document.getElementById('new-machine-creation-date').value = formattedYYYYMMDD(new Date())
-})
+}
 
 document.getElementById('new-machine-creation-date').value = formattedYYYYMMDD(new Date())
 
 var newMachineElement = new Machine()
 
 document.getElementById('new-machine-submit').addEventListener('click', function() {
+    let newMachineDate = document.getElementById('new-machine-creation-date');
+    let newMachineName = document.getElementById('new-machine-name');
+    let newMachineCreatedBy = document.getElementById('new-machine-created-by')
     newMachineElement = new Machine()
-    newMachineElement.createdBy = document.getElementById('new-machine-created-by').value
-    newMachineElement.name = document.getElementById('new-machine-name').value
-    newMachineElement.creationDate = document.getElementById('new-machine-creation-date').value
+    newMachineElement.createdBy = newMachineCreatedBy.value
+    newMachineElement.name = newMachineName.value
+    newMachineElement.creationDate = newMachineDate.value
+    if (newMachineDate.value == '' || newMachineName.value == '' || newMachineCreatedBy.value == '') { alert('Missing inputs'); return }
     submitMachine()
 })
 
@@ -57,4 +63,7 @@ async function submitMachine(machine) {
   newId = JSON.parse(data);
 
   newMachineElement.id = newId.id;
+  console.log(newMachineElement)
+  console.log('new machine submitted')
+  clearNewMachine();
 }

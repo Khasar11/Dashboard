@@ -68,6 +68,7 @@ function emptyLog() {
   let dataField = document.getElementById('logs-input')
   let idField = document.getElementById('logs-div-id')
   currentLogInput = null;
+  addingLogInputTo = null;
   dateTimePicker.value = formattedYYYYMMDD(new Date())
   header.value = ''
   dataField.innerHTML = ''
@@ -138,14 +139,14 @@ function dragElement(elmnt) {
 function showAddLogPrompt(id, showCollection) {
   let logDiv = document.getElementById('logs-div')
   if (showCollection) {
+    emptyLog()
     document.getElementById('new-logs-entry').style.visibility = 'visible'
     document.getElementById('new-logs-entry').style.opacity = 1
-    document.getElementById('new-logs-selected-adder-id').innerHTML = id
-    emptyLog()
-    return
+    return;
   }
   logDiv.style.visibility = 'visible'
   logDiv.style.opacity = 1;
+  document.getElementById('logs-div-id').innerHTML = id +'-'+makeid(6)
   emptyNew()
 }
 
@@ -169,6 +170,7 @@ document.getElementById('new-log-continue').addEventListener('click', function()
   let val = document.getElementById("new-logs-value").innerHTML
   if (val == 'Collection') {
     newLogInputCollection.logs = []
+    newLogInputCollection.date = document.getElementById('collection-date').value
     submitLogCollection(newLogInputCollection)
   }
   if (val == 'Singular') {
@@ -181,24 +183,40 @@ document.getElementById('new-log-continue').addEventListener('click', function()
   }
 })
 
+document.getElementById('new-logs-div-Xout').addEventListener('click', function () {
+  let newLogs = document.getElementById('new-logs-entry')
+  newLogs.style.opacity = 0;
+  newLogs.style.visibility = 'hidden'
+  addingLogInputTo = null
+  newLogInputCollection = null
+})
+
 document.getElementById('logs-submit').addEventListener(('click'), function() {
   let dateTimePicker = document.getElementById('logs-date')
   let header = document.getElementById('logs-header-text')
   let writtenBy = document.getElementById('logs-header-written-by')
   let dataField = document.getElementById('logs-input')
   let idField = document.getElementById('logs-div-id')
+
+  if (addingLogInputTo != null && addingLogInputTo.split('-')[1] == 'log') {
+    let logInput = new LogInput(idField.innerHTML, 
+      dataField.innerHTML, 
+      dateTimePicker.value == '' ? formattedYYYYMMDD(new Date()) : dateTimePicker.value,
+      header.value,
+      writtenBy.value)
+    appendLog(logInput, addingLogInputTo)
+    emptyLog()
+    return;
+  }
   newLogInputCollection.logs.header = header.value
   newLogInputCollection.logs.writtenBy = writtenBy.value
   newLogInputCollection.logs.data = dataField.innerHTML
   newLogInputCollection.logs.id = idField.innerHTML
   if (dataField.innerHTML == '' || header.value == '' || writtenBy.value == '' || idField.innerHTML == '') { alert('Missing inputs'); return }
   newLogInputCollection.date = formattedYYYYMMDD(new Date())
-  newLogInputCollection.logs.date = dateTimePicker.value == '' ? formatted : dateTimePicker.value
+  newLogInputCollection.logs.date = dateTimePicker.value == '' ? formattedYYYYMMDD(new Date()) : dateTimePicker.value
+  submitLogCollection() 
 })
-
-function submitLogCollection() {
-
-}
 
 function updateLogInputUI(logInput) {
   let dateTimePicker = document.getElementById('logs-date')
@@ -211,4 +229,17 @@ function updateLogInputUI(logInput) {
   dataField.innerHTML = logInput.data === undefined ? null : logInput.data
   writtenBy.value = logInput.writtenBy === undefined ? null : logInput.writtenBy
   idField.innerHTML = logInput.id === undefined ? null : logInput.id+'-'+makeid(6)
+}
+
+function appendLog(logInput, origin) {
+
+  console.log(logInput)
+  console.log('log input appended to ' + origin)
+  emptyLog()
+}
+
+function submitLogCollection() {
+  console.log(newLogInputCollection)
+  console.log('log collection submit')
+  emptyLog()
 }
