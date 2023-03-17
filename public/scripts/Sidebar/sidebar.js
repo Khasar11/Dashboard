@@ -12,14 +12,18 @@ function JSONResolver(element) { // parse sidebar element to html element
     newElement.id = element.id;
     if (element.id.split('-')[1] == 'logs' || element.id.split('-')[1] == 'log') {
       addButton('+', `addLogAtLocation('${newElement.id}', 'folder')`, newElement)
-      if (element.id.split('-')[1] == 'log') addButton('-', `remEntry('${newElement.id}')`, newElement)
+      if (element.id.split('-')[1] == 'log') {
+        addButton('-', `remEntry('${newElement.id}')`, newElement)
+      }
     }
     if (element.id.split('-')[1] == undefined) {
       addButton('-', `remEntry('${element.id}')`, newElement)
     }
     newElement.className = 'folder';
     let nestedElement = document.createElement('ul');
-    nestedElement.className = 'nested';
+    console.log(newElement.id.split('-')[1] == 'log')
+      nestedElement.classList.add('log-area-'+element.id.split('-').length)
+    nestedElement.classList.add('nested');
     element.data.forEach(value => 
       nestedElement.append(JSONResolver(value)))
     newElement.append(nestedElement)
@@ -29,7 +33,8 @@ function JSONResolver(element) { // parse sidebar element to html element
   newElement.id = element.id;
   newElement.className = 'file';
   newElement.innerHTML = element.name;
-  if (element.id.split('-')[1] == 'log') addButton('-', `remEntry('${newElement.id}')`, newElement)
+  if (element.id.split('-')[1] == 'log') 
+    addButton('-', `remEntry('${newElement.id}')`, newElement)
   if (element.hover != '') {
     let hoverElement = document.createElement('span');
     hoverElement.innerHTML = element.hover;
@@ -74,12 +79,12 @@ async function getSidebar() { // get sidebar from server side
   addButton('+', 'newMachine()', sidebar)
 
   var addMachineBtn = document.createElement('button')
-  var delMachineBtn = document.createElement('button')
-
   addMachineBtn.id = 'add-machine-to-tree'
 
   const returnData = JSON.parse(data);
-  returnData.forEach(element => sidebar.append(JSONResolver(element)))
+  returnData.forEach(element => {
+    sidebar.append(JSONResolver(element))
+  })
   document.body.prepend(sidebar)
 
   // on click of file
@@ -92,6 +97,8 @@ async function getSidebar() { // get sidebar from server side
       this.parentElement.querySelector(".nested").classList.toggle("active");
       this.classList.toggle("title-down");
     }));
+
+    sortSidebar()
 } 
 
 getSidebar();
@@ -116,4 +123,8 @@ function addLogAtLocation(id) {
   if (document.getElementById(id).className == 'file') showAddLogPrompt(id, false)
   if (id.split('-')[1] == 'logs') showAddLogPrompt(id, true)
   if (id.split('-')[1] == 'log') showAddLogPrompt(id, false)
+}
+
+async function sortSidebar() {
+  
 }
