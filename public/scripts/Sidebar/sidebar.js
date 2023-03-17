@@ -15,13 +15,14 @@ function JSONResolver(element) { // parse sidebar element to html element
       if (element.id.split('-')[1] == 'log') {
         addButton('-', `remEntry('${newElement.id}')`, newElement)
       }
+      newElement.setAttribute('date', element.name)
     }
     if (element.id.split('-')[1] == undefined) {
       addButton('-', `remEntry('${element.id}')`, newElement)
     }
     newElement.className = 'folder';
     let nestedElement = document.createElement('ul');
-    console.log(newElement.id.split('-')[1] == 'log')
+    if(String(newElement.id.split('-')[1]).includes('log'))
       nestedElement.classList.add('log-area-'+element.id.split('-').length)
     nestedElement.classList.add('nested');
     element.data.forEach(value => 
@@ -33,8 +34,10 @@ function JSONResolver(element) { // parse sidebar element to html element
   newElement.id = element.id;
   newElement.className = 'file';
   newElement.innerHTML = element.name;
-  if (element.id.split('-')[1] == 'log') 
+  if (element.id.split('-')[1] == 'log')  {
     addButton('-', `remEntry('${newElement.id}')`, newElement)
+    newElement.setAttribute('date', element.name)
+  }
   if (element.hover != '') {
     let hoverElement = document.createElement('span');
     hoverElement.innerHTML = element.hover;
@@ -98,7 +101,7 @@ async function getSidebar() { // get sidebar from server side
       this.classList.toggle("title-down");
     }));
 
-    sortSidebar()
+  sortLogs();
 } 
 
 getSidebar();
@@ -125,6 +128,39 @@ function addLogAtLocation(id) {
   if (id.split('-')[1] == 'log') showAddLogPrompt(id, false)
 }
 
-async function sortSidebar() {
-  
+async function sortLogs() {
+  Array.from(document.getElementsByClassName('log-area-2')).forEach(element => { sortList(element) })
+  Array.from(document.getElementsByClassName('log-area-3')).forEach(element => { sortList(element) })
+}
+
+async function sortList(ul) {
+  var list, i, switching, shouldSwitch;
+  list = ul;
+  switching = true;
+  /* Make a loop that will continue until
+  no switching has been done: */
+  while (switching) {
+    // Start by saying: no switching is done:
+    switching = false;
+    b = list.children;
+    // Loop through all list items:
+    for (i = 0; i < (b.length - 1); i++) {
+      // Start by saying there should be no switching:
+      shouldSwitch = false;
+      /* Check if the next item should
+      switch place with the current item: */
+      if (new Date(b[i].getAttribute("date")) < new Date(b[i + 1].getAttribute("date"))) {
+        /* If next item is alphabetically lower than current item,
+        mark as a switch and break the loop: */
+        shouldSwitch = true;
+        break;
+      }
+    }
+    if (shouldSwitch) {
+      /* If a switch has been marked, make the switch
+      and mark the switch as done: */
+      b[i].parentNode.insertBefore(b[i + 1], b[i]);
+      switching = true;
+    }
+  }
 }
