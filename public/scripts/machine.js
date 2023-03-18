@@ -65,5 +65,8 @@ async function submitMachine(machine) {
   newMachineElement.id = newId.id;
   console.log(newMachineElement)
   console.log('new machine submitted')
+
+    // post method here
+
   clearNewMachine();
 }

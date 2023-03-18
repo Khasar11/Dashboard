@@ -231,20 +231,25 @@ function updateLogInputUI(logInput) {
   idField.innerHTML = logInput.id === undefined ? null : logInput.id+'-'+makeid(6)
 }
 
-function appendLog(logInput, origin) {
-
+async function appendLog(logInput, origin) {
   console.log(logInput)
   console.log('log input appended to ' + origin)
+  
+  // post method here
+
   emptyLog()
 }
 
-function submitLogCollection() {
+async function submitLogCollection() {
   console.log(newLogInputCollection)
   console.log('log collection submit')
+
+  // post method here
+
   emptyLog()
 }
 
-function remEntry(id) {
+async function remEntry(id) {
   if (confirm(`Do you really want to delete '${id}'?`) == true) {
       console.log('remove entry with id ' + id)
       return;
