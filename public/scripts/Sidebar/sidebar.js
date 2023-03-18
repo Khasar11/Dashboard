@@ -101,35 +101,11 @@ async function getSidebar() { // get sidebar from server side
       this.classList.toggle("title-down");
     }));
 
-  sortLogs();
+  await sortLogs();
 } 
 
-getSidebar();
-
-function peekFile(id) {
-  let postDash = id.split('-')[1];
-  if (postDash == 'display') {
-    getDisplay(id.split('-')[0]);
-  }
-  if (postDash == 'log') {
-    showLog(id);
-  }
-  if (postDash == 'oee') {
-    
-  }
-}
-
-function addLogAtLocation(id) {
-  addingLogInputTo = id;
-  newLogInputCollection = new LogInputCollection()
-  newLogInputCollection.id = addingLogInputTo+'-'+makeid(6)
-  if (document.getElementById(id).className == 'file') showAddLogPrompt(id, false)
-  if (id.split('-')[1] == 'logs') showAddLogPrompt(id, true)
-  if (id.split('-')[1] == 'log') showAddLogPrompt(id, false)
-}
-
 async function sortLogs() {
-  Array.from(document.getElementsByClassName('log-area-2')).forEach(element => { sortList(element) })
+  Array.from(document.getElementsByClassName('log-area-2')).forEach(element => { sortList(element); })
   Array.from(document.getElementsByClassName('log-area-3')).forEach(element => { sortList(element) })
 }
 
@@ -163,4 +139,28 @@ async function sortList(ul) {
       switching = true;
     }
   }
+}
+
+getSidebar();
+
+function peekFile(id) {
+  let postDash = id.split('-')[1];
+  if (postDash == 'display') {
+    getDisplay(id.split('-')[0]);
+  }
+  if (postDash == 'log') {
+    showLog(id);
+  }
+  if (postDash == 'oee') {
+    
+  }
+}
+
+function addLogAtLocation(id) {
+  addingLogInputTo = id;
+  newLogInputCollection = new LogInputCollection()
+  newLogInputCollection.id = addingLogInputTo+'-'+makeid(6)
+  if (document.getElementById(id).className == 'file') showAddLogPrompt(id, false)
+  if (id.split('-')[1] == 'logs') showAddLogPrompt(id, true)
+  if (id.split('-')[1] == 'log') showAddLogPrompt(id, false)
 }
