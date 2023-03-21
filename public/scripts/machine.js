@@ -79,8 +79,6 @@ async function submitMachine(machine) {
       body: JSON.stringify(newMachineElement)
   });
 
-  console.log(newMachineElement)
-
   clearNewMachine();
   getSidebar()
 }

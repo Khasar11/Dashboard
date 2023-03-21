@@ -3,8 +3,6 @@ exports.__esModule = true;
 exports.upsertLogInput = exports.fetchLogInput = exports.LogInput = void 0;
 var MongoDB_1 = require("../MongoDB/MongoDB");
 var sidebar_1 = require("../Sidebar/sidebar");
-var db = MongoDB_1.client.db("maskintest");
-var logs = db.collection("logs");
 var LogInput = /** @class */ (function () {
     function LogInput(id, data, date, header, writtenBy) {
         this.id = id;
@@ -20,6 +18,10 @@ var LogInput = /** @class */ (function () {
 }());
 exports.LogInput = LogInput;
 function fetchLogInput(id) {
+    var split = id.split('-');
+    MongoDB_1.client.connect();
+    console.log(id);
+    console.log(MongoDB_1.db.coll.find({ id: split[0] }));
     return new LogInput('undefined', 'undefined', 'undefined', 'undefined', 'undefined');
 }
 exports.fetchLogInput = fetchLogInput;

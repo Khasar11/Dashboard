@@ -250,9 +250,7 @@ async function appendLog(logInput, origin) {
       headers: {
           'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-          origin: logInput
-      })
+      body: JSON.stringify(logInput)
   });
 
   emptyLog()

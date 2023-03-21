@@ -110,11 +110,11 @@ async function getSidebar() { // get sidebar from server side
 } 
 
 function saveSidebarExpasionStates() {
-
+  
 }
 
 function loadSidebarExpansionStates() {
-  
+
 }
 
 async function sortLogs() {

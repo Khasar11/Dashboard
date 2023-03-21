@@ -1,4 +1,3 @@
-import { LogInput } from "./Logs/LogInput";
 import { LogInputCollection } from "./Logs/LogInputCollection";
 import { SidebarData, ValueType } from "./Sidebar/sidebar";
 
@@ -24,7 +23,10 @@ export function toSidebarData(machine: Machine) {
     let logData: SidebarData[] = [];
 
     machine.logs.forEach(element => {
-        logData.push(new LogInputCollection(element.id, element.date, element.logs).toSidebarData())
+        if (element != null) {
+            let collect = new LogInputCollection(element.id, element.date, element.logs).toSidebarData()
+            logData.push(collect)
+        }
     });
 
     return new SidebarData(machine.name, machine.id, machine.creationDate, ValueType.folder,

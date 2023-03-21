@@ -17,7 +17,10 @@ exports.Machine = Machine;
 function toSidebarData(machine) {
     var logData = [];
     machine.logs.forEach(function (element) {
-        logData.push(new LogInputCollection_1.LogInputCollection(element.id, element.date, element.logs).toSidebarData());
+        if (element != null) {
+            var collect = new LogInputCollection_1.LogInputCollection(element.id, element.date, element.logs).toSidebarData();
+            logData.push(collect);
+        }
     });
     return new sidebar_1.SidebarData(machine.name, machine.id, machine.creationDate, sidebar_1.ValueType.folder, [
         new sidebar_1.SidebarData('OEE', machine.id + '-oee', '', sidebar_1.ValueType.file),

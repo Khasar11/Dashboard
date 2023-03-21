@@ -22,8 +22,8 @@ exports.LogInputCollection = LogInputCollection;
 function logInputsToSidebarData(logs) {
     if (Array.isArray(logs)) {
         var data_1 = [];
-        logs.forEach(function (element) {
-            data_1.push(element.toSidebarData());
+        logs.filter(function (e) { return e != null; }).forEach(function (element) {
+            data_1.push(new LogInput_1.LogInput(element.id, element.data, element.date, element.header, element.writtenBy).toSidebarData());
         });
         return data_1;
     }
