@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.upsertLogInput = exports.fetchLogInput = exports.LogInput = void 0;
+exports.fetchLogInput = exports.LogInput = void 0;
 var MongoDB_1 = require("../MongoDB/MongoDB");
 var sidebar_1 = require("../Sidebar/sidebar");
 var LogInput = /** @class */ (function () {
@@ -20,14 +20,9 @@ exports.LogInput = LogInput;
 function fetchLogInput(id) {
     var split = id.split('-');
     MongoDB_1.client.connect();
+    // err
     console.log(id);
     console.log(MongoDB_1.db.coll.find({ id: split[0] }));
     return new LogInput('undefined', 'undefined', 'undefined', 'undefined', 'undefined');
 }
 exports.fetchLogInput = fetchLogInput;
-function upsertLogInput(log) {
-    /*const update = { $set: { id: log.id }};
-    const options = { upsert: true };
-    logs.updateOne(log, update, options); */
-}
-exports.upsertLogInput = upsertLogInput;

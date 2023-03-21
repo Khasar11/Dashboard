@@ -37,10 +37,3 @@ export function fetchLogInput(id: string) {
     
     return new LogInput('undefined','undefined', 'undefined', 'undefined', 'undefined');
 }
-
-export function upsertLogInput(log: LogInput) {
-    /*const update = { $set: { id: log.id }};
-    const options = { upsert: true };
-    logs.updateOne(log, update, options); */
-}
-
