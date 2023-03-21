@@ -21,7 +21,12 @@ export class LogInput {
     }
 
     toSidebarData() {
-        return new SidebarData(String(this.date).split('T')[0], this.id, this.header, ValueType.file, undefined);
+        return new SidebarData(
+            String(this.date).split('T')[0],
+             this.id, 
+             this.header, 
+             ValueType.file, 
+             undefined);
     }
 }
 

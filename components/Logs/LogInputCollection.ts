@@ -20,7 +20,7 @@ export class LogInputCollection {
                 this.id, 
                 ValueType.folder, 
                 logInputsToSidebarData(this.logs))
-        return this.logs.toSidebarData();
+        return new LogInput(this.logs.id, this.logs.data, this.logs.date, this.logs.header, this.logs.writtenBy).toSidebarData();
     }
 }
 

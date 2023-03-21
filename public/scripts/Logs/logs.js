@@ -1,4 +1,3 @@
-
 class LogInputCollection {
   date = '';
   id = '';
@@ -18,7 +17,7 @@ class LogInput {
   header;
   writtenBy;
 
-  constructor(id,  data, date, header, writtenBy) {
+  constructor(id, data, date, header, writtenBy) {
       this.id = id;
       this.data = data;
       this.date = date;
@@ -40,10 +39,14 @@ async function showLog(logId) {
   currentLogInput = logId;
 
   let data = await fetch(baseUrl, {
-    method: 'GET'
-  }).then((response) => response.text())
-  .then(data => { return data; })
-  .catch(error => { console.error(error); });
+          method: 'GET'
+      }).then((response) => response.text())
+      .then(data => {
+          return data;
+      })
+      .catch(error => {
+          console.error(error);
+      });
 
   let log = JSON.parse(data);
   let dateTimePicker = document.getElementById('logs-date')
@@ -86,80 +89,84 @@ function emptyNew() {
 }
 
 document.getElementById("logs-div-Xout").addEventListener("click", function() {
-    let logsDiv = document.getElementById('logs-div')
-    logsDiv.style.visibility = 'hidden';
-    logsDiv.style.opacity = 0;
-    emptyLog();
-  });
+  let logsDiv = document.getElementById('logs-div')
+  logsDiv.style.visibility = 'hidden';
+  logsDiv.style.opacity = 0;
+  emptyLog();
+});
 
 // Make the DIV element draggable:
 dragElement(document.getElementById("logs-div"));
 
 function dragElement(elmnt) {
-  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  var pos1 = 0,
+      pos2 = 0,
+      pos3 = 0,
+      pos4 = 0;
   if (document.getElementById(elmnt.id + "-moveable")) {
-    // if present, the header is where you move the DIV from:
-    document.getElementById(elmnt.id + "-moveable").onmousedown = dragMouseDown;
+      // if present, the header is where you move the DIV from:
+      document.getElementById(elmnt.id + "-moveable").onmousedown = dragMouseDown;
   } else {
-    // otherwise, move the DIV from anywhere inside the DIV:
-    elmnt.onmousedown = dragMouseDown;
+      // otherwise, move the DIV from anywhere inside the DIV:
+      elmnt.onmousedown = dragMouseDown;
   }
 
   function dragMouseDown(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // get the mouse cursor position at startup:
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    document.onmouseup = closeDragElement;
-    // call a function whenever the cursor moves:
-    document.onmousemove = elementDrag;
+      e = e || window.event;
+      e.preventDefault();
+      // get the mouse cursor position at startup:
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.onmouseup = closeDragElement;
+      // call a function whenever the cursor moves:
+      document.onmousemove = elementDrag;
   }
 
   function elementDrag(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // calculate the new cursor position:
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    // set the element's new position:
-    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+      e = e || window.event;
+      e.preventDefault();
+      // calculate the new cursor position:
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      // set the element's new position:
+      elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+      elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
   }
 
   function closeDragElement() {
-    // stop moving when mouse button is released:
-    document.onmouseup = null;
-    document.onmousemove = null;
+      // stop moving when mouse button is released:
+      document.onmouseup = null;
+      document.onmousemove = null;
   }
 }
 
 function showAddLogPrompt(id, showCollection) {
   let logDiv = document.getElementById('logs-div')
   if (showCollection) {
-    emptyLog()
-    document.getElementById('new-logs-entry').style.visibility = 'visible'
-    document.getElementById('new-logs-entry').style.opacity = 1
-    return;
+      emptyLog()
+      document.getElementById('new-logs-entry').style.visibility = 'visible'
+      document.getElementById('new-logs-entry').style.opacity = 1
+      return;
   }
   logDiv.style.visibility = 'visible'
   logDiv.style.opacity = 1;
-  document.getElementById('logs-div-id').innerHTML = id +'-'+makeid(6)
+  document.getElementById('logs-div-id').innerHTML = id + '-' + makeid(6)
   emptyNew()
 }
 
-document.getElementById("new-logs-singular").addEventListener('click', function () {
+document.getElementById("new-logs-singular").addEventListener('click', function() {
   document.getElementById("new-logs-value").innerHTML = 'Singular'
   let coldate = document.getElementById('collection-date')
   coldate.style.visibility = 'hidden'
   coldate.style.opacity = 0
 })
 
-document.getElementById("new-logs-collection").addEventListener('click', function () {
+document.getElementById("new-logs-collection").addEventListener('click', function() {
   document.getElementById("new-logs-value").innerHTML = 'Collection'
   let coldate = document.getElementById('collection-date')
+  document.getElementById('collection-date').value = formattedYYYYMMDD(new Date())
   coldate.style.visibility = 'visible'
   coldate.style.opacity = 1
 })
@@ -169,21 +176,21 @@ document.getElementById('new-log-continue').addEventListener('click', function()
   document.getElementById('new-logs-entry').style.opacity = 0
   let val = document.getElementById("new-logs-value").innerHTML
   if (val == 'Collection') {
-    newLogInputCollection.logs = []
-    newLogInputCollection.date = document.getElementById('collection-date').value
-    submitLogCollection(newLogInputCollection)
+      newLogInputCollection.logs = []
+      newLogInputCollection.date = document.getElementById('collection-date').value
+      submitLogCollection(newLogInputCollection)
   }
   if (val == 'Singular') {
-    newLogInputCollection.logs = new LogInput()
-    newLogInputCollection.logs.id = newLogInputCollection.id
-    updateLogInputUI(newLogInputCollection.logs)
-    let logDiv = document.getElementById('logs-div')
-    logDiv.style.visibility = 'visible'
-    logDiv.style.opacity = 1;
+      newLogInputCollection.logs = new LogInput()
+      newLogInputCollection.logs.id = newLogInputCollection.id
+      updateLogInputUI(newLogInputCollection.logs)
+      let logDiv = document.getElementById('logs-div')
+      logDiv.style.visibility = 'visible'
+      logDiv.style.opacity = 1;
   }
 })
 
-document.getElementById('new-logs-div-Xout').addEventListener('click', function () {
+document.getElementById('new-logs-div-Xout').addEventListener('click', function() {
   let newLogs = document.getElementById('new-logs-entry')
   newLogs.style.opacity = 0;
   newLogs.style.visibility = 'hidden'
@@ -199,23 +206,26 @@ document.getElementById('logs-submit').addEventListener(('click'), function() {
   let idField = document.getElementById('logs-div-id')
 
   if (addingLogInputTo != null && addingLogInputTo.split('-')[1] == 'log') {
-    let logInput = new LogInput(idField.innerHTML, 
-      dataField.innerHTML, 
-      dateTimePicker.value == '' ? formattedYYYYMMDD(new Date()) : dateTimePicker.value,
-      header.value,
-      writtenBy.value)
-    appendLog(logInput, addingLogInputTo)
-    emptyLog()
-    return;
+      let logInput = new LogInput(idField.innerHTML,
+          dataField.innerHTML,
+          dateTimePicker.value == '' ? formattedYYYYMMDD(new Date()) : dateTimePicker.value,
+          header.value,
+          writtenBy.value)
+      appendLog(logInput, addingLogInputTo)
+      emptyLog()
+      return;
   }
   newLogInputCollection.logs.header = header.value
   newLogInputCollection.logs.writtenBy = writtenBy.value
   newLogInputCollection.logs.data = dataField.innerHTML
   newLogInputCollection.logs.id = idField.innerHTML
-  if (dataField.innerHTML == '' || header.value == '' || writtenBy.value == '' || idField.innerHTML == '') { alert('Missing inputs'); return }
+  if (dataField.innerHTML == '' || header.value == '' || writtenBy.value == '' || idField.innerHTML == '') {
+      alert('Missing inputs');
+      return
+  }
   newLogInputCollection.date = formattedYYYYMMDD(new Date())
   newLogInputCollection.logs.date = dateTimePicker.value == '' ? formattedYYYYMMDD(new Date()) : dateTimePicker.value
-  submitLogCollection() 
+  submitLogCollection()
 })
 
 function updateLogInputUI(logInput) {
@@ -228,30 +238,54 @@ function updateLogInputUI(logInput) {
   header.value = logInput.header === undefined ? null : logInput.header
   dataField.innerHTML = logInput.data === undefined ? null : logInput.data
   writtenBy.value = logInput.writtenBy === undefined ? null : logInput.writtenBy
-  idField.innerHTML = logInput.id === undefined ? null : logInput.id+'-'+makeid(6)
+  idField.innerHTML = logInput.id === undefined ? null : logInput.id + '-' + makeid(6)
 }
 
 async function appendLog(logInput, origin) {
   console.log(logInput)
   console.log('log input appended to ' + origin)
-  
-  // post method here
+
+  fetch('http://localhost:8383/logupsert/', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          origin: logInput
+      })
+  });
 
   emptyLog()
+  getSidebar()
 }
 
 async function submitLogCollection() {
   console.log(newLogInputCollection)
   console.log('log collection submit')
 
-  // post method here
+  fetch('http://localhost:8383/logcolupsert/', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newLogInputCollection)
+  });
 
   emptyLog()
+  getSidebar()
 }
 
-async function remEntry(id) {
+async function remEntry(id, origin) {
   if (confirm(`Do you really want to delete '${id}'?`) == true) {
       console.log('remove entry with id ' + id)
+      fetch('http://localhost:8383/removeentry/', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: origin == null ? JSON.stringify({id}) : JSON.stringify({origin: id})
+      });
+      getSidebar()
       return;
   }
 }

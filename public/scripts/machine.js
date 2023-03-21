@@ -16,11 +16,15 @@ class Machine {
     }
 }
 
+newMachine();
+
 function newMachine() {
     let machineBox = document.getElementById('new-machine')
     machineBox.style.visibility = 'visible'
     machineBox.style.opacity = 1;
 }
+
+clearNewMachine();
 
 document.getElementById('new-machine-Xout').addEventListener('click', function() {clearNewMachine()})
 
@@ -63,10 +67,20 @@ async function submitMachine(machine) {
   newId = JSON.parse(data);
 
   newMachineElement.id = newId.id;
+  newMachineElement.logs = []
   console.log(newMachineElement)
   console.log('new machine submitted')
 
-    // post method here
+  fetch('http://localhost:8383/machineupsert/', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newMachineElement)
+  });
+
+  console.log(newMachineElement)
 
   clearNewMachine();
+  getSidebar()
 }

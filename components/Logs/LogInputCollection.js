@@ -2,6 +2,7 @@
 exports.__esModule = true;
 exports.LogInputCollection = void 0;
 var sidebar_1 = require("../Sidebar/sidebar");
+var LogInput_1 = require("./LogInput");
 var LogInputCollection = /** @class */ (function () {
     function LogInputCollection(id, date, logs) {
         this.date = '';
@@ -13,7 +14,7 @@ var LogInputCollection = /** @class */ (function () {
     LogInputCollection.prototype.toSidebarData = function () {
         if (Array.isArray(this.logs))
             return new sidebar_1.SidebarData(this.date, this.id, this.id, sidebar_1.ValueType.folder, logInputsToSidebarData(this.logs));
-        return this.logs.toSidebarData();
+        return new LogInput_1.LogInput(this.logs.id, this.logs.data, this.logs.date, this.logs.header, this.logs.writtenBy).toSidebarData();
     };
     return LogInputCollection;
 }());

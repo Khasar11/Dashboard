@@ -23,8 +23,9 @@ export function toSidebarData(machine: Machine) {
 
     let logData: SidebarData[] = [];
 
-    machine.logs.forEach(element => 
-        logData.push(element.toSidebarData()));
+    machine.logs.forEach(element => {
+        logData.push(new LogInputCollection(element.id, element.date, element.logs).toSidebarData())
+    });
 
     return new SidebarData(machine.name, machine.id, machine.creationDate, ValueType.folder,
         [

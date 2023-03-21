@@ -13,12 +13,12 @@ function JSONResolver(element) { // parse sidebar element to html element
     if (element.id.split('-')[1] == 'logs' || element.id.split('-')[1] == 'log') {
       addButton('+', `addLogAtLocation('${newElement.id}', 'folder')`, newElement)
       if (element.id.split('-')[1] == 'log') {
-        addButton('-', `remEntry('${newElement.id}')`, newElement)
+        addButton('-', `remEntry('${newElement.id}', null)`, newElement)
       }
       newElement.setAttribute('date', element.name)
     }
     if (element.id.split('-')[1] == undefined) {
-      addButton('-', `remEntry('${element.id}')`, newElement)
+      addButton('-', `remEntry('${element.id}', null)`, newElement)
     }
     newElement.className = 'folder';
     let nestedElement = document.createElement('ul');
@@ -35,7 +35,7 @@ function JSONResolver(element) { // parse sidebar element to html element
   newElement.className = 'file';
   newElement.innerHTML = element.name;
   if (element.id.split('-')[1] == 'log')  {
-    addButton('-', `remEntry('${newElement.id}')`, newElement)
+    addButton('-', `remEntry('${newElement.id}', null)`, newElement)
     newElement.setAttribute('date', element.name)
   }
   if (element.hover != '') {
@@ -73,6 +73,10 @@ async function getSidebar() { // get sidebar from server side
   .then(data => { return data; })
   .catch(error => { console.error(error); });
 
+  if (document.getElementById('main-sidebar') != null) {
+    document.getElementById('main-sidebar').remove();
+    saveSidebarExpasionStates()
+  }
   var sidebar = document.createElement('ul')
   sidebar.id = 'main-sidebar'
 
@@ -89,6 +93,7 @@ async function getSidebar() { // get sidebar from server side
     sidebar.append(JSONResolver(element))
   })
   document.body.prepend(sidebar)
+  loadSidebarExpansionStates()
 
   // on click of file
   Array.from(document.getElementsByClassName('file')).forEach(file => {
@@ -103,6 +108,14 @@ async function getSidebar() { // get sidebar from server side
 
   await sortLogs();
 } 
+
+function saveSidebarExpasionStates() {
+
+}
+
+function loadSidebarExpansionStates() {
+  
+}
 
 async function sortLogs() {
   Array.from(document.getElementsByClassName('log-area-2')).forEach(element => { sortList(element); })
@@ -126,7 +139,7 @@ async function sortList(ul) {
       /* Check if the next item should
       switch place with the current item: */
       if (new Date(b[i].getAttribute("date")) < new Date(b[i + 1].getAttribute("date"))) {
-        /* If next item is alphabetically lower than current item,
+        /* If next item is date lower than current item,
         mark as a switch and break the loop: */
         shouldSwitch = true;
         break;
@@ -157,7 +170,7 @@ function peekFile(id) {
 }
 
 function addLogAtLocation(id) {
-  addingLogInputTo = id;
+  addingLogInputTo = id.slice(0,-1);
   newLogInputCollection = new LogInputCollection()
   newLogInputCollection.id = addingLogInputTo+'-'+makeid(6)
   if (document.getElementById(id).className == 'file') showAddLogPrompt(id, false)
