@@ -14,6 +14,8 @@ export class Bindings {
         this.DBNumber = DBNumber;
     }
 
+    
+
     refresh() {
 
     }
@@ -23,6 +25,6 @@ export class Bindings {
     }
 
     links() {
-        
+
     }
 }
