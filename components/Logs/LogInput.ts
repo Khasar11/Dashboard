@@ -1,6 +1,5 @@
-import { client, db } from "../MongoDB/MongoDB";
-import { SidebarData, ValueType } from "../Sidebar/sidebar";
 
+import { SidebarData, ValueType } from "../Sidebar/sidebar";
 
 export class LogInput {
     id: string;
@@ -25,15 +24,4 @@ export class LogInput {
              ValueType.file, 
              undefined);
     }
-}
-
-export function fetchLogInput(id: string) {
-    let split = id.split('-')
-
-    client.connect();
-    // err
-    console.log(id)
-    console.log(db.coll.find({id: split[0]}))
-    
-    return new LogInput('undefined','undefined', 'undefined', 'undefined', 'undefined');
 }

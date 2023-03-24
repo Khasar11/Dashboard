@@ -1,7 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.fetchLogInput = exports.LogInput = void 0;
-var MongoDB_1 = require("../MongoDB/MongoDB");
+exports.LogInput = void 0;
 var sidebar_1 = require("../Sidebar/sidebar");
 var LogInput = /** @class */ (function () {
     function LogInput(id, data, date, header, writtenBy) {
@@ -17,12 +16,3 @@ var LogInput = /** @class */ (function () {
     return LogInput;
 }());
 exports.LogInput = LogInput;
-function fetchLogInput(id) {
-    var split = id.split('-');
-    MongoDB_1.client.connect();
-    // err
-    console.log(id);
-    console.log(MongoDB_1.db.coll.find({ id: split[0] }));
-    return new LogInput('undefined', 'undefined', 'undefined', 'undefined', 'undefined');
-}
-exports.fetchLogInput = fetchLogInput;

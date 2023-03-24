@@ -48,6 +48,8 @@ async function showLog(logId) {
           console.error(error);
       });
 
+  let split = logId.split('-')
+  addingLogInputTo = split[0]+'-'+split[1]+'-'+split[2]
   let log = JSON.parse(data);
   let dateTimePicker = document.getElementById('logs-date')
   let header = document.getElementById('logs-header-text')
