@@ -14,7 +14,8 @@
     "ip-address": "^8.1.0",
     "json-tree-view": "^0.4.12",
     "lzutf8": "^0.6.3",
-    "mongodb": "5.1"
+    "mongodb": "5.1",
+    "node-opcua": "^2.95.0"
   },
   "devDependencies": {
     "typescript": "^4.9.5"

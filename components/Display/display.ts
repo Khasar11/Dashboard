@@ -4,11 +4,11 @@ import { Link } from './Link';
 import { NodeObject } from './NodeObject';
 
 class Display {
+    bindings: Bindings;
     links: Link[];
     nodeObjects: NodeObject[];
-    bindings: Bindings;
 
-    constructor(links: Link[], nodeObjects: NodeObject[], bindings: Bindings) {
+    constructor(bindings: Bindings, links: Link[], nodeObjects: NodeObject[]) {
         this.links = links;
         this.nodeObjects = nodeObjects;
         this.bindings = bindings;
