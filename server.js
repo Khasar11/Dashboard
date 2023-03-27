@@ -179,3 +179,5 @@ app.post('/removeentry/', (req, res) => { // submit of machine {Machine}
 app.listen(port, () => {
     console.log('NodeJS startup')
 });
+
+display.getDisplay()
