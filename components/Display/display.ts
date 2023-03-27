@@ -1,4 +1,3 @@
-
 const async = require("async");
 import { OPCUAClient } from 'node-opcua';
 import { AttributeIds, ClientSession, TimestampsToReturn } from 'node-opcua-client';
