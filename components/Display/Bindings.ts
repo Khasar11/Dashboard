@@ -8,12 +8,4 @@ export class Bindings {
         this.endpointUrl = endpointUrl;
         this.nodeIDmain = nodeIDmain;
     }
-
-    nodeObjects() {
-
-    }
-
-    links() {
-
-    }
 }

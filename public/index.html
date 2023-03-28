@@ -14,14 +14,14 @@
         <link rel="stylesheet" href="./styles/sidebar.css" type="text/css">
         <link rel="stylesheet" href="./styles/logs.css" type="text/css">
         <link rel="stylesheet" href="./styles/machine.css" type="text/css">
-
+        <link rel="stylesheet" href="./styles/display.css" type="text/css">
         <link rel="shortcut icon" href="#">
     </head>
     <body>
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-        <div class="form" id="logs-div">
+        <div class="form" id="logs-div"> <!-- shown when user is writing a log input -->
             <div id="logs">
                 <section id="logs-div-header" class="outlined">
                     <input type="date" id="logs-date" name="log" required>
@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <div id="new-logs-entry">
+        <div id="new-logs-entry"> <!-- shown on push of new log button on main logs sidebar element -->
             <div id="new-logs-div-Xout">✖</div>
             <div id="new-logs">
                 <span id="new-logs-type">Select log type</span>
@@ -55,7 +55,7 @@
             <button id="new-log-continue">Continue</button>
         </div>
 
-        <form id="new-machine">
+        <form id="new-machine"> <!-- shown on push of new machine button -->
             <div id="new-machine-header">New machine</div>
             <div id="new-machine-Xout">✖</div>
             <input id="new-machine-name" type="text" placeholder="Machine name" required>
@@ -64,10 +64,7 @@
             <button id="new-machine-submit" type="button">Submit machine</button>
         </form>
 
-        <svg>
-            <g class="links"></g>
-            <g class="nodes"></g>
-        </svg>
+        <svg id="main-svg"></svg> <!-- D3.js (7.0) view inserted into this on 'display' click -->
         <script src="./lib/d3/d3.v7.min.js"></script>
         <script src="./lib/froala/froala_editor.pkgd.min.js"></script>
         <script src="./scripts/fetcher.js"></script>
@@ -76,6 +73,5 @@
         <script src="./scripts/Logs/logs.js"></script> 
         <script src="./scripts//Sidebar/sidebar.js"></script>  
         <script src="./scripts/Display/display.js"></script>  
-        
     </body>
 </html>

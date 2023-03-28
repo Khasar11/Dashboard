@@ -6,10 +6,6 @@ var Bindings = /** @class */ (function () {
         this.endpointUrl = endpointUrl;
         this.nodeIDmain = nodeIDmain;
     }
-    Bindings.prototype.nodeObjects = function () {
-    };
-    Bindings.prototype.links = function () {
-    };
     return Bindings;
 }());
 exports.Bindings = Bindings;

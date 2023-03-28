@@ -16,9 +16,9 @@ app.get('/sidebar', (req, res) => {
     });
 });
 
-app.get('/display/:dynamic', (req, res) => {
+app.get('/display/:dynamic', async (req, res) => {
     const {dynamic} = req.params;
-    res.status(200).json(display.getDisplay(dynamic))
+    res.status(200).json(await display.getDisplay(dynamic))
 });
 
 app.get('/logs/:dynamic', async (req, res) => {
@@ -180,4 +180,4 @@ app.listen(port, () => {
     console.log('NodeJS startup')
 });
 
-display.getDisplay()
+//display.displayTest()
