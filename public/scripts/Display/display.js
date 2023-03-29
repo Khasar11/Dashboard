@@ -174,7 +174,14 @@ async function getDisplay(id) {
 		.enter().append('text')
 		.attr('font-weight', 'bold')
 		.classed('.node-values', true)
+}
 
+setInterval(async () => {
+	nodes.nodeObjects = await updateNodeObjects();
+}, 5000);
+
+async function updateNodeObjects() {
+	// wip auto update nodes
 }
 
 function ticked() {
