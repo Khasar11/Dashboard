@@ -1,7 +1,6 @@
 const express = require('express');
 const sidebar = require('./components/Sidebar/sidebar');
 const display = require('./components/Display/Display');
-const logInput = require('./components/Logs/LogInput');
 const mongoDB = require('./components/MongoDB/MongoDB');
 const app = express();
 const port = 8383;
@@ -18,14 +17,24 @@ app.get('/sidebar', (req, res) => {
 
 app.get('/display/:dynamic', async (req, res) => {
     const {dynamic} = req.params;
-    res.status(200).json(await display.getDisplay(dynamic))
+    res.status(200).json(await display.getDisplay(dynamic)) // {dynamic} = id to get display data from
 });
+
+app.get('/displayData/:dynamic', async (req, res) => {
+    const {dynamic} = req.params;
+    res.status(200).json(await display.getDisplayData(dynamic)) // {dynamic} = id to get display data from
+})
+
+app.get('/writeDisplayData/:dynamic', (req, res) => {
+    const {dynamic} = req.params;
+    res.status(200).json(display.setDisplayData(JSON.parse(dynamic))) 
+    // {dynamic} = data object to set $.display.$ to
+    // containing id, endpoint, nodeAddress fields
+})
 
 app.get('/logs/:dynamic', async (req, res) => {
     const {dynamic} = req.params;
-
     let split = dynamic.split('-')
-    
     let done = false
 
     mongoDB.client.connect()
@@ -53,12 +62,10 @@ app.get('/idfy/:dynamic', (req, res) => {
 });
 
 app.post('/logupsert', async (req, res) => { // submit of log input to machine with {machineId: LogInput}
-    console.log('logupsert')
     let parsed = JSON.parse(JSON.stringify(req.body))
     let appendTo = String(parsed.id).substring(0, String(parsed.id).lastIndexOf("-"))
     let split = parsed.id.split('-')
 
-    console.log(parsed)
     mongoDB.client.connect()
 
     let written = false
@@ -67,14 +74,12 @@ app.post('/logupsert', async (req, res) => { // submit of log input to machine w
         element.logs.forEach(log => {
             if (log != null && split[0]+'-'+split[1]+'-'+split[2] == log.id) {
                 if (!Array.isArray(log.logs)) {
-                    console.log('update sub log non array')
                     let query = { id: parsed.id.split('-')[0], 'logs.id': appendTo };
                     let update = { $set: {'logs.$.logs': parsed}}
                     let options = { upsert: true };
                     mongoDB.coll.updateOne(query, update, options);
                     written = true
                 } else {
-                    console.log('update sub log array')
                     log.logs.forEach(subLog => { 
                         if (subLog != null && split[0]+'-'+split[1]+'-'+split[2]+'-'+split[3] == subLog.id) {
                             mongoDB.coll.findOneAndUpdate({id:split[0]}, 
@@ -95,13 +100,11 @@ app.post('/logupsert', async (req, res) => { // submit of log input to machine w
     const update = { $push: {'logs.$.logs': parsed}}
     const options = { upsert: true };
     if (!written) {
-        console.log('write')
         mongoDB.coll.updateOne(query, update, options);
     }
 });
 
 app.post('/logcolupsert', (req, res) => { // submitting of log collection {LogInputCollection}
-    console.log('logcolupsert')
     let parsed = JSON.parse(JSON.stringify(req.body))
 
     mongoDB.client.connect()
@@ -113,7 +116,6 @@ app.post('/logcolupsert', (req, res) => { // submitting of log collection {LogIn
 });
 
 app.post('/machineupsert/', (req, res) => { // submit of machine {Machine}
-    console.log('machineupsert')
     let parsed = JSON.parse(JSON.stringify(req.body))
     mongoDB.client.connect()
     
@@ -124,7 +126,6 @@ app.post('/machineupsert/', (req, res) => { // submit of machine {Machine}
 });
 
 app.post('/removeentry/', (req, res) => { // submit of machine {Machine}
-    console.log('removeentry')
     let parsed = JSON.parse(JSON.stringify(req.body))
 
     mongoDB.client.connect()

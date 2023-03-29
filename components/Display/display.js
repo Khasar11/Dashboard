@@ -36,9 +36,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.displayTest = exports.getDisplay = void 0;
-var async = require("async");
+exports.displayTest = exports.getDisplay = exports.setDisplayData = exports.getDisplayData = void 0;
 var node_opcua_1 = require("node-opcua");
+var MongoDB_1 = require("../MongoDB/MongoDB");
 var Link_1 = require("./Link");
 var NodeObject_1 = require("./NodeObject");
 var Display = /** @class */ (function () {
@@ -48,6 +48,52 @@ var Display = /** @class */ (function () {
     }
     return Display;
 }());
+function getDisplayData(from) {
+    return __awaiter(this, void 0, void 0, function () {
+        var split, retData;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    MongoDB_1.client.connect();
+                    split = from.split('-');
+                    return [4 /*yield*/, MongoDB_1.coll.find({ id: split[0] }).forEach(function (machine) {
+                            machine.display != undefined ? retData = {
+                                endpoint: machine.display.endpoint,
+                                nodeAddress: machine.display.nodeAddress
+                            } : retData = {
+                                endpoint: '',
+                                nodeAddress: ''
+                            };
+                        })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/, JSON.stringify(retData)];
+            }
+        });
+    });
+}
+exports.getDisplayData = getDisplayData;
+// takes in data object to set $.display.$ to
+// containing id, endpoint, nodeAddress fields
+// requests back an ok status
+function setDisplayData(data) {
+    return __awaiter(this, void 0, void 0, function () {
+        var split, query, update, options, update2;
+        return __generator(this, function (_a) {
+            MongoDB_1.client.connect();
+            console.log(data);
+            split = data.id.split('-');
+            query = { id: split[0] };
+            update = { $set: { 'display.endpoint': data.endpoint } };
+            options = { upsert: true };
+            MongoDB_1.coll.updateOne(query, update, options);
+            update2 = { $set: { 'display.nodeAddress': data.nodeAddress } };
+            MongoDB_1.coll.updateOne(query, update2, options);
+            return [2 /*return*/, "display updated for " + split[0]];
+        });
+    });
+}
+exports.setDisplayData = setDisplayData;
 function getDisplay(from) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {

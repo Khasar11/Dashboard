@@ -45,13 +45,73 @@ var elemLinks;
 var elemCircles;
 var elemKeys;
 var elemValues;
+var currentDisplayData;
 var svg = d3.select('#main-svg');
+displayData = qSelect('#display-data')
+
+qSelect('#display-data-Xout').addEventListener('click', () => {clearDisplayData()})
+
+function clearDisplayData() {
+	displayData.style.visibility = 'hidden'
+	displayData.style.opacity = 0
+	displayData.childNodes.forEach(e => {
+		e.value = ''
+	}) 
+	currentDisplayData = null 
+}
+
+qSelect('#display-data-submit').addEventListener('click', () => {
+	setDisplayData(currentDisplayData)
+})
+
+async function setDisplayData(id) {
+
+	let submission = {
+		id: id,
+		endpoint: encodeURIComponent(qSelect('#display-data-endpturl').value),
+		nodeAddress: encodeURIComponent(qSelect('#display-data-opc-adr').value)
+	}
+
+	let actSubmission = JSON.stringify(submission)
+
+	const baseUrl = `http://localhost:8383/writeDisplayData/${actSubmission}`
+	fetch(baseUrl, {
+			method: 'GET'
+		}).then((response) => response.text())
+		.then(data => {
+			return data;
+		})
+		.catch(error => {
+			console.error(error);
+		});
+
+	clearDisplayData() 
+}
 
 async function modifyDisplay(id) {
+	currentDisplayData = id;
 	await updateDisplayData(id)
-
-	displaydata = qSelect('#display-data')
+	displayData.style.visibility = 'visible'
+	displayData.style.opacity = 1
 }
+
+async function updateDisplayData(id) {
+	const baseUrl = `http://localhost:8383/displayData/${id}`
+	let data = await fetch(baseUrl, {
+			method: 'GET'
+		}).then((response) => response.text())
+		.then(data => {
+			return data;
+		})
+		.catch(error => {
+			console.error(error);
+		});
+
+	const returnData = JSON.parse(JSON.parse(data));
+
+	qSelect("#display-data-endpturl").value = returnData["endpoint"]
+	qSelect("#display-data-opc-adr").value = returnData["nodeAddress"]
+} 
 
 async function getDisplay(id) {
 	const baseUrl = `http://localhost:8383/display/${id}`

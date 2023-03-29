@@ -1,6 +1,6 @@
-const async = require("async");
+
 import { OPCUAClient, AttributeIds, DataValue, Variant, NodeId, Subscription, ClientSubscription, TimestampsToReturn, ReadValueIdOptions, BrowseResult, ReferenceDescription } from "node-opcua";
-import { Bindings } from './Bindings';
+import { client, coll } from "../MongoDB/MongoDB";
 import { Link } from './Link';
 import { NodeObject } from './NodeObject';
 
@@ -12,6 +12,42 @@ class Display { // object to return for GET method from browser, will turn autom
         this.links = links;
         this.nodeObjects = nodeObjects;
     }
+}
+
+export async function getDisplayData(from: string) {
+    client.connect()
+    let split = from.split('-')
+
+    let retData: any;
+
+    await coll.find({id: split[0]}).forEach((machine: any ) => {
+        machine.display != undefined ? retData = {
+            endpoint: machine.display.endpoint,
+            nodeAddress: machine.display.nodeAddress
+        } : retData = {
+            endpoint: '', 
+            nodeAddress: ''
+        }
+    })
+    return JSON.stringify(retData)
+}
+
+// takes in data object to set $.display.$ to
+// containing id, endpoint, nodeAddress fields
+// requests back an ok status
+export async function setDisplayData(data: any) {
+    client.connect()
+    const split = data.id.split('-')
+
+    const query = { id: split[0]};
+    const update = { $set: {'display.endpoint': data.endpoint}}
+    const options = { upsert: true };
+    coll.updateOne(query, update, options);
+
+    const update2 = { $set: {'display.nodeAddress': data.nodeAddress}}
+    coll.updateOne(query, update2, options);
+
+    return "display updated for " + split[0] 
 }
 
 export async function getDisplay(from: string) {

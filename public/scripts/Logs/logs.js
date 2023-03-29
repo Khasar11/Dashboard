@@ -285,7 +285,8 @@ async function remEntry(id, origin) {
           },
           body: origin == null ? JSON.stringify({id}) : JSON.stringify({origin: id})
       });
-      getSidebar()
-      return;
+      setTimeout(()=> { 
+        getSidebar()
+      }, 1000);
   }
 }

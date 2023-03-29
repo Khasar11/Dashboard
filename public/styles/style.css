@@ -35,7 +35,7 @@ html, body {
     backdrop-filter: blur(3px);
 }
 
-.form-inputbox:focus, .form-inputbox::selection {
+.form-inputbox:focus {
     border: 3px solid #555;
 }
 
