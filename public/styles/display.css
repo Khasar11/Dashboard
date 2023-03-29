@@ -5,15 +5,16 @@ line {
 }
 
 .node {
-    fill: rgb(123, 255, 198);
+    fill: rgb(159, 253, 172);
     -webkit-filter: drop-shadow( 3px 3px 2px rgba(0, 0, 0, 0.336));
     filter: drop-shadow( 3px 3px 2px rgba(0, 0, 0, 0.356));
+    transition: fill 0.5s ease;
 }
 
 svg g text {
     text-anchor: middle;
     font-family: "Helvetica Neue", Helvetica, sans-serif;
-    font-size: 15px;
+    font-size: 9px;
 }
 
 svg g text:hover {
@@ -25,3 +26,9 @@ svg {
     width: 100%;
     height: 100%;
 }
+
+.node.fixed {
+    transition: fill 0.5s ease;
+    fill: rgb(48, 255, 97) !important;
+    z-index:  999;
+  }

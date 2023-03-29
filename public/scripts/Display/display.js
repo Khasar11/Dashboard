@@ -45,7 +45,13 @@ var elemLinks;
 var elemCircles;
 var elemKeys;
 var elemValues;
-var svg = d3.select('#main-svg')
+var svg = d3.select('#main-svg');
+
+async function modifyDisplay(id) {
+	await updateDisplayData(id)
+
+	displaydata = qSelect('#display-data')
+}
 
 async function getDisplay(id) {
 	const baseUrl = `http://localhost:8383/display/${id}`
@@ -65,8 +71,11 @@ async function getDisplay(id) {
 	links = returnData.links;
 	nodes = returnData.nodeObjects;
 
-	simulation = d3.forceSimulation(nodes)
-		.force('charge', d3.forceManyBody().strength(-4000).distanceMin(400).distanceMax(200))
+	qSelect('#main-svg').innerHTML = ''
+
+	simulation = d3.forceSimulation()
+		.nodes(nodes)
+		.force('charge', d3.forceManyBody().strength(-400).distanceMax(200))
 		.force('center', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
 		.force("link", d3.forceLink(links))
 		.on('tick', ticked);
@@ -85,7 +94,7 @@ async function getDisplay(id) {
   		.data(nodes)
   		.enter().append("circle")
 		.classed("node", true)
-		.attr('r', 20)
+		.attr('r', 18)
 		.call(drag).on("click", click)
 
 	elemKeys = svg
@@ -103,6 +112,7 @@ async function getDisplay(id) {
 		.selectAll('.node-values')
 		.data(nodes)
 		.enter().append('text')
+		.attr('font-weight', 'bold')
 		.classed('.node-values', true)
 
 }
@@ -127,7 +137,7 @@ function ticked() {
 		.text(	   	  d => { return d.value })
 		.attr('fill', d => fixColor(d))
 		.attr('x',    d => { return d.x })
-		.attr('y',    d => { return d.y +20 })
+		.attr('y',    d => { return d.y +10 })
 }
 
 const drag = d3

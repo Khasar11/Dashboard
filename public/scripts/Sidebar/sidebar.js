@@ -3,6 +3,7 @@ var undefined = NaN
 const stopParentEventClick = 'event.cancelBubble = true; if (event.stopPropagation) event.stopPropagation();  return false;'
 
 function JSONResolver(element) { // parse sidebar element to html element
+  let split = element.id.split('-')
   if (element.type == '0') {
     let newElement = document.createElement('li');
     let title = document.createElement('span');
@@ -10,20 +11,20 @@ function JSONResolver(element) { // parse sidebar element to html element
     title.textContent = element.name;
     newElement.append(title)
     newElement.id = element.id;
-    if (element.id.split('-')[1] == 'logs' || element.id.split('-')[1] == 'log') {
+    if (split[1] == 'logs' || split[1] == 'log') {
       addButton('+', `addLogAtLocation('${newElement.id}', 'folder')`, newElement)
       if (element.id.split('-')[1] == 'log') {
         addButton('-', `remEntry('${newElement.id}', null)`, newElement)
       }
       newElement.setAttribute('date', element.name)
     }
-    if (element.id.split('-')[1] == undefined) {
+    if (split[1] == undefined) {
       addButton('-', `remEntry('${element.id}', null)`, newElement)
     }
     newElement.className = 'folder';
     let nestedElement = document.createElement('ul');
     if(String(newElement.id.split('-')[1]).includes('log'))
-      nestedElement.classList.add('log-area-'+element.id.split('-').length)
+      nestedElement.classList.add('log-area-'+split.length)
     nestedElement.classList.add('nested');
     element.data.forEach(value => 
       nestedElement.append(JSONResolver(value)))
@@ -34,9 +35,12 @@ function JSONResolver(element) { // parse sidebar element to html element
   newElement.id = element.id;
   newElement.className = 'file';
   newElement.innerHTML = element.name;
-  if (element.id.split('-')[1] == 'log')  {
+  if (split[1] == 'log')  {
     addButton('-', `remEntry('${newElement.id}', null)`, newElement)
     newElement.setAttribute('date', element.name)
+  }
+  if (split[1] == 'display')  {
+    addButton('M', `modifyDisplay('${newElement.id}', null)`, newElement)
   }
   if (element.hover != '') {
     let hoverElement = document.createElement('span');
@@ -73,8 +77,8 @@ async function getSidebar() { // get sidebar from server side
   .then(data => { return data; })
   .catch(error => { console.error(error); });
 
-  if (document.getElementById('main-sidebar') != null) {
-    document.getElementById('main-sidebar').remove();
+  if (qSelect('#main-sidebar') != null) {
+    qSelect('#main-sidebar').remove();
     saveSidebarExpasionStates()
   }
   var sidebar = document.createElement('ul')

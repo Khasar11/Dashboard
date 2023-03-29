@@ -1,20 +1,7 @@
-
 .form img {
     resize: both;
     overflow: auto;
-  }
-
-  .form input, .form button {
-    border: 3px solid #d5d5d5;
-    -webkit-transition: 0.1s;
-    transition: 0.1s;
-    outline: transparent;
 }
-
-.form input:focus, .form button::selection {
-    border: 3px solid #555;
-}
-
 #logs-div {
     position: absolute;
     display:block;
@@ -30,14 +17,12 @@
     border: 1px solid rgba(255, 136, 0, 0.142);
     box-shadow: 5px 10px rgba(122, 89, 24, 0.207);
     backdrop-filter: blur(2px);
-    background-color:rgba(255, 255, 255, 0.441)
+    background-color:rgb(255, 255, 255) 
 }
-
 #logs {
     height: auto;
     width: auto;
 }
-
 #logs-div-header {
     padding: 1rem;
     border-top-right-radius: 2px;
@@ -45,7 +30,6 @@
     background-color: #ff7732;
     text-align: center;
 }
-
 #logs-div-moveable {
     cursor: move;
     z-index: 5;
@@ -54,34 +38,18 @@
     height: 1rem;
     width: 1rem;
 }
-
 #logs-div-X {
     position: absolute;
-    top: 2.5rem;
-    right: 0rem;
-}
-
-#logs-div-Xout, #new-logs-div-Xout {
-    position: absolute;
     top: 0rem;
-    right: 0.05rem;
-    filter: blur(0.33px);
-    user-select: none;
+    left: 0rem;
 }
-
-#logs-div-Xout:hover, #new-logs-div-Xout:hover {
-    cursor: crosshair;
-}
-
 #logs-div-id {
     position: absolute;
     top: 0.1rem;
-    left: 1rem;
+    left: 1.5rem;
     font-size: 0.8rem;
     color: rgba(0,0,0,0.5);
 }
-
-
 #logs-body, #logs-input {
     height: auto;
     min-height: 25vh;
@@ -89,38 +57,31 @@
     padding: 0.5rem;
     outline: 1px dotted gray;
 }
-
 #logs-input img {
     max-width: 60vw;
     max-height: 60vh;
 }
-
 #logs-date, #logs-header-text {
     cursor: text;
     z-index: 50;
 }
-
 #new-logs-entry * {
     font-family:Verdana, Geneva, Tahoma, sans-serif;
 }
-
 #logs-footer {
     padding: 1rem;
     text-align: center;
     background-color: #dcdcdc;
 }
-
 [contentEditable=true]:empty:not(:focus):before {
     content: attr(data-text);
     color: rgba(0,0,0,0.5);
-  }
-
-  #new-logs {
+}
+#new-logs {
     top: 40vh;
     left: 45vw;
     display: inline-block;
-  }
-  
+}
 #new-logs-entry {
     position: absolute;
     backdrop-filter: blur(3px);
@@ -134,30 +95,25 @@
     border-top: 1px solid rgba(0, 0, 0, 0.148);
     border-left: 1px solid rgba(0, 0, 0, 0.158);
 }
-
 #new-log-continue {
     margin-top: 6vh;
     margin-bottom: 2vh;
     margin-left: 1vw;
     margin-right: 1vw;
 }
-
 #collection-date {
     visibility: hidden;
     opacity: 0;
 }
-
 #new-logs-value {
     color:#fffad0;
     font-weight: bold;
 }
-
 #new-logs-selected-adder-id {
     text-align: center;
     margin-top: 1vh;
 }
-
-  #new-logs-type-dropdown {
+#new-logs-type-dropdown {
     display: none;
     position: absolute;
     background-color: #ebebeb;
@@ -167,23 +123,19 @@
     padding: 0;
     margin: 0;
     height: auto;
-  }
-
-  #new-logs:hover #new-logs-type-dropdown {
+}
+#new-logs:hover #new-logs-type-dropdown {
     display: block;
-  }
-
+}
 .background-on-hover:hover {
     transition: background-color 0.2s, opacity 0.1s linear;
     background-color: #d0d0d0;
 }
-
 .background-on-hover {
-     padding: 1vh;
-     border-top: 1px dotted black;
-     border-bottom: 1px dotted black;
+    padding: 1vh;
+    border-top: 1px dotted black;
+    border-bottom: 1px dotted black;
 }
-
 #new-logs {
     background-color:#ff7732;
     transition: visibility 0.1s, opacity 0.1s linear;

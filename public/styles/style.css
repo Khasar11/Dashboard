@@ -5,3 +5,58 @@ html, body {
     width: 100%;
     height: 99%;
 }
+
+.form-Xout {
+    position: fixed;
+    top: -0.075rem;
+    right: 0.025rem;
+    cursor: crosshair;
+    filter: blur(0.33px);
+    user-select: none;
+}
+
+.form-Xout:hover {
+    cursor: crosshair;
+}
+
+.form-form {
+    position: absolute;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.1s, opacity 0.1s, border 0.1s, outline 0.1s linear;
+    display: flex;
+    flex-direction: column;
+    left: 40vw;
+    top: 30vh;
+    padding: 1rem;
+    box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 0.207);
+    background-color:rgba(225, 255, 246, 0.356);
+    backdrop-filter: blur(3px);
+}
+
+.form-inputbox:focus, .form-inputbox::selection {
+    border: 3px solid #555;
+}
+
+.form-inputbox {
+    margin-top: 1.5vh;
+    padding: 0.25rem;
+    border: 3px solid #d5d5d5;
+    -webkit-transition: 0.1s;
+    transition: 0.1s;
+    outline: transparent;
+}
+
+.form-form:hover {
+    outline: 3px solid #555;
+}
+
+.form-header {
+    position:fixed;
+    top: 0.1rem;
+    opacity: 0.5;
+    border-bottom: 1px dashed black;
+    width: 82%;
+    text-align: center;
+}

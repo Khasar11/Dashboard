@@ -51,27 +51,27 @@ async function showLog(logId) {
   let split = logId.split('-')
   addingLogInputTo = split[0]+'-'+split[1]+'-'+split[2]
   let log = JSON.parse(data);
-  let dateTimePicker = document.getElementById('logs-date')
-  let header = document.getElementById('logs-header-text')
-  let writtenBy = document.getElementById('logs-header-written-by')
-  let dataField = document.getElementById('logs-input')
-  let idField = document.getElementById('logs-div-id')
+  let dateTimePicker = qSelect('#logs-date')
+  let header = qSelect('#logs-header-text')
+  let writtenBy = qSelect('#logs-header-written-by')
+  let dataField = qSelect('#logs-input')
+  let idField = qSelect('#logs-div-id')
   idField.innerHTML = log.id;
   dataField.innerHTML = log.data
   header.value = log.header
   writtenBy.value = log.writtenBy;
   dateTimePicker.value = log.date.split('T')[0];
-  let logDiv = document.getElementById('logs-div')
+  let logDiv = qSelect('#logs-div')
   logDiv.style.visibility = 'visible'
   logDiv.style.opacity = 1;
 }
 
 function emptyLog() {
-  let dateTimePicker = document.getElementById('logs-date')
-  let header = document.getElementById('logs-header-text')
-  let writtenBy = document.getElementById('logs-header-written-by')
-  let dataField = document.getElementById('logs-input')
-  let idField = document.getElementById('logs-div-id')
+  let dateTimePicker = qSelect('#logs-date')
+  let header = qSelect('#logs-header-text')
+  let writtenBy = qSelect('#logs-header-written-by')
+  let dataField = qSelect('#logs-input')
+  let idField = qSelect('#logs-div-id')
   currentLogInput = null;
   addingLogInputTo = null;
   dateTimePicker.value = formattedYYYYMMDD(new Date())
@@ -79,26 +79,26 @@ function emptyLog() {
   dataField.innerHTML = ''
   writtenBy.value = ''
   idField.innerHTML = ''
-  let logDiv = document.getElementById('logs-div')
+  let logDiv = qSelect('#logs-div')
   logDiv.style.visibility = 'hidden'
   logDiv.style.opacity = 0;
 }
 
 function emptyNew() {
-  let newLogsEntry = document.getElementById('new-logs-entry')
+  let newLogsEntry = qSelect('#new-logs-entry')
   newLogsEntry.style.visibility = 'hidden'
   newLogsEntry.style.opacity = 0
 }
 
-document.getElementById("logs-div-Xout").addEventListener("click", function() {
-  let logsDiv = document.getElementById('logs-div')
+qSelect("#logs-div-Xout").addEventListener("click", function() {
+  let logsDiv = qSelect('#logs-div')
   logsDiv.style.visibility = 'hidden';
   logsDiv.style.opacity = 0;
   emptyLog();
 });
 
 // Make the DIV element draggable:
-dragElement(document.getElementById("logs-div"));
+dragElement(qSelect("#logs-div"));
 
 function dragElement(elmnt) {
   var pos1 = 0,
@@ -145,67 +145,67 @@ function dragElement(elmnt) {
 }
 
 function showAddLogPrompt(id, showCollection) {
-  let logDiv = document.getElementById('logs-div')
+  let logDiv = qSelect('#logs-div')
   if (showCollection) {
       emptyLog()
-      document.getElementById('new-logs-entry').style.visibility = 'visible'
-      document.getElementById('new-logs-entry').style.opacity = 1
+      qSelect('#new-logs-entry').style.visibility = 'visible'
+      qSelect('#new-logs-entry').style.opacity = 1
       return;
   }
   logDiv.style.visibility = 'visible'
   logDiv.style.opacity = 1;
-  document.getElementById('logs-div-id').innerHTML = id + '-' + makeid(6)
+  qSelect('#logs-div-id').innerHTML = id + '-' + makeid(6)
   emptyNew()
 }
 
-document.getElementById("new-logs-singular").addEventListener('click', function() {
-  document.getElementById("new-logs-value").innerHTML = 'Singular'
-  let coldate = document.getElementById('collection-date')
+qSelect("#new-logs-singular").addEventListener('click', function() {
+  qSelect("#new-logs-value").innerHTML = 'Singular'
+  let coldate = qSelect('#collection-date')
   coldate.style.visibility = 'hidden'
   coldate.style.opacity = 0
 })
 
-document.getElementById("new-logs-collection").addEventListener('click', function() {
-  document.getElementById("new-logs-value").innerHTML = 'Collection'
-  let coldate = document.getElementById('collection-date')
-  document.getElementById('collection-date').value = formattedYYYYMMDD(new Date())
+qSelect("#new-logs-collection").addEventListener('click', function() {
+  qSelect("#new-logs-value").innerHTML = 'Collection'
+  let coldate = qSelect('#collection-date')
+  qSelect('#collection-date').value = formattedYYYYMMDD(new Date())
   coldate.style.visibility = 'visible'
   coldate.style.opacity = 1
 })
 
-document.getElementById('new-log-continue').addEventListener('click', function() {
-  document.getElementById('new-logs-entry').style.visibility = 'hidden'
-  document.getElementById('new-logs-entry').style.opacity = 0
-  let val = document.getElementById("new-logs-value").innerHTML
+qSelect('#new-log-continue').addEventListener('click', function() {
+  qSelect('#new-logs-entry').style.visibility = 'hidden'
+  qSelect('#new-logs-entry').style.opacity = 0
+  let val = qSelect("#new-logs-value").innerHTML
   if (val == 'Collection') {
       newLogInputCollection.logs = []
-      newLogInputCollection.date = document.getElementById('collection-date').value
+      newLogInputCollection.date = qSelect('#collection-date').value
       submitLogCollection(newLogInputCollection)
   }
   if (val == 'Singular') {
       newLogInputCollection.logs = new LogInput()
       newLogInputCollection.logs.id = newLogInputCollection.id
       updateLogInputUI(newLogInputCollection.logs)
-      let logDiv = document.getElementById('logs-div')
+      let logDiv = qSelect('#logs-div')
       logDiv.style.visibility = 'visible'
       logDiv.style.opacity = 1;
   }
 })
 
-document.getElementById('new-logs-div-Xout').addEventListener('click', function() {
-  let newLogs = document.getElementById('new-logs-entry')
+qSelect('#new-logs-div-Xout').addEventListener('click', function() {
+  let newLogs = qSelect('#new-logs-entry')
   newLogs.style.opacity = 0;
   newLogs.style.visibility = 'hidden'
   addingLogInputTo = null
   newLogInputCollection = null
 })
 
-document.getElementById('logs-submit').addEventListener(('click'), function() {
-  let dateTimePicker = document.getElementById('logs-date')
-  let header = document.getElementById('logs-header-text')
-  let writtenBy = document.getElementById('logs-header-written-by')
-  let dataField = document.getElementById('logs-input')
-  let idField = document.getElementById('logs-div-id')
+qSelect('#logs-submit').addEventListener(('click'), function() {
+  let dateTimePicker = qSelect('#logs-date')
+  let header = qSelect('#logs-header-text')
+  let writtenBy = qSelect('#logs-header-written-by')
+  let dataField = qSelect('#logs-input')
+  let idField = qSelect('#logs-div-id')
 
   if (addingLogInputTo != null && addingLogInputTo.split('-')[1] == 'log') {
       let logInput = new LogInput(idField.innerHTML,
@@ -231,11 +231,11 @@ document.getElementById('logs-submit').addEventListener(('click'), function() {
 })
 
 function updateLogInputUI(logInput) {
-  let dateTimePicker = document.getElementById('logs-date')
-  let header = document.getElementById('logs-header-text')
-  let writtenBy = document.getElementById('logs-header-written-by')
-  let dataField = document.getElementById('logs-input')
-  let idField = document.getElementById('logs-div-id')
+  let dateTimePicker = qSelect('#logs-date')
+  let header = qSelect('#logs-header-text')
+  let writtenBy = qSelect('#logs-header-written-by')
+  let dataField = qSelect('#logs-input')
+  let idField = qSelect('#logs-div-id')
   dateTimePicker.value = formattedYYYYMMDD(new Date())
   header.value = logInput.header === undefined ? null : logInput.header
   dataField.innerHTML = logInput.data === undefined ? null : logInput.data

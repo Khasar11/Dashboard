@@ -20,14 +20,27 @@ export async function getDisplay(from: string) {
             new Link(0, 1),
             new Link(1, 2),
             new Link(2,0),
-            new Link(2,3)
+            new Link(2,3),
+            new Link(4,5),
+            new Link(3,6),
+            new Link(6,7),
+            new Link(7,8),
+            new Link(8,9),
+            new Link(9,10),
         ], 
         [
             new NodeObject('key1', 3),
             new NodeObject('key2', 'false'),
             new NodeObject('key3', 'true'),
             new NodeObject('key4', 'value4'),
-            new NodeObject('key5', 'value5')
+            new NodeObject('key5', 'value5'),
+            new NodeObject('key6', 'true'),
+            new NodeObject('key7', 'false'),
+            new NodeObject('key8', 'true'),
+            new NodeObject('key9', 'false'),
+            new NodeObject('key10', '0'),
+            new NodeObject('key11', '16#ffff'),
+
         ]
     )
 }

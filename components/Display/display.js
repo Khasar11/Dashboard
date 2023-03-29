@@ -55,13 +55,25 @@ function getDisplay(from) {
                     new Link_1.Link(0, 1),
                     new Link_1.Link(1, 2),
                     new Link_1.Link(2, 0),
-                    new Link_1.Link(2, 3)
+                    new Link_1.Link(2, 3),
+                    new Link_1.Link(4, 5),
+                    new Link_1.Link(3, 6),
+                    new Link_1.Link(6, 7),
+                    new Link_1.Link(7, 8),
+                    new Link_1.Link(8, 9),
+                    new Link_1.Link(9, 10),
                 ], [
                     new NodeObject_1.NodeObject('key1', 3),
                     new NodeObject_1.NodeObject('key2', 'false'),
                     new NodeObject_1.NodeObject('key3', 'true'),
                     new NodeObject_1.NodeObject('key4', 'value4'),
-                    new NodeObject_1.NodeObject('key5', 'value5')
+                    new NodeObject_1.NodeObject('key5', 'value5'),
+                    new NodeObject_1.NodeObject('key6', 'true'),
+                    new NodeObject_1.NodeObject('key7', 'false'),
+                    new NodeObject_1.NodeObject('key8', 'true'),
+                    new NodeObject_1.NodeObject('key9', 'false'),
+                    new NodeObject_1.NodeObject('key10', '0'),
+                    new NodeObject_1.NodeObject('key11', '16#ffff'),
                 ])];
         });
     });
@@ -74,7 +86,7 @@ function displayTest() {
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
-                    endpointUrl = "opc.tcp://srv123006:57888/opcexpert";
+                    endpointUrl = "opc.tcp://192.168.120.160:49320";
                     client = node_opcua_1.OPCUAClient.create({ endpointMustExist: false });
                     client.on("backoff", function (retry, delay) {
                         console.log(" cannot connect to endpoint retry = ", retry, " next attempt in ", delay / 1000, "seconds");

@@ -13,7 +13,6 @@
         <link rel="stylesheet" href="./styles/style.css" type="text/css">
         <link rel="stylesheet" href="./styles/sidebar.css" type="text/css">
         <link rel="stylesheet" href="./styles/logs.css" type="text/css">
-        <link rel="stylesheet" href="./styles/machine.css" type="text/css">
         <link rel="stylesheet" href="./styles/display.css" type="text/css">
         <link rel="shortcut icon" href="#">
     </head>
@@ -24,24 +23,24 @@
         <div class="form" id="logs-div"> <!-- shown when user is writing a log input -->
             <div id="logs">
                 <section id="logs-div-header" class="outlined">
-                    <input type="date" id="logs-date" name="log" required>
-                    <input id="logs-header-text" class="outlined" type="text" placeholder="Title" required>
-                    <input id="logs-header-written-by" class="outlined" type="text" placeholder="Writer" required>
+                    <input type="date" id="logs-date" class="form-inputbox" name="log" required>
+                    <input id="logs-header-text" class="form-inputbox" type="text" placeholder="Title" required>
+                    <input id="logs-header-written-by" class="form-inputbox" type="text" placeholder="Writer" required>
                     <div id="logs-div-X"><img id="logs-div-moveable" src="./move.png"></img></div>
                     <div id="logs-div-id">null</div>
-                    <div id="logs-div-Xout">✖</div>
+                    <div id="logs-div-Xout" class="form-Xout">✖</div>
                 </section>
                 <section id="logs-body" class="outlined">
                     <div id="logs-input" contenteditable="true" data-text="Input text/image(s)"></div>
                 </section>
                 <section id="logs-footer" class="outlined">
-                    <button id="logs-submit">Submit log</button>
+                    <button id="logs-submit" class="form-button">Submit log</button>
                 </section>
             </div>
         </div>
 
         <div id="new-logs-entry"> <!-- shown on push of new log button on main logs sidebar element -->
-            <div id="new-logs-div-Xout">✖</div>
+            <div id="new-logs-div-Xout" class="form-Xout">✖</div>
             <div id="new-logs">
                 <span id="new-logs-type">Select log type</span>
                 <text id="new-logs-value">Singular</text>
@@ -51,17 +50,25 @@
                 </div>
             </div>
             <text id="new-logs-selected-adder-id"></text>
-            <input type="date" id="collection-date">
-            <button id="new-log-continue">Continue</button>
+            <input type="date" id="collection-date" class="form-inputbox">
+            <button id="new-log-continue" class="form-button">Continue</button>
         </div>
 
-        <form id="new-machine"> <!-- shown on push of new machine button -->
-            <div id="new-machine-header">New machine</div>
-            <div id="new-machine-Xout">✖</div>
-            <input id="new-machine-name" type="text" placeholder="Machine name" required>
-            <input id="new-machine-creation-date" type="date" required>
-            <input id="new-machine-created-by" type="text" placeholder="Created by" required>
-            <button id="new-machine-submit" type="button">Submit machine</button>
+        <form id="new-machine" class="form-form"> <!-- shown on push of new machine button -->
+            <div id="new-machine-header" class="form-header">New machine</div>
+            <div id="new-machine-Xout" class="form-Xout">✖</div>
+            <input id="new-machine-name" class="form-inputbox" type="text" placeholder="Machine name" required>
+            <input id="new-machine-creation-date" class="form-inputbox" type="date" required>
+            <input id="new-machine-created-by" class="form-inputbox" type="text" placeholder="Created by" required>
+            <button id="new-machine-submit" class="form-button" type="button">Submit machine</button>
+        </form>
+
+        <form id="display-data" class="form-form"> <!-- shown on modifying display data -->
+            <div id="display-data-header" class="form-header">New machine</div>
+            <div id="display-data-Xout" class="form-Xout">✖</div>
+            <input id="display-data-endpturl" class="form-inputbox" type="text" placeholder="Endpoint url OPC" required>
+            <input id="display-data-opc-adr" class="form-inputbox" type="text" placeholder="OPC DB address" required>
+            <button id="display-data-submit" class="form-button" type="button">Submit display</button>
         </form>
 
         <svg id="main-svg"></svg> <!-- D3.js (7.0) view inserted into this on 'display' click -->

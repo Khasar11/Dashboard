@@ -19,33 +19,33 @@ class Machine {
 newMachine();
 
 function newMachine() {
-    let machineBox = document.getElementById('new-machine')
+    let machineBox = qSelect('#new-machine')
     machineBox.style.visibility = 'visible'
     machineBox.style.opacity = 1;
 }
 
 clearNewMachine();
 
-document.getElementById('new-machine-Xout').addEventListener('click', function() {clearNewMachine()})
+qSelect('#new-machine-Xout').addEventListener('click', function() {clearNewMachine()})
 
 function clearNewMachine() {
-    let newMachine = document.getElementById('new-machine')
+    let newMachine = qSelect('#new-machine')
     newMachine.style.opacity = 0
     newMachine.style.visibility = 'hidden'
     newMachine.childNodes.forEach(element => {
         element.value = null
     })
-    document.getElementById('new-machine-creation-date').value = formattedYYYYMMDD(new Date())
+    qSelect('#new-machine-creation-date').value = formattedYYYYMMDD(new Date())
 }
 
-document.getElementById('new-machine-creation-date').value = formattedYYYYMMDD(new Date())
+qSelect('#new-machine-creation-date').value = formattedYYYYMMDD(new Date())
 
 var newMachineElement = new Machine()
 
-document.getElementById('new-machine-submit').addEventListener('click', function() {
-    let newMachineDate = document.getElementById('new-machine-creation-date');
-    let newMachineName = document.getElementById('new-machine-name');
-    let newMachineCreatedBy = document.getElementById('new-machine-created-by')
+qSelect('#new-machine-submit').addEventListener('click', function() {
+    let newMachineDate = qSelect('#new-machine-creation-date');
+    let newMachineName = qSelect('#new-machine-name');
+    let newMachineCreatedBy = qSelect('#new-machine-created-by')
     newMachineElement = new Machine()
     newMachineElement.createdBy = newMachineCreatedBy.value
     newMachineElement.name = newMachineName.value
@@ -56,7 +56,7 @@ document.getElementById('new-machine-submit').addEventListener('click', function
 
 async function submitMachine(machine) {
     // update id first
-    const baseUrl = `http://localhost:8383/idfy/${document.getElementById('new-machine-name').value}`
+    const baseUrl = `http://localhost:8383/idfy/${qSelect('#new-machine-name').value}`
 
   let data = await fetch(baseUrl, {
     method: 'GET'
