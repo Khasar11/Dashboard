@@ -1,5 +1,5 @@
 
-import { OPCUAClient, AttributeIds, DataValue, Variant, NodeId, Subscription, ClientSubscription, TimestampsToReturn, ReadValueIdOptions, BrowseResult, ReferenceDescription } from "node-opcua";
+import { OPCUAClient, AttributeIds, ClientSubscription, TimestampsToReturn, BrowseResult, ReferenceDescription } from "node-opcua";
 import { client, coll } from "../MongoDB/MongoDB";
 import { Link } from './Link';
 import { NodeObject } from './NodeObject';
