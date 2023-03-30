@@ -1,3 +1,4 @@
+
 let zoom = d3.zoom()
 	.on('zoom', handleZoom);
 
@@ -46,6 +47,7 @@ var elemCircles;
 var elemKeys;
 var elemValues;
 var currentDisplayData;
+var currentDisplay;
 var svg = d3.select('#main-svg');
 displayData = qSelect('#display-data')
 
@@ -127,6 +129,7 @@ async function getDisplay(id) {
 		});
 
 	const returnData = JSON.parse(data);
+	currentDisplay = id;
 
 	links = returnData.links;
 	nodes = returnData.nodeObjects;
@@ -173,16 +176,36 @@ async function getDisplay(id) {
 		.data(nodes)
 		.enter().append('text')
 		.attr('font-weight', 'bold')
-		.classed('.node-values', true)
+		.classed('node-values', true)
 }
 
-setInterval(async () => {
-	nodes.nodeObjects = await updateNodeObjects();
+setInterval(async () => { // re-fetch data on time
+	if (currentDisplay != null) {
+		const baseUrl = `http://localhost:8383/display/${currentDisplay}`
+
+		let data = await fetch(baseUrl, {
+			method: 'GET'
+		}).then((response) => response.text())
+		.then(data => {
+			return data;
+		})
+		.catch(error => {
+			console.error(error);
+		});
+
+		const returnData = JSON.parse(data);
+
+		nodes = returnData.nodeObjects;
+
+		let elems = document.getElementsByClassName("node-values");
+		Array.prototype.forEach.call(elems, (e, i) => {
+			if (nodes[i].value != undefined) {
+				e.innerHTML = nodes[i].value
+				e.setAttribute('fill', fixColor(nodes[i].value))
+			}
+		});
+	}
 }, 5000);
-
-async function updateNodeObjects() {
-	// wip auto update nodes
-}
 
 function ticked() {
 	elemLinks
@@ -202,7 +225,7 @@ function ticked() {
 
 	elemValues
 		.text(	   	  d => { return d.value })
-		.attr('fill', d => fixColor(d))
+		.attr('fill', d => fixColor(d.value))
 		.attr('x',    d => { return d.x })
 		.attr('y',    d => { return d.y +10 })
 }
@@ -233,12 +256,12 @@ function clamp(x, lo, hi) {
 	return x < lo ? lo : x > hi ? hi : x;
 }
 
-function fixColor(d) {
-	if (d.value === 'false') 
+function fixColor(dvalue) {
+	if (typeof dvalue === 'string' && dvalue.includes('#'))
+		return '#ff00ff'
+	if (dvalue == 'false' || !dvalue) 
 	  return 'red'
-	if (d.value === 'true') 
+	if (dvalue == 'true' || dvalue && !(typeof dvalue === 'number')) 
 	  return 'green'
-	if (typeof d.value === 'string' || d.value instanceof String)
-		return '#004400'
 	return 'teal'
 }

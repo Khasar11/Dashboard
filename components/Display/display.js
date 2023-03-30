@@ -81,7 +81,6 @@ function setDisplayData(data) {
         var split, query, update, options, update2;
         return __generator(this, function (_a) {
             MongoDB_1.client.connect();
-            console.log(data);
             split = data.id.split('-');
             query = { id: split[0] };
             update = { $set: { 'display.endpoint': data.endpoint } };
@@ -94,6 +93,10 @@ function setDisplayData(data) {
     });
 }
 exports.setDisplayData = setDisplayData;
+var randomHex = function () {
+    var n = (Math.random() * 0xfffff * 1000000).toString(16);
+    return '16#' + n.slice(0, 6);
+};
 function getDisplay(from) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -108,18 +111,19 @@ function getDisplay(from) {
                     new Link_1.Link(7, 8),
                     new Link_1.Link(8, 9),
                     new Link_1.Link(9, 10),
+                    new Link_1.Link(10, 3)
                 ], [
-                    new NodeObject_1.NodeObject('key1', 3),
-                    new NodeObject_1.NodeObject('key2', 'false'),
-                    new NodeObject_1.NodeObject('key3', 'true'),
-                    new NodeObject_1.NodeObject('key4', 'value4'),
-                    new NodeObject_1.NodeObject('key5', 'value5'),
-                    new NodeObject_1.NodeObject('key6', 'true'),
-                    new NodeObject_1.NodeObject('key7', 'false'),
-                    new NodeObject_1.NodeObject('key8', 'true'),
-                    new NodeObject_1.NodeObject('key9', 'false'),
-                    new NodeObject_1.NodeObject('key10', '0'),
-                    new NodeObject_1.NodeObject('key11', '16#ffff'),
+                    new NodeObject_1.NodeObject('key1', Math.random() < 0.5),
+                    new NodeObject_1.NodeObject('key2', Math.round((Math.random() * 100 * 100)) / 100),
+                    new NodeObject_1.NodeObject('key3', Math.round((Math.random() * 100 * 100)) / 100),
+                    new NodeObject_1.NodeObject('key4', Math.round((Math.random() * 100 * 100)) / 100),
+                    new NodeObject_1.NodeObject('key5', Math.random() < 0.5),
+                    new NodeObject_1.NodeObject('key6', Math.random() < 0.5),
+                    new NodeObject_1.NodeObject('key7', randomHex()),
+                    new NodeObject_1.NodeObject('key8', randomHex()),
+                    new NodeObject_1.NodeObject('key9', Math.random() < 0.5),
+                    new NodeObject_1.NodeObject('key10', Math.random() < 0.5),
+                    new NodeObject_1.NodeObject('key11', Math.random() < 0.5),
                 ])];
         });
     });

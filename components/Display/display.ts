@@ -50,6 +50,11 @@ export async function setDisplayData(data: any) {
     return "display updated for " + split[0] 
 }
 
+const randomHex = () => {
+	let n = (Math.random() * 0xfffff * 1000000).toString(16);
+	return '16#' + n.slice(0, 6);
+};
+
 export async function getDisplay(from: string) {
     return new Display(
         [
@@ -63,19 +68,20 @@ export async function getDisplay(from: string) {
             new Link(7,8),
             new Link(8,9),
             new Link(9,10),
+            new Link(10, 3)
         ], 
         [
-            new NodeObject('key1', 3),
-            new NodeObject('key2', 'false'),
-            new NodeObject('key3', 'true'),
-            new NodeObject('key4', 'value4'),
-            new NodeObject('key5', 'value5'),
-            new NodeObject('key6', 'true'),
-            new NodeObject('key7', 'false'),
-            new NodeObject('key8', 'true'),
-            new NodeObject('key9', 'false'),
-            new NodeObject('key10', '0'),
-            new NodeObject('key11', '16#ffff'),
+            new NodeObject('key1', Math.random() < 0.5),
+            new NodeObject('key2', Math.round((Math.random() * 100 * 100)) / 100),
+            new NodeObject('key3', Math.round((Math.random() * 100 * 100)) / 100),
+            new NodeObject('key4', Math.round((Math.random() * 100 * 100)) / 100),
+            new NodeObject('key5', Math.random() < 0.5),
+            new NodeObject('key6', Math.random() < 0.5),
+            new NodeObject('key7', randomHex()),
+            new NodeObject('key8', randomHex()),
+            new NodeObject('key9', Math.random() < 0.5),
+            new NodeObject('key10',Math.random() < 0.5),
+            new NodeObject('key11',Math.random() < 0.5),
 
         ]
     )
