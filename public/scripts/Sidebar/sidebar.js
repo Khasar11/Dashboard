@@ -163,7 +163,7 @@ getSidebar();
 function peekFile(id) {
   let postDash = id.split('-')[1];
   if (postDash == 'display') {
-    getDisplay(id.split('-')[0]);
+    startDisplaySubscription(id.split('-')[0]);
   }
   if (postDash == 'log') {
     showLog(id);

@@ -1,24 +1,23 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.toSidebarData = exports.Machine = void 0;
-var LogInputCollection_1 = require("./Logs/LogInputCollection");
-var sidebar_1 = require("./Sidebar/sidebar");
-var Machine = /** @class */ (function () {
-    function Machine(name, id, createdBy, creationDate, logs) {
+const LogInputCollection_1 = require("./Logs/LogInputCollection");
+const sidebar_1 = require("./Sidebar/sidebar");
+class Machine {
+    constructor(name, id, createdBy, creationDate, logs) {
         this.name = name;
         this.id = id;
         this.createdBy = createdBy;
         this.creationDate = creationDate;
         this.logs = logs;
     }
-    return Machine;
-}());
+}
 exports.Machine = Machine;
 function toSidebarData(machine) {
-    var logData = [];
-    machine.logs.forEach(function (element) {
+    let logData = [];
+    machine.logs.forEach(element => {
         if (element != null) {
-            var collect = new LogInputCollection_1.LogInputCollection(element.id, element.date, element.logs).toSidebarData();
+            let collect = new LogInputCollection_1.LogInputCollection(element.id, element.date, element.logs).toSidebarData();
             logData.push(collect);
         }
     });
@@ -29,3 +28,4 @@ function toSidebarData(machine) {
     ]);
 }
 exports.toSidebarData = toSidebarData;
+//# sourceMappingURL=Machine.js.map

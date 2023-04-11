@@ -68,16 +68,21 @@
             <div id="display-data-Xout" class="form-Xout">✖</div>
             <input id="display-data-endpturl" class="form-inputbox" type="text" placeholder="Endpoint url OPC" required oninput="this.setCustomValidity('OPC endpoint url')">
             <input id="display-data-opc-adr" class="form-inputbox" type="text" placeholder="OPC DB address" required oninput="this.setCustomValidity('OPC node address')">
+            <input id="display-data-opc-username" class="form-inputbox" type="text" placeholder="OPC username" required oninput="this.setCustomValidity('OPC username')">
+            <input id="display-data-opc-password" class="form-inputbox" type="password" placeholder="OPC password" required oninput="this.setCustomValidity('OPC password')">
             <button id="display-data-submit" class="form-button" type="button">Submit display</button>
         </form>
 
         <svg id="main-svg"></svg> <!-- D3.js (7.0) view inserted into this on 'display' click -->
         <script src="./lib/d3/d3.v7.min.js"></script>
-        <script src="./lib/froala/froala_editor.pkgd.min.js"></script>
         <script src="./scripts/script.js"></script>
         <script src="./scripts/machine.js"></script>
         <script src="./scripts/Logs/logs.js"></script> 
         <script src="./scripts//Sidebar/sidebar.js"></script>  
         <script src="./scripts/Display/display.js"></script>  
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+          var socket = io();
+        </script>
     </body>
 </html>

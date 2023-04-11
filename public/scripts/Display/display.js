@@ -70,8 +70,10 @@ async function setDisplayData(id) {
 
 	let submission = {
 		id: id,
-		endpoint: encodeURIComponent(qSelect('#display-data-endpturl').value),
-		nodeAddress: encodeURIComponent(qSelect('#display-data-opc-adr').value)
+		endpoint:    encodeURIComponent(qSelect('#display-data-endpturl').value),
+		nodeAddress: encodeURIComponent(qSelect('#display-data-opc-adr').value),
+		username:    encodeURIComponent(qSelect('#display-data-opc-username').value),
+		password:    encodeURIComponent(qSelect('#display-data-opc-password').value)
 	}
 
 	let actSubmission = JSON.stringify(submission)
@@ -113,10 +115,16 @@ async function updateDisplayData(id) {
 
 	qSelect("#display-data-endpturl").value = returnData["endpoint"]
 	qSelect("#display-data-opc-adr").value = returnData["nodeAddress"]
+	qSelect("#display-data-opc-username").value = returnData["username"]
+	qSelect("#display-data-opc-password").value = returnData["password"]
 } 
 
-async function getDisplay(id) {
-	const baseUrl = `http://localhost:8383/display/${id}`
+async function startDisplaySubscription(id) {
+	socket.emit('subscribe-display', id, res => {
+		console.log(res)
+	}) // socket io 
+
+	/*const baseUrl = `http://localhost:8383/display/${id}`
 
 	let data = await fetch(baseUrl, {
 			method: 'GET'
@@ -176,10 +184,10 @@ async function getDisplay(id) {
 		.data(nodes)
 		.enter().append('text')
 		.attr('font-weight', 'bold')
-		.classed('node-values', true)
+		.classed('node-values', true) */
 }
 
-setInterval(async () => { // re-fetch data on time
+/*setInterval(async () => { // re-fetch data on time
 	if (currentDisplay != null) {
 		const baseUrl = `http://localhost:8383/display/${currentDisplay}`
 
@@ -205,9 +213,9 @@ setInterval(async () => { // re-fetch data on time
 			}
 		});
 	}
-}, 5000);
+}, 5000); */
 
-function ticked() {
+async function ticked() {
 	elemLinks
 		.attr('x1', d => { return d.source.x })
 		.attr('y1', d => { return d.source.y })

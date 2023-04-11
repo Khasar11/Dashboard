@@ -1,5 +1,5 @@
 
-import { OPCUAClient, AttributeIds, ClientSubscription, TimestampsToReturn, BrowseResult, ReferenceDescription } from "node-opcua";
+import { OPCUAClient, AttributeIds, ClientSubscription, ClientSession, TimestampsToReturn, BrowseResult, ReferenceDescription, UserIdentityToken, UserTokenPolicy, UserTokenType, NodeId } from "node-opcua";
 import { client, coll } from "../MongoDB/MongoDB";
 import { Link } from './Link';
 import { NodeObject } from './NodeObject';
@@ -23,10 +23,14 @@ export async function getDisplayData(from: string) {
     await coll.find({id: split[0]}).forEach((machine: any ) => {
         machine.display != undefined ? retData = {
             endpoint: machine.display.endpoint,
-            nodeAddress: machine.display.nodeAddress
+            nodeAddress: machine.display.nodeAddress,
+            username: machine.display.username,
+            password: machine.display.password
         } : retData = {
             endpoint: '', 
-            nodeAddress: ''
+            nodeAddress: '',
+            username: '',
+            password: ''
         }
     })
     return JSON.stringify(retData)
@@ -46,6 +50,12 @@ export async function setDisplayData(data: any) {
 
     const update2 = { $set: {'display.nodeAddress': data.nodeAddress}}
     coll.updateOne(query, update2, options);
+
+    const update3 = { $set: {'display.username': data.username}}
+    coll.updateOne(query, update3, options);
+
+    const update4 = { $set: {'display.password': data.password}}
+    coll.updateOne(query, update4, options);
 
     return "display updated for " + split[0] 
 }
@@ -82,13 +92,13 @@ export async function getDisplay(from: string) {
             new NodeObject('key9', Math.random() < 0.5),
             new NodeObject('key10',Math.random() < 0.5),
             new NodeObject('key11',Math.random() < 0.5),
-
         ]
     )
 }
-
+const nss = 'ns=2;s='
 export async function displayTest() {
     const endpointUrl = "opc.tcp://192.168.120.160:49320";
+    const baseNode = nss+"Tapperi.Knuser.Program_blocks.Dashboard.Dash";
     const client = OPCUAClient.create({ endpointMustExist: false});
     client.on("backoff", (retry: number, delay: number) => {
         console.log(" cannot connect to endpoint retry = ", retry,
@@ -96,15 +106,20 @@ export async function displayTest() {
     });
 
     let subscription: ClientSubscription | undefined = undefined;
-    const node = 
-        "ns=3;s=SRV123006->Kepware.KEPServerEX.V6->Tapperi.Knuser.Program_blocks.HMI";
     try {
         await client.connect(endpointUrl);
-        const session = await client.createSession();
+        const session = await client.createSession({userName: 'tine', password: 'Melkebart_2021%&', type: UserTokenType.UserName});
 
-        console.log(await session.browse('RootFolder'))
+        const dashBrowser: BrowseResult = await session.browse(baseNode) as BrowseResult;
 
-        await session.createSubscription2({
+        let nodes = await lookupNodeIds(dashBrowser, session) // get available nodes in array of DType from PLC
+        let nodeIdList: string[] = []
+        Object.entries(nodes).forEach(([key, value], index) => {
+            Object.entries(value as object).forEach(([key, value], index) => {
+                if (key == '5') nodeIdList.push(value) // push only 'value' index of DType (5th child)
+            })
+        });
+        session.createSubscription2({
             requestedPublishingInterval: 1000,
             requestedLifetimeCount: 1000,
             requestedMaxKeepAliveCount: 20,
@@ -115,39 +130,61 @@ export async function displayTest() {
             subscription = newSubscription;
             if (subscription != undefined) 
                 subscription.on("keepalive", function() {
-                    console.log("Subscription keep alive");
+                    console.log("OPCUA Subscription keep alive");
                 }).on("terminated", function() {
-                    console.log('Subscription ended')
+                    console.log('OPCUA Subscription ended')
                 });
-            
-                const browseResult: BrowseResult = await session.browse("RootFolder") as BrowseResult;
-
-                if (browseResult.references != null)
-                    console.log(browseResult.references.map(
-                        (r: ReferenceDescription) => r.browseName.toString()).join("\n"));
-
-            let monitorItem = await subscription?.monitor({
-                nodeId: node,
-                attributeId: AttributeIds.Value
-            },{
-                samplingInterval: 100,
-                discardOldest: true,
-                queueSize: 5
-            }, TimestampsToReturn.Both)
-
-            monitorItem?.on('changed', (val) => {
-                console.log('Value change: '+val.value.value)
-            }) 
+            for(const nodeId of nodeIdList) {
+                const monitorItem = await subscription?.monitor({
+                    nodeId: nss+nodeId,
+                    attributeId: AttributeIds.Value
+                },{
+                    samplingInterval: 100,
+                    discardOldest: true,
+                    queueSize: 2
+                }, TimestampsToReturn.Neither)
+                
+                monitorItem?.on('changed', async (val) => {
+                    if (val.value.value != null) {
+                        let tag = await session.read(
+                            {nodeId: nss+nodeId.substring(0, nodeId.lastIndexOf('.'))+'.tag'}
+                            , TimestampsToReturn.Both)
+                        console.log('Value change: '+ (tag.value.value))
+                        console.log(val.value.value)
+                    }
+                }) 
+            }
         });
 
-        await setTimeout(() => {
+        setTimeout(() => {
             subscription?.terminate();
             session.close();
             client.disconnect();
-            console.log('Client disconnect')
-        }, 10000);
+            console.log('OPCUA Client disconnect')
+        }, 60000);
 
     } catch (err: any) {
         console.log("An error occured in OPC-UA client connection ", err.message);
     }
+}
+
+const lookupNodeIds = async (startpoint: BrowseResult, session: ClientSession) => {
+    let lookupList: any = {}
+    if (startpoint != null && startpoint.references != null) {
+        let i = -1
+        for(const ref of startpoint.references) {
+            const dashBrowser: BrowseResult = await session.browse(nss+ref.nodeId.value+'') as BrowseResult;
+            let lookupSubList: any = {}
+            if (dashBrowser.references != null) {
+                let i2 = 0
+                for(const subRef of dashBrowser.references) {
+                    lookupSubList[i2] = subRef.nodeId.value
+                    i2++
+                }
+            }
+            i++
+            lookupList[i] = lookupSubList
+        }
+    }
+    return lookupList
 }

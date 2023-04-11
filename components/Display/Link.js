@@ -1,11 +1,11 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.Link = void 0;
-var Link = /** @class */ (function () {
-    function Link(source, target) {
+class Link {
+    constructor(source, target) {
         this.source = source;
         this.target = target;
     }
-    return Link;
-}());
+}
 exports.Link = Link;
+//# sourceMappingURL=Link.js.map

@@ -1,11 +1,11 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bindings = void 0;
-var Bindings = /** @class */ (function () {
-    function Bindings(endpointUrl, nodeIDmain) {
+class Bindings {
+    constructor(endpointUrl, nodeIDmain) {
         this.endpointUrl = endpointUrl;
         this.nodeIDmain = nodeIDmain;
     }
-    return Bindings;
-}());
+}
 exports.Bindings = Bindings;
+//# sourceMappingURL=Bindings.js.map

@@ -1,11 +1,11 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.NodeObject = void 0;
-var NodeObject = /** @class */ (function () {
-    function NodeObject(name, value) {
+class NodeObject {
+    constructor(name, value) {
         this.name = name;
         this.value = value;
     }
-    return NodeObject;
-}());
+}
 exports.NodeObject = NodeObject;
+//# sourceMappingURL=NodeObject.js.map

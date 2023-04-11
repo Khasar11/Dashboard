@@ -1,13 +1,13 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.coll = exports.db = exports.client = void 0;
-var _a = require("mongodb"), MongoClient = _a.MongoClient, ServerApiVersion = _a.ServerApiVersion;
-var url = 'mongodb://127.0.0.1:27017'; //192.168.120.162
+const { MongoClient, ServerApiVersion } = require("mongodb");
+const url = 'mongodb://127.0.0.1:27017'; //192.168.120.162
 exports.client = new MongoClient(url, {
     serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
-        deprecationErrors: true
+        deprecationErrors: true,
     }
 });
 exports.client.connect();
@@ -32,3 +32,4 @@ async function run() {
     }
   }
   run().catch(console.dir); */
+//# sourceMappingURL=MongoDB.js.map
