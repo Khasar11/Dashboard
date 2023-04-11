@@ -95,80 +95,8 @@ export async function getDisplay(from: string) {
         ]
     )
 }
-const nss = 'ns=2;s='
-export async function displayTest() {
-    const endpointUrl = "opc.tcp://192.168.120.160:49320";
-    const baseNode = nss+"Tapperi.Knuser.Program_blocks.Dashboard.Dash";
-    const client = OPCUAClient.create({ endpointMustExist: false});
-    client.on("backoff", (retry: number, delay: number) => {
-        console.log(" cannot connect to endpoint retry = ", retry,
-          " next attempt in " , delay/1000, "seconds");
-    });
 
-    let subscription: ClientSubscription | undefined = undefined;
-    try {
-        await client.connect(endpointUrl);
-        const session = await client.createSession({userName: 'tine', password: 'Melkebart_2021%&', type: UserTokenType.UserName});
-
-        const dashBrowser: BrowseResult = await session.browse(baseNode) as BrowseResult;
-
-        let nodes = await lookupNodeIds(dashBrowser, session) // get available nodes in array of DType from PLC
-        let nodeIdList: string[] = []
-        Object.entries(nodes).forEach(([key, value], index) => {
-            Object.entries(value as object).forEach(([key, value], index) => {
-                if (key == '5') nodeIdList.push(value) // push only 'value' index of DType (5th child)
-            })
-        });
-        session.createSubscription2({
-            requestedPublishingInterval: 1000,
-            requestedLifetimeCount: 1000,
-            requestedMaxKeepAliveCount: 20,
-            maxNotificationsPerPublish: 10,
-            publishingEnabled: true,
-            priority: 10
-        }, async (err: Error | null, newSubscription: ClientSubscription | undefined) => {
-            subscription = newSubscription;
-            if (subscription != undefined) 
-                subscription.on("keepalive", function() {
-                    console.log("OPCUA Subscription keep alive");
-                }).on("terminated", function() {
-                    console.log('OPCUA Subscription ended')
-                });
-            for(const nodeId of nodeIdList) {
-                const monitorItem = await subscription?.monitor({
-                    nodeId: nss+nodeId,
-                    attributeId: AttributeIds.Value
-                },{
-                    samplingInterval: 100,
-                    discardOldest: true,
-                    queueSize: 2
-                }, TimestampsToReturn.Neither)
-                
-                monitorItem?.on('changed', async (val) => {
-                    if (val.value.value != null) {
-                        let tag = await session.read(
-                            {nodeId: nss+nodeId.substring(0, nodeId.lastIndexOf('.'))+'.tag'}
-                            , TimestampsToReturn.Both)
-                        console.log('Value change: '+ (tag.value.value))
-                        console.log(val.value.value)
-                    }
-                }) 
-            }
-        });
-
-        setTimeout(() => {
-            subscription?.terminate();
-            session.close();
-            client.disconnect();
-            console.log('OPCUA Client disconnect')
-        }, 60000);
-
-    } catch (err: any) {
-        console.log("An error occured in OPC-UA client connection ", err.message);
-    }
-}
-
-const lookupNodeIds = async (startpoint: BrowseResult, session: ClientSession) => {
+export const lookupNodeIds = async (startpoint: BrowseResult, session: ClientSession, nss: string) => {
     let lookupList: any = {}
     if (startpoint != null && startpoint.references != null) {
         let i = -1

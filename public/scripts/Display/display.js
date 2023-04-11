@@ -120,9 +120,22 @@ async function updateDisplayData(id) {
 } 
 
 async function startDisplaySubscription(id) {
-	socket.emit('subscribe-display', id, res => {
+	let loading = document.createElement('div')
+	loading.className = 'lds-grid'
+	loading.id = 'loading-grid'
+	for(i=0; i<9; i++) {
+		let subp = document.createElement('div')
+		loading.append(subp)
+	}
+	document.body.prepend(loading)
+	socket.emit('subscribe-display', id, res => { // socket io 
 		console.log(res)
-	}) // socket io 
+	}) 
+
+	socket.on('subscribe-update', async (arg, callback) => {
+		if (qSelect('#loading-grid') != null) qSelect('#loading-grid').remove()
+		console.log(arg)
+	})
 
 	/*const baseUrl = `http://localhost:8383/display/${id}`
 

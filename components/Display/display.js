@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.displayTest = exports.getDisplay = exports.setDisplayData = exports.getDisplayData = void 0;
-const node_opcua_1 = require("node-opcua");
+exports.lookupNodeIds = exports.getDisplay = exports.setDisplayData = exports.getDisplayData = void 0;
 const MongoDB_1 = require("../MongoDB/MongoDB");
 const Link_1 = require("./Link");
 const NodeObject_1 = require("./NodeObject");
@@ -82,73 +81,7 @@ async function getDisplay(from) {
     ]);
 }
 exports.getDisplay = getDisplay;
-const nss = 'ns=2;s=';
-async function displayTest() {
-    const endpointUrl = "opc.tcp://192.168.120.160:49320";
-    const baseNode = nss + "Tapperi.Knuser.Program_blocks.Dashboard.Dash";
-    const client = node_opcua_1.OPCUAClient.create({ endpointMustExist: false });
-    client.on("backoff", (retry, delay) => {
-        console.log(" cannot connect to endpoint retry = ", retry, " next attempt in ", delay / 1000, "seconds");
-    });
-    let subscription = undefined;
-    try {
-        await client.connect(endpointUrl);
-        const session = await client.createSession({ userName: 'tine', password: 'Melkebart_2021%&', type: node_opcua_1.UserTokenType.UserName });
-        const dashBrowser = await session.browse(baseNode);
-        let nodes = await lookupNodeIds(dashBrowser, session); // get available nodes in array of DType from PLC
-        let nodeIdList = [];
-        Object.entries(nodes).forEach(([key, value], index) => {
-            Object.entries(value).forEach(([key, value], index) => {
-                if (key == '5')
-                    nodeIdList.push(value); // push only 'value' index of DType (5th child)
-            });
-        });
-        session.createSubscription2({
-            requestedPublishingInterval: 1000,
-            requestedLifetimeCount: 1000,
-            requestedMaxKeepAliveCount: 20,
-            maxNotificationsPerPublish: 10,
-            publishingEnabled: true,
-            priority: 10
-        }, async (err, newSubscription) => {
-            subscription = newSubscription;
-            if (subscription != undefined)
-                subscription.on("keepalive", function () {
-                    console.log("OPCUA Subscription keep alive");
-                }).on("terminated", function () {
-                    console.log('OPCUA Subscription ended');
-                });
-            for (const nodeId of nodeIdList) {
-                const monitorItem = await subscription?.monitor({
-                    nodeId: nss + nodeId,
-                    attributeId: node_opcua_1.AttributeIds.Value
-                }, {
-                    samplingInterval: 100,
-                    discardOldest: true,
-                    queueSize: 2
-                }, node_opcua_1.TimestampsToReturn.Neither);
-                monitorItem?.on('changed', async (val) => {
-                    if (val.value.value != null) {
-                        let tag = await session.read({ nodeId: nss + nodeId.substring(0, nodeId.lastIndexOf('.')) + '.tag' }, node_opcua_1.TimestampsToReturn.Both);
-                        console.log('Value change: ' + (tag.value.value));
-                        console.log(val.value.value);
-                    }
-                });
-            }
-        });
-        setTimeout(() => {
-            subscription?.terminate();
-            session.close();
-            client.disconnect();
-            console.log('OPCUA Client disconnect');
-        }, 60000);
-    }
-    catch (err) {
-        console.log("An error occured in OPC-UA client connection ", err.message);
-    }
-}
-exports.displayTest = displayTest;
-const lookupNodeIds = async (startpoint, session) => {
+const lookupNodeIds = async (startpoint, session, nss) => {
     let lookupList = {};
     if (startpoint != null && startpoint.references != null) {
         let i = -1;
@@ -168,4 +101,5 @@ const lookupNodeIds = async (startpoint, session) => {
     }
     return lookupList;
 };
+exports.lookupNodeIds = lookupNodeIds;
 //# sourceMappingURL=Display.js.map

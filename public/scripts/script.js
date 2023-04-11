@@ -1,4 +1,4 @@
-function makeid(length) {
+const makeid = (length) => {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
@@ -10,10 +10,10 @@ function makeid(length) {
     return result;
 }
 
-function formattedYYYYMMDD(nowDate) {
+const formattedYYYYMMDD = (nowDate) => {
   return nowDate.getFullYear() + '-' + ('0' + (nowDate.getMonth()+1)).slice(-2) + '-' + ('0' + nowDate.getDate()).slice(-2);
 }
 
-function qSelect(query) {
+const qSelect = (query) => {
     return document.querySelector(query)
 }
