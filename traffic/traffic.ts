@@ -1,7 +1,7 @@
 import path from "path";
 import { app, port, server } from "../server";
 import { getSidebar } from "../components/Sidebar/sidebar";
-import { getDisplay, getDisplayData, setDisplayData } from "../components/Display/Display";
+import { getDisplayData, setDisplayData } from "../components/Display/Display";
 import { client, coll } from "../components/MongoDB/MongoDB";
 
 export const initApp = () => {
@@ -19,11 +19,6 @@ export const initApp = () => {
         sidebarPromise.then((value) => {
           res.status(200).json(value)
         });
-    });
-    
-    app.get('/display/:dynamic', async (req, res) => {
-        const {dynamic} = req.params;
-        res.status(200).json(await getDisplay(dynamic)) // {dynamic} = id to get display data from
     });
     
     app.get('/displayData/:dynamic', async (req, res) => {

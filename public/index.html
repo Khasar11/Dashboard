@@ -84,6 +84,10 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
           var socket = io();
+
+          socket.on('alert', async (arg, callback) => {
+            alert(arg)
+          })
         </script>
     </body>
 </html>

@@ -39,8 +39,6 @@ document.addEventListener('keydown', function(event) {
 	}
 });
 
-var links;
-var nodes;
 var simulation;
 var elemLinks;
 var elemCircles;
@@ -119,7 +117,17 @@ async function updateDisplayData(id) {
 	qSelect("#display-data-opc-password").value = returnData["password"]
 } 
 
+let nodes = [];
+let links = [];
+
+function upsert(array, element) { // (1)
+  const i = array.findIndex(_element => _element[0] === element[0]);
+  if (i > -1) array[i] = element; // (2)
+  else array.push(element);
+}
+
 async function startDisplaySubscription(id) {
+	currentDisplay = id;
 	let loading = document.createElement('div')
 	loading.className = 'lds-grid'
 	loading.id = 'loading-grid'
@@ -132,26 +140,20 @@ async function startDisplaySubscription(id) {
 		console.log(res)
 	}) 
 
-	socket.on('subscribe-update', async (arg, callback) => {
+	socket.on('subscribe-update', async arg => {
 		if (qSelect('#loading-grid') != null) qSelect('#loading-grid').remove()
 		console.log(arg)
+		upsert(nodes, arg)
+		console.log(nodes)
 	})
 
-	/*const baseUrl = `http://localhost:8383/display/${id}`
+	setTimeout(() => {
+		socket.emit('subscribe-terminate', id => {
+			console.log('Subscription terminate')
+		}) 
+	}, 20000);
 
-	let data = await fetch(baseUrl, {
-			method: 'GET'
-		}).then((response) => response.text())
-		.then(data => {
-			return data;
-		})
-		.catch(error => {
-			console.error(error);
-		});
-
-	const returnData = JSON.parse(data);
-	currentDisplay = id;
-
+	/*
 	links = returnData.links;
 	nodes = returnData.nodeObjects;
 

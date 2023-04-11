@@ -1,5 +1,5 @@
 
-import { OPCUAClient, AttributeIds, ClientSubscription, ClientSession, TimestampsToReturn, BrowseResult, ReferenceDescription, UserIdentityToken, UserTokenPolicy, UserTokenType, NodeId } from "node-opcua";
+import { BrowseResult, ClientSession } from "node-opcua";
 import { client, coll } from "../MongoDB/MongoDB";
 import { Link } from './Link';
 import { NodeObject } from './NodeObject';
@@ -58,42 +58,6 @@ export async function setDisplayData(data: any) {
     coll.updateOne(query, update4, options);
 
     return "display updated for " + split[0] 
-}
-
-const randomHex = () => {
-	let n = (Math.random() * 0xfffff * 1000000).toString(16);
-	return '16#' + n.slice(0, 6);
-};
-
-export async function getDisplay(from: string) {
-    return new Display(
-        [
-            new Link(0, 1),
-            new Link(1, 2),
-            new Link(2,0),
-            new Link(2,3),
-            new Link(4,5),
-            new Link(3,6),
-            new Link(6,7),
-            new Link(7,8),
-            new Link(8,9),
-            new Link(9,10),
-            new Link(10, 3)
-        ], 
-        [
-            new NodeObject('key1', Math.random() < 0.5),
-            new NodeObject('key2', Math.round((Math.random() * 100 * 100)) / 100),
-            new NodeObject('key3', Math.round((Math.random() * 100 * 100)) / 100),
-            new NodeObject('key4', Math.round((Math.random() * 100 * 100)) / 100),
-            new NodeObject('key5', Math.random() < 0.5),
-            new NodeObject('key6', Math.random() < 0.5),
-            new NodeObject('key7', randomHex()),
-            new NodeObject('key8', randomHex()),
-            new NodeObject('key9', Math.random() < 0.5),
-            new NodeObject('key10',Math.random() < 0.5),
-            new NodeObject('key11',Math.random() < 0.5),
-        ]
-    )
 }
 
 export const lookupNodeIds = async (startpoint: BrowseResult, session: ClientSession, nss: string) => {

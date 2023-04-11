@@ -22,10 +22,6 @@ const initApp = () => {
             res.status(200).json(value);
         });
     });
-    server_1.app.get('/display/:dynamic', async (req, res) => {
-        const { dynamic } = req.params;
-        res.status(200).json(await (0, Display_1.getDisplay)(dynamic)); // {dynamic} = id to get display data from
-    });
     server_1.app.get('/displayData/:dynamic', async (req, res) => {
         const { dynamic } = req.params;
         res.status(200).json(await (0, Display_1.getDisplayData)(dynamic)); // {dynamic} = id to get display data from
