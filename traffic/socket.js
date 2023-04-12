@@ -8,9 +8,9 @@ const initSock = () => {
     var allClients = [];
     server_1.io.sockets.on("connection", (socket) => {
         allClients.push(socket);
-        console.log("socket connect");
+        console.log("socket connect:", socket.id);
         socket.on("disconnect", function () {
-            console.log("socket disconnect");
+            console.log("socket disconnect:", socket.id);
             var i = allClients.indexOf(socket);
             allClients.splice(i, 1);
         });
@@ -33,11 +33,11 @@ const initSock = () => {
                 });
                 const dashBrowser = (await session.browse(baseNode));
                 let nodes = await (0, Display_1.lookupNodeIds)(dashBrowser, session, nss); // get available nodes in array of DType from PLC
-                let nodeIdList = [];
-                Object.entries(nodes).forEach(([key, value], index) => {
-                    Object.entries(value).forEach(([key, value], index) => {
+                let nodeIdListValues = [];
+                Object.entries(nodes).forEach(([key, value]) => {
+                    Object.entries(value).forEach(([key, value]) => {
                         if (key == "5")
-                            nodeIdList.push(value); // push only 'value' index of DType (5th child)
+                            nodeIdListValues.push(value); // push only 'value' index of DType (5th child)
                     });
                 });
                 session.createSubscription2({
@@ -57,43 +57,52 @@ const initSock = () => {
                             .on("terminated", function () {
                             console.log("OPCUA Subscription ended");
                         });
-                    for (const nodeId of nodeIdList) {
-                        const monitorItem = await subscription?.monitor({
-                            nodeId: nss + nodeId,
-                            attributeId: node_opcua_1.AttributeIds.Value,
-                        }, {
-                            samplingInterval: 500,
-                            discardOldest: true,
-                            queueSize: 2,
-                        }, node_opcua_1.TimestampsToReturn.Neither);
-                        monitorItem?.on("changed", async (val) => {
-                            if (val.value.value != null) {
-                                let tag = await session.read({
-                                    nodeId: nss +
-                                        nodeId.substring(0, nodeId.lastIndexOf(".")) +
-                                        ".tag",
-                                }, node_opcua_1.TimestampsToReturn.Neither);
-                                let links = [];
+                    const delayedIterator = (i) => {
+                        setTimeout(async () => {
+                            console.log(i);
+                            const monitorItem = await subscription?.monitor({
+                                nodeId: nss + nodeIdListValues[i],
+                                attributeId: node_opcua_1.AttributeIds.Value,
+                            }, {
+                                samplingInterval: 500,
+                                discardOldest: true,
+                                queueSize: 2,
+                            }, node_opcua_1.TimestampsToReturn.Neither);
+                            let links = [];
+                            (async () => {
                                 for (let i = 0; i <= 3; i++) {
-                                    links.push('a'
-                                    /*await session.read(
-                                      {
-                                        nodeId:
-                                          nss +
-                                          nodeId.substring(0, nodeId.lastIndexOf(".")) +
-                                          `.links[${i}]`,
-                                      },
-                                      TimestampsToReturn.Neither*/
-                                    );
+                                    await new Promise((resolve) => {
+                                        setTimeout(async () => {
+                                            links.push((await session.read({
+                                                nodeId: nss +
+                                                    nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
+                                                    `.links[${i}]`,
+                                            }, node_opcua_1.TimestampsToReturn.Neither)).value.value);
+                                            resolve(true);
+                                        }, 25);
+                                    });
                                 }
-                                socket.emit("subscribe-update", [
-                                    tag.value.value,
-                                    val.value.value,
-                                    links,
-                                ]);
-                            }
-                        });
-                    }
+                            })();
+                            monitorItem?.on("changed", async (val) => {
+                                if (val.value.value != null) {
+                                    console.log('yup');
+                                    let tag = await session.read({
+                                        nodeId: nss +
+                                            nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
+                                            ".tag",
+                                    }, node_opcua_1.TimestampsToReturn.Neither);
+                                    socket.emit("subscribe-update", [
+                                        tag.value.value,
+                                        val.value.value,
+                                        links
+                                    ]);
+                                }
+                            });
+                            if (i + 1 < nodeIdListValues.length)
+                                delayedIterator(i + 1);
+                        }, 25);
+                    };
+                    delayedIterator(0);
                 });
                 socket.on("subscribe-terminate", () => {
                     subscription?.terminate();
