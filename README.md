@@ -37,3 +37,16 @@ _World class_
 >Loggable OPC data:     
 >   Login system for per user logs  
 >   log-tag manage system   
+>PLC Library
+
+****
+PLC data:     
+    1. 
+      1.  tag string[10]  
+      2.  value string[22]  
+      3.  links Array[0..3] of String[10]
+        1. links[0]   
+        2. links[1]   
+        3. links[2]   
+        4. links[3]   
+    2.
