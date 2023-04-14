@@ -2,12 +2,14 @@
 
 var currentDisplayData;
 var currentDisplay;
+let simulation = undefined;
 let svg = d3.select('body').append('svg').attr('id', 'main-svg')
-let circles = svg.append('g').attr('id', 'node-circles')
-let keys = svg.append('g').attr('id', 'node-keys')
-let values = svg.append('g').attr('id', 'node-values')
-let links = svg.append('g').attr('id', 'node-links')
+let elemCircles = svg.append('g').attr('id', 'node-circles')
+let elemKeys = svg.append('g').attr('id', 'node-keys')
+let elemValues = svg.append('g').attr('id', 'node-values')
+let elemLinks = svg.append('g').attr('id', 'node-links')
 let displayData = qSelect('#display-data')
+let links, circles, keys, values = undefined;
 let nodes 	 = [];
 let nodeLinks= [];
 
@@ -79,10 +81,33 @@ async function updateDisplayData(id) {
 	qSelect("#display-data-opc-password").value = returnData["password"]
 } 
 
-function upsert(array, element) { // upserts object by .key
-  const i = array.findIndex(_element => _element.key === element.key);
-  if (i > -1) array[i] = element;
+function upsert(array, element) { // upserts object by .key//
+  const i = array.findIndex(_element => _element.key === element.key)
+	if (i > -1) array[i] = element;
   else array.push(element);
+}
+
+const ticked = _ => {
+	links
+		.attr('x1', d => { return d.source.x })
+		.attr('y1', d => { return d.source.y })
+		.attr('x2', d => { return d.target.x })
+		.attr('y2', d => { return d.target.y })
+
+	circles
+		.classed("fixed", d => d.fx !== undefined)
+		.attr('cx', d => { return d.x })
+		.attr('cy', d => { return d.y })
+
+	keys
+		.attr('x', d => { return d.x })
+		.attr('y', d => { return d.y })
+
+	values
+		.text(	   	  d => { return d.value })
+		.attr('fill', d => fixColor(d.value))
+		.attr('x',    d => { return d.x })
+		.attr('y',    d => { return d.y +10 }) 
 }
 
 const startDisplaySubscription = id => {
@@ -92,10 +117,10 @@ const startDisplaySubscription = id => {
 		console.log(res)
 	})
 
-	socket.on('subscribe-update', arg => {
-		if (qSelect('#loading-grid') != null) qSelect('#loading-grid').remove()
+	socket.on('subscribe-update', arg => { // waiting for server to send data from opc 
+		if (qSelect('#loading-grid') != null) qSelect('#loading-grid').remove() // removes loading grid on 
 		if (arg == undefined) return;
-		if (arg[1].includes('.') && arg[1].includes('E+')) {
+		if (arg[1].includes('.') && arg[1].includes('E+')) { // fix float numbers 
 			upsert(nodes, {key: arg[0], value: ((arg[1])/10).toFixed(5), links: arg[2]})
 		}
 		else {
@@ -104,19 +129,70 @@ const startDisplaySubscription = id => {
 
 		parseLinks()
 
-		links.selectAll('link').data(nodes)
-		circles.selectAll('circle').data(nodes)
+		console.log(nodeLinks)
+
+
+		/*
+		links.attr("id", "links")
+			.selectAll("line")
+			.data(nodes)
+			.enter().append("line")
+			.classed("node-line", true)
+		circles.selectAll('circle')
+  		.selectAll("circle")
+  		.data(nodes)
+  		.enter().append("circle")
+			.classed("node-circle", true)
+			.attr('r', 18)
+			.call(drag).on("click", click)
 		keys
 			.selectAll('p').data(nodes)
 			.enter().append('p')
 			.text((d) => { return d.key })
-			.attr('id', (d) => {return 'keys-'+d.key})
+			.classed("node-keys", true)
 		values
 			.selectAll('p').data(nodes)
 			.enter().append('p')
 			.text((d) => { return d.value })
 			.attr('fill', (d) => { return fixColor(d.value)})
-			.attr('id', (d) => {return 'values-'+d.key})
+			.attr('id', (d) => { return 'value-'+d.key})
+			.classed("node-values", true)
+*/
+		
+		links = elemLinks
+  		.selectAll("line")
+  		.data(nodeLinks)
+  		.enter().append("line")
+			.classed("node-link", true)
+
+		circles = elemCircles
+  			.selectAll("circle")
+  			.data(nodes)
+  			.enter().append("circle")
+			.classed("node-circle", true)
+			.attr('r', 18)
+			.call(drag).on("click", click)
+
+		keys = elemKeys
+			.selectAll('p')
+			.data(nodes)
+			.enter().append('p')
+			.classed('node-key', true)
+			.text(d => { return d.key })
+
+		values = elemValues
+			.selectAll('p')
+			.data(nodes)
+			.enter().append('p')
+			.attr('font-weight', 'bold')
+			.classed('node-values', true)
+
+		simulation = d3.forceSimulation()
+			.nodes(nodes)
+			.force('charge', d3.forceManyBody().strength(-400).distanceMax(200))
+			.force('center', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
+			.force("link", d3.forceLink(nodeLinks))
+			.on('tick', ticked);
 	})
 
 	setTimeout(_ => {
@@ -133,20 +209,12 @@ const parseLinks = _ => { // parse linkage tag array to numbered linkage key val
 	for (const node of nodes) {
 		for (const link of node.links) {
 			let index = nodeKeys.indexOf(link)
-			index != -1 ? upsert(nodeLinks, {key: i, value: index}) : undefined;
+			if (index != -1)
+				nodeLinks, {source: i, target: index}; //must be upserted into array somehow
 		}
 		i++;
 	}
 }
-/*
-let retLinkArray = []
-	let nodeKeys = []
-	nodes.forEach(n => nodeKeys.push(n.key))
-	for (const link of linksIn) {
-		nodeKeys.indexOf(link) != -1 ? nodeLinks.push({source: 0, target: nodeKeys.indexOf(link)}) :
-	}
-	return retLinkArray
-*/
 
 const fixColor = dvalue => {
 	dvalue = parseFloat(dvalue)
@@ -166,7 +234,7 @@ const handleZoom = (e) => {
 		.attr('transform', e.transform);
 	d3.selectAll('svg circle')
 		.attr('transform', e.transform);
-	d3.selectAll('svg text')
+	d3.selectAll('svg p')
 		.attr('transform', e.transform);
 }
 
@@ -191,6 +259,33 @@ document.addEventListener('keydown', function(event) {
 		center();
 	}
 });
+
+const dragstart = _ => {
+	d3.select(this).classed("fixed", true);
+}
+
+const clamp = (x, lo, hi) => {
+	return x < lo ? lo : x > hi ? hi : x;
+}
+
+const dragged = (event, d) => {
+	d.fx = clamp(event.x, 0, window.innerWidth);
+	d.fy = clamp(event.y, 0, window.innerHeight);
+	simulation.alpha(1).restart();
+}
+
+const drag = d3
+		.drag()
+		.on("start", dragstart)
+		.on("drag", dragged);
+	
+const click = (event, d) => {
+	delete d.fx;
+	delete d.fy;
+	d3.select(this).classed("fixed", false);
+	simulation.alpha(1).restart();
+}
+
 
 /* old
 
