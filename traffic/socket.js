@@ -73,7 +73,7 @@ const initSock = () => {
                     requestedMaxKeepAliveCount: 20,
                     maxNotificationsPerPublish: 10,
                     publishingEnabled: true,
-                    priority: 10,
+                    priority: 1,
                 }, async (err, newSubscription) => {
                     subscription = newSubscription;
                     if (subscription != undefined)
@@ -106,7 +106,7 @@ const initSock = () => {
                                                     `.links[${i2}]`,
                                             }, node_opcua_1.TimestampsToReturn.Neither)).value.value : undefined);
                                             resolve(true);
-                                        }, 12);
+                                        }, 5);
                                     });
                                 }
                             })();
@@ -127,7 +127,7 @@ const initSock = () => {
                             });
                             if (i + 1 < nodeIdListValues.length)
                                 delayedIterator(i + 1);
-                        }, 12);
+                        }, 5);
                     };
                     delayedIterator(0);
                 });

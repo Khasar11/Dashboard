@@ -17,5 +17,4 @@ exports.app.use(express_1.default.static('public'));
 exports.app.use(express_1.default.json({ limit: '100mb' }));
 (0, traffic_1.initApp)();
 (0, socket_1.initSock)();
-//displayTest()
 //# sourceMappingURL=server.js.map

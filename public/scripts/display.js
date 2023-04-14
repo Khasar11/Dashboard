@@ -9,6 +9,7 @@ let values = svg.append('g').attr('id', 'node-values')
 let links = svg.append('g').attr('id', 'node-links')
 let displayData = qSelect('#display-data')
 let nodes 	 = [];
+let nodeLinks= [];
 
 qSelect('#display-data-Xout').addEventListener('click', () => {clearDisplayData()})
 
@@ -94,11 +95,14 @@ const startDisplaySubscription = id => {
 	socket.on('subscribe-update', arg => {
 		if (qSelect('#loading-grid') != null) qSelect('#loading-grid').remove()
 		if (arg == undefined) return;
-		console.log(arg[2])
-		if (arg[1].includes('.') && arg[1].includes('E+'))
-			upsert(nodes, {key: arg[0], value: ((arg[1])/10).toFixed(5), links: parseLinks(arg[2])})
-		else
-			upsert(nodes, {key: arg[0], value: arg[1], links: parseLinks(arg[2])})
+		if (arg[1].includes('.') && arg[1].includes('E+')) {
+			upsert(nodes, {key: arg[0], value: ((arg[1])/10).toFixed(5), links: arg[2]})
+		}
+		else {
+			upsert(nodes, {key: arg[0], value: arg[1], links: arg[2]})
+		}
+
+		parseLinks()
 
 		links.selectAll('link').data(nodes)
 		circles.selectAll('circle').data(nodes)
@@ -111,30 +115,38 @@ const startDisplaySubscription = id => {
 			.selectAll('p').data(nodes)
 			.enter().append('p')
 			.text((d) => { return d.value })
-			.attr('fill', (d) => { console.log(fixColor(d.value)); return fixColor(d.value)})
+			.attr('fill', (d) => { return fixColor(d.value)})
 			.attr('id', (d) => {return 'values-'+d.key})
 	})
 
 	setTimeout(_ => {
 		socket.emit('subscribe-terminate')
-	}, 10000)
+		console.log(nodeLinks)
+		console.log(nodes)
+	}, 30000)
 }
 
-const parseLinks = links => {
-	let retLinkArray = []
-	/*let nodeKeys = []
-	nodes.forEach(e => {
-		nodeKeys.push(e.key)
-	})
-	let c = 0
-	links.forEach(link => {
-		console.log(link)
-		if (link != '' && nodeKeys[c] == link)
-			retLinkArray.push(nodeKeys.indexOf(link))
-		c++;
-	}) */
-	return retLinkArray
+const parseLinks = _ => { // parse linkage tag array to numbered linkage key value pair collection array
+	let i = 0;
+	let nodeKeys = []
+	nodes.forEach(n => nodeKeys.push(n.key))
+	for (const node of nodes) {
+		for (const link of node.links) {
+			let index = nodeKeys.indexOf(link)
+			index != -1 ? upsert(nodeLinks, {key: i, value: index}) : undefined;
+		}
+		i++;
+	}
 }
+/*
+let retLinkArray = []
+	let nodeKeys = []
+	nodes.forEach(n => nodeKeys.push(n.key))
+	for (const link of linksIn) {
+		nodeKeys.indexOf(link) != -1 ? nodeLinks.push({source: 0, target: nodeKeys.indexOf(link)}) :
+	}
+	return retLinkArray
+*/
 
 const fixColor = dvalue => {
 	dvalue = parseFloat(dvalue)
