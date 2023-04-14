@@ -17,3 +17,14 @@ const formattedYYYYMMDD = (nowDate) => {
 const qSelect = (query) => {
     return document.querySelector(query)
 }
+
+const showCenteredLoading = () => {
+	let loading = document.createElement('div')
+	loading.className = 'lds-grid'
+	loading.id = 'loading-grid'
+	for(let i=0; i<9; i++) {
+		let subp = document.createElement('div')
+		loading.append(subp)
+	}
+	document.body.prepend(loading)
+}

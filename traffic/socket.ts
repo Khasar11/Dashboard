@@ -4,6 +4,7 @@ import { getDisplayData, lookupNodeIds } from "../components/Display/Display";
 import {
   AttributeIds,
   BrowseResult,
+  ClientSession,
   ClientSubscription,
   OPCUAClient,
   TimestampsToReturn,
@@ -16,9 +17,15 @@ export const initSock = () => {
     allClients.push(socket);
     console.log("socket connect:", socket.id);
 
+    let client: OPCUAClient | undefined = undefined;
+    let subscription: ClientSubscription | undefined = undefined;
+    let session: ClientSession | undefined = undefined;
+
     socket.on("disconnect", function () {
       console.log("socket disconnect:", socket.id);
-
+      if (subscription!= undefined) { subscription.terminate(); subscription = undefined };
+      if (session     != undefined) { session.close(); session = undefined };
+      if (client      != undefined) {client.disconnect(); client = undefined };
       var i = allClients.indexOf(socket);
       allClients.splice(i, 1);
     });
@@ -28,7 +35,8 @@ export const initSock = () => {
       const endpointUrl = displayData.endpoint;
       const baseNode = displayData.nodeAddress;
       const nss = baseNode.substring(0, baseNode.lastIndexOf("=") + 1);
-      const client = OPCUAClient.create({ endpointMustExist: false });
+      client = OPCUAClient.create({ endpointMustExist: false });
+      let terminated: boolean = false;
       client.on("backoff", (retry: number, delay: number) => {
         console.log(
           " cannot connect to endpoint retry = ",
@@ -37,12 +45,19 @@ export const initSock = () => {
           delay / 1000,
           "seconds"
         );
+        socket.emit('alert', 'Error on OPCUA client initialization on server side, are you sure you have a connection route to the destination?')
+        socket.emit("subscribe-update", undefined); // to reomve the loading bar
+        console.log('OPCUA client terminated for', socket.id)
+        subscription?.terminate();
+        if (client  != undefined) client.disconnect();
+        terminated = true;
       });
 
-      let subscription: ClientSubscription | undefined = undefined;
+      if (terminated) return;
+
       try {
         await client.connect(endpointUrl);
-        const session = await client.createSession({
+        session = await client.createSession({
           userName: "tine",
           password: "Melkebart_2021%&",
           type: UserTokenType.UserName,
@@ -81,6 +96,7 @@ export const initSock = () => {
                 })
                 .on("terminated", function () {
                   console.log("OPCUA Subscription ended");
+                  subscription = undefined;
                 });
 
             const delayedIterator = (i:number) => {
@@ -104,24 +120,24 @@ export const initSock = () => {
                       await new Promise((resolve) => {
                         setTimeout(async () => {
                             links.push(
-                                (await session.read(
+                                session != undefined ? (await session.read(
                                 {
                                   nodeId: nss +
                                     nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
                                     `.links[${i}]`,
                                 },
-                                TimestampsToReturn.Neither)).value.value
+                                TimestampsToReturn.Neither)).value.value : undefined
                               )
                           resolve(true)
-                        }, 25)
+                        }, 12)
                       });
                     }
                   })()
 
                   monitorItem?.on("changed", async (val) => {
                     if (val.value.value != null) {
-                      console.log('yup')
-                      let tag = await session.read(
+                      console.log('upd',val.value.value)
+                      let tag = session != undefined ? await session.read(
                         {
                           nodeId:
                             nss +
@@ -129,25 +145,28 @@ export const initSock = () => {
                             ".tag",
                         },
                         TimestampsToReturn.Neither
-                      );
+                      ) : undefined;
                       socket.emit("subscribe-update", [
-                        tag.value.value,
+                        tag != undefined ? tag.value.value : undefined,
                         val.value.value,
                         links
                       ]);
                     }
                   });
                 if (i+1<nodeIdListValues.length) delayedIterator(i+1);
-              }, 25)
+              }, 12)
             };
           delayedIterator(0)
           }
         );
 
         socket.on("subscribe-terminate", () => {
-          subscription?.terminate();
-          session.close();
-          client.disconnect();
+          if (subscription!= undefined) subscription.terminate();
+          if (session     != undefined) session.close();
+          if (client      != undefined) client.disconnect();
+          subscription = undefined;
+          session = undefined;
+          client = undefined;
           console.log("OPCUA Client disconnect");
           socket.emit("alert", "OPCUA client disconnect");
         });
@@ -157,7 +176,8 @@ export const initSock = () => {
           err.message
         );
       }
-      callback("Subscription start for " + arg);
+      if (!terminated) callback("Subscription start for " + arg);
+      else callback('Unable to connect to OPCUA')
     });
   });
 };

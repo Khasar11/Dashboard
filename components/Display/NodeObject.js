@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NodeObject = void 0;
 class NodeObject {
-    constructor(name, value) {
-        this.name = name;
+    constructor(key, value) {
+        this.key = key;
         this.value = value;
     }
 }

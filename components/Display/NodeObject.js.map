@@ -1,1 +1,1 @@
-{"version":3,"file":"NodeObject.js","sourceRoot":"","sources":["NodeObject.ts"],"names":[],"mappings":";;;AAAA,MAAa,UAAU;IAInB,YAAY,IAAY,EAAE,KAAU;QAChC,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,KAAK,GAAG,KAAK,CAAC;IACvB,CAAC;CACJ;AARD,gCAQC"}
+{"version":3,"file":"NodeObject.js","sourceRoot":"","sources":["NodeObject.ts"],"names":[],"mappings":";;;AAAA,MAAa,UAAU;IAInB,YAAY,GAAW,EAAE,KAAU;QAC/B,IAAI,CAAC,GAAG,GAAG,GAAG,CAAC;QACf,IAAI,CAAC,KAAK,GAAG,KAAK,CAAC;IACvB,CAAC;CACJ;AARD,gCAQC"}

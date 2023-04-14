@@ -9,7 +9,7 @@ import { initSock } from "./traffic/socket";
 export const io = new Server(server);
 
 app.use(express.static('public'));
-app.use(express.json());
+app.use(express.json({limit: '100mb'}));
 
 initApp()
 initSock()

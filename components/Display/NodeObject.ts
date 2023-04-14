@@ -1,9 +1,9 @@
 export class NodeObject {
-    name: string;
+    key: string;
     value: any;
 
-    constructor(name: string, value: any) {
-        this.name = name;
+    constructor(key: string, value: any) {
+        this.key = key;
         this.value = value;
     }
 }
