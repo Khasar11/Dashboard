@@ -82,7 +82,7 @@ export const initSock = () => {
             requestedMaxKeepAliveCount: 20,
             maxNotificationsPerPublish: 10,
             publishingEnabled: true,
-            priority: 10,
+            priority: 1,
           },
           async (
             err: Error | null,
@@ -128,7 +128,7 @@ export const initSock = () => {
                                 TimestampsToReturn.Neither)).value.value : undefined
                               )
                           resolve(true)
-                        }, 12)
+                        }, 5)
                       });
                     }
                   })()
@@ -153,7 +153,7 @@ export const initSock = () => {
                     }
                   });
                 if (i+1<nodeIdListValues.length) delayedIterator(i+1);
-              }, 12)
+              }, 5)
             };
           delayedIterator(0)
           }
