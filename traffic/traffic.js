@@ -7,8 +7,8 @@ exports.initApp = void 0;
 const path_1 = __importDefault(require("path"));
 const server_1 = require("../server");
 const sidebar_1 = require("../components/Sidebar/sidebar");
-const Display_1 = require("../components/Display/Display");
 const MongoDB_1 = require("../components/MongoDB/MongoDB");
+const Display_1 = require("../components/Display/Display");
 const initApp = () => {
     server_1.app.get('/', (req, res) => {
         res.sendFile(path_1.default.join(__dirname, '/index.html'));

@@ -94,21 +94,36 @@ async function startDisplaySubscription(id) {
 	socket.on('subscribe-update', async arg => {
 		if (qSelect('#loading-grid') != null) qSelect('#loading-grid').remove()
 		if (arg == undefined) return;
+		if (arg[1].includes('.') && arg[1].includes('E+'))
+			upsert(nodes, {key: arg[0], value: ((arg[1])/10).toFixed(5)})
+		else
 		upsert(nodes, {key: arg[0], value: arg[1]})
 
 		links.selectAll('link').data(nodes)
 		circles.selectAll('circle').data(nodes)
-		keys.selectAll('p').data(nodes).enter().append('p').text((d) => { return d.key }).attr('id', (d) => {return 'keys-'+d.key})
-		values.selectAll('p').data(nodes).enter().append('p').attr('id', (d) => {return 'values-'+d.key})
+		keys
+			.selectAll('p').data(nodes)
+			.enter().append('p')
+			.text((d) => { return d.key })
+			.attr('id', (d) => {return 'keys-'+d.key})
+		values
+			.selectAll('p').data(nodes)
+			.enter().append('p')
+			.text((d) => { return d.value })
+			.attr('fill', (d) => { console.log(fixColor(d.value)); return fixColor(d.value)})
+			.attr('id', (d) => {return 'values-'+d.key})
 	})
 }
 
 function fixColor(dvalue) {
-	if (typeof dvalue === 'string' && dvalue.includes('#'))
+	dvalue = parseFloat(dvalue)
+	if (String(dvalue).includes('.'))
+		return '#00ff00'
+	if (dvalue > 1 && dvalue < 16384)
 		return '#ff00ff'
-	if (dvalue == 'false' || !dvalue) 
+	if (dvalue == '0' || !dvalue) 
 	  return 'red'
-	if (dvalue == 'true' || dvalue && !(typeof dvalue === 'number')) 
+	if (dvalue == '1' || dvalue) 
 	  return 'green'
 	return 'teal'
 }

@@ -1,8 +1,8 @@
 import path from "path";
 import { app, port, server } from "../server";
 import { getSidebar } from "../components/Sidebar/sidebar";
-import { getDisplayData, setDisplayData } from "../components/Display/Display";
 import { client, coll } from "../components/MongoDB/MongoDB";
+import { getDisplayData, setDisplayData } from "../components/Display/Display";
 
 export const initApp = () => {
     
