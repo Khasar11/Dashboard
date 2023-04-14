@@ -1,6 +1,4 @@
-# TDashboard
-
-_World class_
+# Dashboard
 
 **Readonly dashboard for OPC server connected machinery, web based**
 
