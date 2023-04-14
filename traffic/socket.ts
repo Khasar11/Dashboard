@@ -101,7 +101,6 @@ export const initSock = () => {
 
             const delayedIterator = (i:number) => {
               setTimeout(async () => {
-                  console.log(i)
                   const monitorItem = await subscription?.monitor(
                     {
                       nodeId: nss + nodeIdListValues[i],
@@ -116,7 +115,7 @@ export const initSock = () => {
                   );
                   let links: string[] = [];
                   (async () => {
-                    for (let i = 0; i <= 3; i++) {
+                    for (let i2 = 0; i2 <= 3; i2++) {
                       await new Promise((resolve) => {
                         setTimeout(async () => {
                             links.push(
@@ -124,7 +123,7 @@ export const initSock = () => {
                                 {
                                   nodeId: nss +
                                     nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
-                                    `.links[${i}]`,
+                                    `.links[${i2}]`,
                                 },
                                 TimestampsToReturn.Neither)).value.value : undefined
                               )
@@ -136,7 +135,6 @@ export const initSock = () => {
 
                   monitorItem?.on("changed", async (val) => {
                     if (val.value.value != null) {
-                      console.log('upd',val.value.value)
                       let tag = session != undefined ? await session.read(
                         {
                           nodeId:
@@ -146,6 +144,7 @@ export const initSock = () => {
                         },
                         TimestampsToReturn.Neither
                       ) : undefined;
+                      console.log(tag?.value.value,val.value.value,links)
                       socket.emit("subscribe-update", [
                         tag != undefined ? tag.value.value : undefined,
                         val.value.value,

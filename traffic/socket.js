@@ -87,7 +87,6 @@ const initSock = () => {
                         });
                     const delayedIterator = (i) => {
                         setTimeout(async () => {
-                            console.log(i);
                             const monitorItem = await subscription?.monitor({
                                 nodeId: nss + nodeIdListValues[i],
                                 attributeId: node_opcua_1.AttributeIds.Value,
@@ -98,13 +97,13 @@ const initSock = () => {
                             }, node_opcua_1.TimestampsToReturn.Neither);
                             let links = [];
                             (async () => {
-                                for (let i = 0; i <= 3; i++) {
+                                for (let i2 = 0; i2 <= 3; i2++) {
                                     await new Promise((resolve) => {
                                         setTimeout(async () => {
                                             links.push(session != undefined ? (await session.read({
                                                 nodeId: nss +
                                                     nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
-                                                    `.links[${i}]`,
+                                                    `.links[${i2}]`,
                                             }, node_opcua_1.TimestampsToReturn.Neither)).value.value : undefined);
                                             resolve(true);
                                         }, 12);
@@ -113,12 +112,12 @@ const initSock = () => {
                             })();
                             monitorItem?.on("changed", async (val) => {
                                 if (val.value.value != null) {
-                                    console.log('upd', val.value.value);
                                     let tag = session != undefined ? await session.read({
                                         nodeId: nss +
                                             nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
                                             ".tag",
                                     }, node_opcua_1.TimestampsToReturn.Neither) : undefined;
+                                    console.log(tag?.value.value, val.value.value, links);
                                     socket.emit("subscribe-update", [
                                         tag != undefined ? tag.value.value : undefined,
                                         val.value.value,

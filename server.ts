@@ -13,5 +13,3 @@ app.use(express.json({limit: '100mb'}));
 
 initApp()
 initSock()
-
-//displayTest()

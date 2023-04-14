@@ -84,20 +84,21 @@ function upsert(array, element) { // upserts object by .key
   else array.push(element);
 }
 
-async function startDisplaySubscription(id) {
+const startDisplaySubscription = id => {
 	currentDisplay = id;
 	showCenteredLoading()
 	socket.emit('subscribe-display', id, res => { // socket io 
 		console.log(res)
 	})
 
-	socket.on('subscribe-update', async arg => {
+	socket.on('subscribe-update', arg => {
 		if (qSelect('#loading-grid') != null) qSelect('#loading-grid').remove()
 		if (arg == undefined) return;
+		console.log(arg[2])
 		if (arg[1].includes('.') && arg[1].includes('E+'))
-			upsert(nodes, {key: arg[0], value: ((arg[1])/10).toFixed(5)})
+			upsert(nodes, {key: arg[0], value: ((arg[1])/10).toFixed(5), links: parseLinks(arg[2])})
 		else
-		upsert(nodes, {key: arg[0], value: arg[1]})
+			upsert(nodes, {key: arg[0], value: arg[1], links: parseLinks(arg[2])})
 
 		links.selectAll('link').data(nodes)
 		circles.selectAll('circle').data(nodes)
@@ -113,9 +114,29 @@ async function startDisplaySubscription(id) {
 			.attr('fill', (d) => { console.log(fixColor(d.value)); return fixColor(d.value)})
 			.attr('id', (d) => {return 'values-'+d.key})
 	})
+
+	setTimeout(_ => {
+		socket.emit('subscribe-terminate')
+	}, 10000)
 }
 
-function fixColor(dvalue) {
+const parseLinks = links => {
+	let retLinkArray = []
+	/*let nodeKeys = []
+	nodes.forEach(e => {
+		nodeKeys.push(e.key)
+	})
+	let c = 0
+	links.forEach(link => {
+		console.log(link)
+		if (link != '' && nodeKeys[c] == link)
+			retLinkArray.push(nodeKeys.indexOf(link))
+		c++;
+	}) */
+	return retLinkArray
+}
+
+const fixColor = dvalue => {
 	dvalue = parseFloat(dvalue)
 	if (String(dvalue).includes('.'))
 		return '#00ff00'
@@ -128,13 +149,7 @@ function fixColor(dvalue) {
 	return 'teal'
 }
 
-
-
-/* old
-let zoom = d3.zoom()
-	.on('zoom', handleZoom);
-
-function handleZoom(e) {
+const handleZoom = (e) => {
 	d3.selectAll('svg line')
 		.attr('transform', e.transform);
 	d3.selectAll('svg circle')
@@ -143,23 +158,17 @@ function handleZoom(e) {
 		.attr('transform', e.transform);
 }
 
-function initZoom() {
+let zoom = d3.zoom()
+	.on('zoom', handleZoom);
+
+const initZoom = _ => {
 	d3.selectAll('svg')
 		.call(zoom);
 }
 
 initZoom();
 
-function copy(that) {
-	var inp = document.createElement('input');
-	document.body.appendChild(inp)
-	inp.value = that.textContent
-	inp.select();
-	document.execCommand('copy', false);
-	inp.remove();
-}
-
-function center() {
+const center = _ => {
 	d3.select('svg')
 		.transition()
 		.call(zoom.translateTo, 0.5 * window.innerWidth, 0.5 * window.innerHeight);
@@ -170,6 +179,17 @@ document.addEventListener('keydown', function(event) {
 		center();
 	}
 });
+
+/* old
+
+function copy(that) {
+	var inp = document.createElement('input');
+	document.body.appendChild(inp)
+	inp.value = that.textContent
+	inp.select();
+	document.execCommand('copy', false);
+	inp.remove();
+}
 
 var simulation;
 var elemLinks;
@@ -291,12 +311,6 @@ async function startDisplaySubscription(id) {
 
 	qSelect('#main-svg').innerHTML = ''
 
-	simulation = d3.forceSimulation()
-		.nodes(nodes)
-		.force('charge', d3.forceManyBody().strength(-400).distanceMax(200))
-		.force('center', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
-		.force("link", d3.forceLink(links))
-		.on('tick', ticked);
 
 	elemLinks = svg
 		.append("g")
