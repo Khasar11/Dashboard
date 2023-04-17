@@ -21,7 +21,8 @@
     cursor: copy;
 }
 
-svg {
+#main-svg {
+    position: fixed;
     margin: 0;
     width: 100%;
     height: 100%;

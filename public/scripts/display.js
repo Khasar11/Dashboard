@@ -4,10 +4,10 @@ var currentDisplayData;
 var currentDisplay;
 let simulation = undefined;
 let svg = d3.select('body').append('svg').attr('id', 'main-svg')
+let elemLinks = svg.append('g').attr('id', 'node-links')
 let elemCircles = svg.append('g').attr('id', 'node-circles')
 let elemKeys = svg.append('g').attr('id', 'node-keys')
 let elemValues = svg.append('g').attr('id', 'node-values')
-let elemLinks = svg.append('g').attr('id', 'node-links')
 let displayData = qSelect('#display-data')
 let links, circles, keys, values = undefined;
 let nodes 	 = [];
@@ -104,8 +104,6 @@ const ticked = _ => {
 		.attr('y', d => { return d.y })
 
 	values
-		.text(	   	  d => { return d.value })
-		.attr('fill', d => fixColor(d.value))
 		.attr('x',    d => { return d.x })
 		.attr('y',    d => { return d.y +10 }) 
 }
@@ -116,6 +114,8 @@ const startDisplaySubscription = id => {
 	socket.emit('subscribe-display', id, res => { // socket io 
 		console.log(res)
 	})
+
+	simulation = d3.forceSimulation().nodes(nodes)
 
 	socket.on('subscribe-update', arg => { // waiting for server to send data from opc 
 		if (qSelect('#loading-grid') != null) qSelect('#loading-grid').remove() // removes loading grid on 
@@ -129,76 +129,64 @@ const startDisplaySubscription = id => {
 
 		parseLinks()
 
-		console.log(nodeLinks)
+		let nodeLinksCopy = JSON.parse(JSON.stringify(nodeLinks))
 
-
-		/*
-		links.attr("id", "links")
-			.selectAll("line")
-			.data(nodes)
-			.enter().append("line")
-			.classed("node-line", true)
-		circles.selectAll('circle')
-  		.selectAll("circle")
-  		.data(nodes)
-  		.enter().append("circle")
-			.classed("node-circle", true)
-			.attr('r', 18)
-			.call(drag).on("click", click)
-		keys
-			.selectAll('p').data(nodes)
-			.enter().append('p')
-			.text((d) => { return d.key })
-			.classed("node-keys", true)
-		values
-			.selectAll('p').data(nodes)
-			.enter().append('p')
-			.text((d) => { return d.value })
-			.attr('fill', (d) => { return fixColor(d.value)})
-			.attr('id', (d) => { return 'value-'+d.key})
-			.classed("node-values", true)
-*/
-		
-		links = elemLinks
+		elemLinks
   		.selectAll("line")
-  		.data(nodeLinks)
+  		.data(nodeLinksCopy)
   		.enter().append("line")
 			.classed("node-link", true)
 
-		circles = elemCircles
+		elemCircles
   			.selectAll("circle")
   			.data(nodes)
   			.enter().append("circle")
 			.classed("node-circle", true)
 			.attr('r', 18)
+			.attr('cx', d => { return d.cx })
+			.attr('cy', d => { return d.cy })
 			.call(drag).on("click", click)
 
-		keys = elemKeys
-			.selectAll('p')
+		elemKeys
+			.selectAll('text')
 			.data(nodes)
-			.enter().append('p')
+			.enter().append('text')
 			.classed('node-key', true)
-			.text(d => { return d.key })
+			.attr('x', d => { return d.x })
+			.attr('y', d => { return d.y })
+			.html(d => { return d.key })
 
-		values = elemValues
-			.selectAll('p')
+		elemValues
+			.selectAll('text')
 			.data(nodes)
-			.enter().append('p')
+			.enter().append('text')
 			.attr('font-weight', 'bold')
-			.classed('node-values', true)
+			.attr('id', d => {return 'values-'+d.key})
+			.html(d => { return d.value == '+0' ? 'false' : d.value == '+1' ? 'true' : d.value })
+			.attr('x', d => { return d.x })
+			.attr('y', d => { return d.y })
+			.attr('fill', d => fixColor(d.value))
+			.classed('node-value', true)
 
-		simulation = d3.forceSimulation()
+		values = elemValues.selectAll('text')
+		links = elemLinks.selectAll('line')
+		keys = elemKeys.selectAll('text')
+		circles = elemCircles.selectAll('circle')
+
+		elemValues.selectAll('#values-'+arg[0])
+			.text(d => { return d.value == '+0' ? 'false' : d.value == '+1' ? 'true' : d.value }).
+			attr('fill', d => fixColor(d.value))
+
+		simulation
 			.nodes(nodes)
-			.force('charge', d3.forceManyBody().strength(-400).distanceMax(200))
-			.force('center', d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2))
-			.force("link", d3.forceLink(nodeLinks))
-			.on('tick', ticked);
+			//.force("charge", d3.forceManyBody().strength(-1000))
+			//.force('center', d3.forceCenter(window.innerWidth / 2, window.innerHeigh / 2))
+			.force("link", d3.forceLink(nodeLinksCopy).distance(50))
+			.on('tick', ticked)
 	})
 
 	setTimeout(_ => {
 		socket.emit('subscribe-terminate')
-		console.log(nodeLinks)
-		console.log(nodes)
 	}, 30000)
 }
 
@@ -209,17 +197,21 @@ const parseLinks = _ => { // parse linkage tag array to numbered linkage key val
 	for (const node of nodes) {
 		for (const link of node.links) {
 			let index = nodeKeys.indexOf(link)
-			if (index != -1)
-				nodeLinks, {source: i, target: index}; //must be upserted into array somehow
+			if (index != -1) {
+				let index2 = nodeLinks.findIndex(x => x.source == i && x.target == index);
+				let toUpsert = {source: i, target: index};
+				index2 != -1 ? 
+					nodeLinks[index2] = toUpsert : nodeLinks.push(toUpsert); //must be upserted into array somehow
+			}
 		}
 		i++;
 	}
 }
 
-const fixColor = dvalue => {
+const fixColor = dvalue => { // fixes color values for string variable from opc
 	dvalue = parseFloat(dvalue)
 	if (String(dvalue).includes('.'))
-		return '#00ff00'
+		return '#9b34eb'
 	if (dvalue > 1 && dvalue < 16384)
 		return '#ff00ff'
 	if (dvalue == '0' || !dvalue) 
@@ -234,7 +226,7 @@ const handleZoom = (e) => {
 		.attr('transform', e.transform);
 	d3.selectAll('svg circle')
 		.attr('transform', e.transform);
-	d3.selectAll('svg p')
+	d3.selectAll('svg text')
 		.attr('transform', e.transform);
 }
 
@@ -261,7 +253,7 @@ document.addEventListener('keydown', function(event) {
 });
 
 const dragstart = _ => {
-	d3.select(this).classed("fixed", true);
+	d3.select().classed("fixed", true);
 }
 
 const clamp = (x, lo, hi) => {
@@ -269,8 +261,8 @@ const clamp = (x, lo, hi) => {
 }
 
 const dragged = (event, d) => {
-	d.fx = clamp(event.x, 0, window.innerWidth);
-	d.fy = clamp(event.y, 0, window.innerHeight);
+	d.fx = clamp(event.x, 0, qSelect('#main-svg').innerWidth);
+	d.fy = clamp(event.y, 0, qSelect('#main-svg').innerHeight);
 	simulation.alpha(1).restart();
 }
 
@@ -282,7 +274,7 @@ const drag = d3
 const click = (event, d) => {
 	delete d.fx;
 	delete d.fy;
-	d3.select(this).classed("fixed", false);
+	d3.select().classed("fixed", false);
 	simulation.alpha(1).restart();
 }
 
