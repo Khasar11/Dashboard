@@ -87,44 +87,47 @@ const initSock = () => {
                         });
                     const delayedIterator = (i) => {
                         setTimeout(async () => {
-                            const monitorItem = await subscription?.monitor({
-                                nodeId: nss + nodeIdListValues[i],
-                                attributeId: node_opcua_1.AttributeIds.Value,
-                            }, {
-                                samplingInterval: 500,
-                                discardOldest: true,
-                                queueSize: 2,
-                            }, node_opcua_1.TimestampsToReturn.Neither);
-                            let links = [];
-                            (async () => {
-                                for (let i2 = 0; i2 <= 3; i2++) {
-                                    await new Promise((resolve) => {
-                                        setTimeout(async () => {
-                                            links.push(session != undefined ? (await session.read({
-                                                nodeId: nss +
-                                                    nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
-                                                    `.links[${i2}]`,
-                                            }, node_opcua_1.TimestampsToReturn.Neither)).value.value : undefined);
-                                            resolve(true);
-                                        }, 5);
-                                    });
-                                }
-                            })();
-                            monitorItem?.on("changed", async (val) => {
-                                if (val.value.value != null) {
-                                    let tag = session != undefined ? await session.read({
-                                        nodeId: nss +
-                                            nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
-                                            ".tag",
-                                    }, node_opcua_1.TimestampsToReturn.Neither) : undefined;
-                                    console.log(tag?.value.value, val.value.value, links);
-                                    socket.emit("subscribe-update", [
-                                        tag != undefined ? tag.value.value : undefined,
-                                        val.value.value,
-                                        links
-                                    ]);
-                                }
-                            });
+                            if (subscription?.isActive) {
+                                const monitorItem = await subscription?.monitor({
+                                    nodeId: nss + nodeIdListValues[i],
+                                    attributeId: node_opcua_1.AttributeIds.Value,
+                                }, {
+                                    samplingInterval: 500,
+                                    discardOldest: true,
+                                    queueSize: 2,
+                                }, node_opcua_1.TimestampsToReturn.Neither);
+                                let links = [];
+                                await (async () => {
+                                    for (let i2 = 0; i2 <= 3; i2++) {
+                                        await new Promise((resolve) => {
+                                            setTimeout(async () => {
+                                                links.push(session != undefined ? (await session.read({
+                                                    nodeId: nss +
+                                                        nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
+                                                        `.links[${i2}]`,
+                                                }, node_opcua_1.TimestampsToReturn.Neither)).value.value : undefined);
+                                                console.log('pushed links');
+                                                resolve(true);
+                                            }, 5);
+                                        });
+                                    }
+                                })();
+                                monitorItem?.on("changed", async (val) => {
+                                    if (val.value.value != null) {
+                                        let tag = session != undefined ? await session.read({
+                                            nodeId: nss +
+                                                nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
+                                                ".tag",
+                                        }, node_opcua_1.TimestampsToReturn.Neither) : undefined;
+                                        console.log(tag?.value.value, val.value.value, links);
+                                        socket.emit("subscribe-update", [
+                                            tag != undefined ? tag.value.value : undefined,
+                                            val.value.value,
+                                            links
+                                        ]);
+                                    }
+                                });
+                            }
                             if (i + 1 < nodeIdListValues.length)
                                 delayedIterator(i + 1);
                         }, 5);

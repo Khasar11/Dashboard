@@ -28,3 +28,8 @@ const showCenteredLoading = () => {
 	}
 	document.body.prepend(loading)
 }
+
+var socket = io();
+socket.on('alert', async (arg, callback) => {
+  alert(arg)
+})

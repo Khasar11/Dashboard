@@ -101,6 +101,7 @@ export const initSock = () => {
 
             const delayedIterator = (i:number) => {
               setTimeout(async () => {
+                if (subscription?.isActive) {
                   const monitorItem = await subscription?.monitor(
                     {
                       nodeId: nss + nodeIdListValues[i],
@@ -127,6 +128,7 @@ export const initSock = () => {
                                 },
                                 TimestampsToReturn.Neither)).value.value : undefined
                               )
+                          console.log('pushed links')
                           resolve(true)
                         }, 5)
                       });
@@ -152,6 +154,7 @@ export const initSock = () => {
                       ]);
                     }
                   });
+                }
                 if (i+1<nodeIdListValues.length) delayedIterator(i+1);
               }, 5)
             };

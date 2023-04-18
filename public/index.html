@@ -21,6 +21,11 @@
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
+
+        <div id="header">
+            <p id="header-text"></p>
+        </div>
+
         <div class="form" id="logs-div"> <!-- shown when user is writing a log input -->
             <div id="logs">
                 <section id="logs-div-header" class="outlined">
@@ -74,19 +79,18 @@
             <button id="display-data-submit" class="form-button" type="button">Submit display</button>
         </form>
 
-        <script src="./lib/d3.v7.min.js"></script>
+        <div id="display"></div>
+
+        <script src="./lib/force-graph.min.js"></script>
+        <script src="./lib/d3.js"></script>
+        <script src="./lib/socket.io.min.js"></script>
+
+
+
         <script src="./scripts/script.js"></script>
         <script src="./scripts/machine.js"></script>
         <script src="./scripts/logs.js"></script> 
         <script src="./scripts//sidebar.js"></script>  
         <script src="./scripts/display.js"></script>  
-        <script src="./lib/socket.io.min.js"></script>
-        <script>
-          var socket = io();
-
-          socket.on('alert', async (arg, callback) => {
-            alert(arg)
-          })
-        </script>
     </body>
 </html>
