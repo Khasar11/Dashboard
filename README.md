@@ -11,9 +11,9 @@
 >      1.✅ PLC -> OPC system using 1 UDT [DType], 1 DB >(user specified), 2 functions for indexing and >mapping into DB explanation further down
 >      2.✅ OPC -> NodeJS server via NodeOPCUA, where to >   collect data from specified through MongoDB, > customized per machine through UI
 >      3.✅ NodeJS subscribe to specified DB elements and >  emit via SocketIO to web client 
->      4.🚧 D3 Layout:
+>      4.✅ D3 Layout:
 >          1.✅ D3 general layout with sticky circles key >  value pair
->          2.🚧 data from server parsed to d3 layout
+>          2.✅ data from server parsed to d3 layout
 
 ****
 
