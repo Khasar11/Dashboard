@@ -24,7 +24,13 @@
 
         <div id="header">
             <p id="header-text"></p>
+            <div>
+                <button id="header-stop-subscription" class="form-button">Stop</button>
+                <button id="header-reload-data" class="form-button">Reload</button>
+            </div>
         </div>
+
+        <div id="display"></div>
 
         <div class="form" id="logs-div"> <!-- shown when user is writing a log input -->
             <div id="logs">
@@ -78,8 +84,6 @@
             <input id="display-data-opc-password" class="form-inputbox" type="password" placeholder="OPC password" required oninput="this.setCustomValidity('OPC password')">
             <button id="display-data-submit" class="form-button" type="button">Submit display</button>
         </form>
-
-        <div id="display"></div>
 
         <script src="./lib/force-graph.min.js"></script>
         <script src="./lib/d3.js"></script>

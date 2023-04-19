@@ -154,6 +154,9 @@ setInterval(() => {
 const startDisplaySubscription = async id => {
 	currentDisplay = id;
 	showCenteredLoading()
+	qSelect('#header').style.visibility = 'visible'
+	qSelect('#header').style.opacity = 1
+	qSelect('#header-text').innerHTML = id
 	socket.emit('subscribe-display', id, res => { // socket io 
 		console.log(res)
 	})

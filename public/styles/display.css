@@ -33,3 +33,30 @@
     fill: rgb(150, 255, 230) !important;
     z-index:  999;
   }
+
+#header {
+    margin: 0;
+    position: fixed;
+    width: 35vw;
+    height: 5vh;
+    opacity: 0;
+    visibility: hidden;
+    right: 0;
+    z-index: 50;
+    box-shadow: 3px 3px rgba(0, 0, 0, 0.207);
+    background-color: rgb(87, 113, 132);
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    color:whitesmoke;
+    display: flex;
+    align-items: center;
+}
+
+#header p {
+    margin-left: 1vw;
+    font-size: 2vw;
+}
+
+#header div {
+    white-space: nowrap;
+    margin-left: auto;
+}
