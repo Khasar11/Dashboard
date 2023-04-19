@@ -12,6 +12,9 @@ const initSock = () => {
         let client = undefined;
         let subscription = undefined;
         let session = undefined;
+        socket.on('log', arg => {
+            console.log(arg);
+        });
         socket.on("disconnect", function () {
             console.log("socket disconnect:", socket.id);
             if (subscription != undefined) {
@@ -96,22 +99,19 @@ const initSock = () => {
                                     discardOldest: true,
                                     queueSize: 2,
                                 }, node_opcua_1.TimestampsToReturn.Neither);
-                                let links = [];
-                                await (async () => {
-                                    for (let i2 = 0; i2 <= 3; i2++) {
-                                        await new Promise((resolve) => {
-                                            setTimeout(async () => {
-                                                links.push(session != undefined ? (await session.read({
-                                                    nodeId: nss +
-                                                        nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
-                                                        `.links[${i2}]`,
-                                                }, node_opcua_1.TimestampsToReturn.Neither)).value.value : undefined);
-                                                console.log('pushed links');
-                                                resolve(true);
-                                            }, 5);
-                                        });
-                                    }
-                                })();
+                                const sendLinks = async (tag, i2) => {
+                                    setTimeout(async () => {
+                                        let link = session != undefined ? (await session.read({
+                                            nodeId: nss +
+                                                nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
+                                                `.links[${i2}]`,
+                                        }, node_opcua_1.TimestampsToReturn.Neither)).value.value : undefined;
+                                        if (link != null)
+                                            socket.emit('subscribe-link', { source: tag, target: link });
+                                    }, 5);
+                                    if (i2 + 1 < 3)
+                                        sendLinks(tag, i2 + 1);
+                                };
                                 monitorItem?.on("changed", async (val) => {
                                     if (val.value.value != null) {
                                         let tag = session != undefined ? await session.read({
@@ -119,11 +119,11 @@ const initSock = () => {
                                                 nodeIdListValues[i].substring(0, nodeIdListValues[i].lastIndexOf(".")) +
                                                 ".tag",
                                         }, node_opcua_1.TimestampsToReturn.Neither) : undefined;
-                                        console.log(tag?.value.value, val.value.value, links);
+                                        sendLinks(tag?.value.value, 0);
+                                        console.log(tag?.value.value + ' | ', val.value.value);
                                         socket.emit("subscribe-update", [
                                             tag != undefined ? tag.value.value : undefined,
                                             val.value.value,
-                                            links
                                         ]);
                                     }
                                 });

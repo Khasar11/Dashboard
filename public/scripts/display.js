@@ -1,7 +1,7 @@
 'use strict'
 
 var currentDisplayData;
-var currentDisplay;
+var currentDisplay = undefined;
 const initData = {
 	nodes: [],
 	links: []
@@ -15,7 +15,7 @@ const Graph = ForceGraph()(display)
       node.fx = node.x;
       node.fy = node.y;
     })
-		.linkDirectionalArrowLength(3)
+		.linkDirectionalArrowLength(6)
 		.nodeCanvasObject((node, ctx, globalScale) => {
 			const label = node.key;
 			const label2 = node.value == '+0' ? 'false' : node.value == '+1' ? 'true' : node.value == '-' ? '' : node.value;
@@ -26,6 +26,8 @@ const Graph = ForceGraph()(display)
 
 			ctx.textAlign = 'center';
 			ctx.textBaseline = 'middle';
+			ctx.fillStyle = 'white';
+			ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
 			ctx.fillStyle = fixColorKey(node.value);
 			ctx.fillText(label, node.x, node.y);
 			ctx.fillStyle = fixColor(node.value);
@@ -43,7 +45,7 @@ const N = 80;
 
 Graph.cooldownTime(Infinity)
 		.d3AlphaDecay(0)
-		.d3VelocityDecay(0.2)
+		.d3VelocityDecay(0.4)
 		.d3Force('center', null)
 		.d3Force('charge', null)
 		.d3Force('collide', d3.forceCollide(Graph.nodeRelSize()*2))
@@ -120,60 +122,82 @@ async function updateDisplayData(id) {
 
 var nodes 	 = [];
 var nodeLinks= [];
+var parsedLinks = [];
 
 const nodeUpsertSimple = (input, index) => {
 	if (index != -1) {
 		nodes[index].value = input.value
-		nodes[index].links = input.links
 	}
 	else
 		nodes.push(input);
 }
 
-const startDisplaySubscription = id => {
+const parseLinks = links => {
+	let newLinks = []
+	links.forEach(l => {
+		let sourceIndex = nodes.findIndex(node => node.key == l.source)
+		let targetIndex = nodes.findIndex(node => node.key == l.target)
+		if (sourceIndex != -1 && targetIndex != -1) newLinks.push({source: sourceIndex, target: targetIndex})  
+	})
+	return newLinks;
+}
+
+setInterval(() => {
+	socket.emit('log',currentDisplay)
+	if (currentDisplay != undefined) {
+		socket.emit('log', 'caching data')
+		cacheJS.set('display-'+currentDisplay+'-links', parsedLinks)
+		cacheJS.set('display-'+currentDisplay+'-nodes', nodes)
+	}
+}, 30000)
+
+const startDisplaySubscription = async id => {
 	currentDisplay = id;
 	showCenteredLoading()
 	socket.emit('subscribe-display', id, res => { // socket io 
 		console.log(res)
 	})
 
+	let cachedLinks = cacheJS.get('display-'+currentDisplay+'-links')
+	let cachedNodes = cacheJS.get('display-'+currentDisplay+'-nodes')
+
+	if (cachedLinks != null && cachedNodes != null) {
+		nodes = cachedNodes
+		Graph.graphData({
+			nodes: nodes,
+			links: cachedLinks
+		})
+	}
+
+	socket.on('subscribe-link', arg => {
+		const tryFind = nodeLinks.findIndex(x => x.source == arg.source && x.target == arg.target)
+		if (tryFind == -1) nodeLinks.push(arg)
+		else nodeLinks[tryFind] = arg
+		parsedLinks = parseLinks(nodeLinks)
+		let redoLinkage = false;
+		for (let i=0; i<parsedLinks.length; i++) 
+			if (cachedLinks == null || cachedLinks[i] == null || (parsedLinks[i].source != cachedLinks[i].source.id || parsedLinks[i].target != cachedLinks[i].target.id))
+				redoLinkage = true; 
+		Graph.graphData({
+			nodes: Graph.graphData().nodes,
+			links: !redoLinkage ? Graph.graphData().links : parsedLinks
+		}) 
+	})
+
 	socket.on('subscribe-update', arg => { // waiting for server to send data from opc 
 		if (qSelect('#loading-grid') != null) qSelect('#loading-grid').remove() // removes loading grid on 
 		if (arg == undefined) return;
 		const tryFind = nodes.findIndex(x => x.key == arg[0]);
-		console.log(arg[2])
 		if (arg[1].includes('.') && arg[1].includes('E+'))
-			nodeUpsertSimple({id: tryFind != -1 ? tryFind : nodes.length, key: arg[0], value: ((arg[1])/10).toFixed(5), links: arg[2]}, tryFind)
+			nodeUpsertSimple({id: tryFind != -1 ? tryFind : nodes.length, key: arg[0], value: ((arg[1])/10).toFixed(5)}, tryFind)
 		else 
-			nodeUpsertSimple({id: nodes.length, key: arg[0], value: arg[1], links: arg[2]}, tryFind)
-
-		parseLinks()
-
-		let nodeLinksCopy = JSON.parse(JSON.stringify(nodeLinks))
+			nodeUpsertSimple({id: nodes.length, key: arg[0], value: arg[1]}, tryFind)
 
 		Graph.graphData({
 			nodes: nodes,
-			links: nodeLinksCopy
+			links: Graph.graphData().links
 		})
 	})
-}
-
-const parseLinks = _ => { // parse linkage tag array to numbered linkage key value pair collection array
-	let i = 0;
-	let nodeKeys = []
-	nodes.forEach(n => nodeKeys.push(n.key))
-	for (const node of nodes) {
-		for (const link of node.links) {
-			let index = nodeKeys.indexOf(link)
-			if (index != -1) {
-				let index2 = nodeLinks.findIndex(x => x.source == i && x.target == index);
-				let toUpsert = {source: i, target: index};
-				index2 != -1 ? 
-					nodeLinks[index2] = toUpsert : nodeLinks.push(toUpsert);
-			}
-		}
-		i++;
-	}
 }
 
 const fixColor = dvalue => { // fixes color values for string variable from opc
