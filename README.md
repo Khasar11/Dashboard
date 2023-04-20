@@ -14,6 +14,7 @@
 >      4.✅ D3 Layout:
 >          1.✅ D3 general layout with sticky circles key >  value pair
 >          2.✅ data from server parsed to d3 layout
+>      5.✅ Node/link caching so displays load faster after first time viewing
 
 ****
 
