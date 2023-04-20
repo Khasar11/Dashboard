@@ -120,7 +120,6 @@ const initSock = () => {
                                                 ".tag",
                                         }, node_opcua_1.TimestampsToReturn.Neither) : undefined;
                                         sendLinks(tag?.value.value, 0);
-                                        console.log(tag?.value.value + ' | ', val.value.value);
                                         socket.emit("subscribe-update", [
                                             tag != undefined ? tag.value.value : undefined,
                                             val.value.value,

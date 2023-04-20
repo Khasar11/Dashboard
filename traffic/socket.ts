@@ -112,7 +112,7 @@ export const initSock = () => {
                       attributeId: AttributeIds.Value,
                     },
                     {
-                      samplingInterval: 1000,
+                      samplingInterval: 500,
                       discardOldest: true,
                       queueSize: 2,
                     },
@@ -146,7 +146,6 @@ export const initSock = () => {
                         TimestampsToReturn.Neither
                       ) : undefined;
                       sendLinks(tag?.value.value, 0)
-                      console.log(tag?.value.value + ' | ',val.value.value)
                       socket.emit("subscribe-update", [
                         tag != undefined ? tag.value.value : undefined,
                         val.value.value,

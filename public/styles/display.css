@@ -37,10 +37,8 @@
 #header {
     margin: 0;
     position: fixed;
-    width: 35vw;
-    height: 5vh;
-    opacity: 0;
-    visibility: hidden;
+    width: 25rem;
+    height: 2rem;
     right: 0;
     z-index: 50;
     box-shadow: 3px 3px rgba(0, 0, 0, 0.207);
@@ -53,7 +51,7 @@
 
 #header p {
     margin-left: 1vw;
-    font-size: 2vw;
+    font-size: 1rem;
 }
 
 #header div {

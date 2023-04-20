@@ -22,14 +22,6 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <div id="header">
-            <p id="header-text"></p>
-            <div>
-                <button id="header-stop-subscription" class="form-button">Stop</button>
-                <button id="header-reload-data" class="form-button">Reload</button>
-            </div>
-        </div>
-
         <div id="display"></div>
 
         <div class="form" id="logs-div"> <!-- shown when user is writing a log input -->
@@ -73,16 +65,6 @@
             <input id="new-machine-creation-date" class="form-inputbox" type="date" required>
             <input id="new-machine-created-by" class="form-inputbox" type="text" placeholder="Created by" oninput="this.setCustomValidity('Created by')" required>
             <button id="new-machine-submit" class="form-button" type="button">Submit machine</button>
-        </form>
-
-        <form id="display-data" class="form-form"> <!-- shown on modifying display data -->
-            <div id="display-data-header" class="form-header">Display data</div>
-            <div id="display-data-Xout" class="form-Xout">✖</div>
-            <input id="display-data-endpturl" class="form-inputbox" type="text" placeholder="Endpoint url OPC" required oninput="this.setCustomValidity('OPC endpoint url')">
-            <input id="display-data-opc-adr" class="form-inputbox" type="text" placeholder="OPC DB address" required oninput="this.setCustomValidity('OPC node address')">
-            <input id="display-data-opc-username" class="form-inputbox" type="text" placeholder="OPC username" required oninput="this.setCustomValidity('OPC username')">
-            <input id="display-data-opc-password" class="form-inputbox" type="password" placeholder="OPC password" required oninput="this.setCustomValidity('OPC password')">
-            <button id="display-data-submit" class="form-button" type="button">Submit display</button>
         </form>
 
         <script src="./lib/force-graph.min.js"></script>

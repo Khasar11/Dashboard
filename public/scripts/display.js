@@ -27,7 +27,7 @@ const Graph = ForceGraph()(display)
 			ctx.textAlign = 'center';
 			ctx.textBaseline = 'middle';
 			ctx.fillStyle = 'white';
-			ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
+			ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions, fontSize*2);
 			ctx.fillStyle = fixColorKey(node.value);
 			ctx.fillText(label, node.x, node.y);
 			ctx.fillStyle = fixColor(node.value);
@@ -50,22 +50,12 @@ Graph.cooldownTime(Infinity)
 		.d3Force('charge', null)
 		.d3Force('collide', d3.forceCollide(Graph.nodeRelSize()*2))
 
-var displayData = qSelect('#display-data')
-
-qSelect('#display-data-Xout').addEventListener('click', () => {clearDisplayData()})
+var displayData = undefined
 
 function clearDisplayData() {
-	displayData.style.visibility = 'hidden'
-	displayData.style.opacity = 0
-	displayData.childNodes.forEach(e => {
-		e.value = ''
-	}) 
+	qSelect('#display-data').remove()
 	currentDisplayData = null 
 }
-
-qSelect('#display-data-submit').addEventListener('click', () => {
-	setDisplayData(currentDisplayData)
-})
 
 async function setDisplayData(id) {
 
@@ -94,10 +84,26 @@ async function setDisplayData(id) {
 }
 
 async function modifyDisplay(id) {
+	let formDisplayInner = `
+    <div id="display-data-header" class="form-header">Display data</div>
+    <div id="display-data-Xout" class="form-Xout">✖</div>
+    <input id="display-data-endpturl" class="form-inputbox" type="text" placeholder="Endpoint url OPC" required oninput="this.setCustomValidity('OPC endpoint url')">
+    <input id="display-data-opc-adr" class="form-inputbox" type="text" placeholder="OPC DB address" required oninput="this.setCustomValidity('OPC node address')">
+    <input id="display-data-opc-username" class="form-inputbox" type="text" placeholder="OPC username" required oninput="this.setCustomValidity('OPC username')">
+    <input id="display-data-opc-password" class="form-inputbox" type="password" placeholder="OPC password" required oninput="this.setCustomValidity('OPC password')">
+    <button id="display-data-submit" class="form-button" type="button">Submit display</button>`
+	let formDisplay = document.createElement('form')
+	formDisplay.id = 'display-data'
+	formDisplay.className = 'form-form'
+	formDisplay.innerHTML = formDisplayInner
+	document.body.append(formDisplay)
+	displayData = qSelect('#display-data')
+	qSelect('#display-data-Xout').addEventListener('click', () => {clearDisplayData()})
+	qSelect('#display-data-submit').addEventListener('click', () => {
+		setDisplayData(currentDisplayData)
+	})
 	currentDisplayData = id;
 	await updateDisplayData(id)
-	displayData.style.visibility = 'visible'
-	displayData.style.opacity = 1
 }
 
 async function updateDisplayData(id) {
@@ -151,12 +157,36 @@ setInterval(() => {
 	}
 }, 30000)
 
+const createSubscriptionHeader = _ => {
+	let header = document.createElement('div')
+	let headerText = document.createElement('p')
+	let headerButtons = document.createElement('div')
+	let headerStop = document.createElement('button')
+	let headerReload = document.createElement('button')
+	header.id = 'header'
+	headerText.innerHTML = currentDisplay; headerStop.className = 'form-button'; headerStop.innerHTML = 'Stop'; headerStop.id = 'header-stop-subscription';
+	headerReload.className = 'form-button'; headerReload.innerHTML = 'Reload'; headerReload.id = 'header-reload-data';
+	headerStop.addEventListener('click', () => {
+		currentDisplay = undefined;
+		Graph.graphData(initData)
+		socket.emit('subscribe-terminate')
+	})
+	headerReload.addEventListener('click', () => {
+		cacheJS.set('display-'+currentDisplay+'-links', null)
+		cacheJS.set('display-'+currentDisplay+'-nodes', null)
+		Graph.graphData(initData)
+		nodes 	 = [];
+		nodeLinks= [];
+		parsedLinks = [];
+		startDisplaySubscription(currentDisplay)
+	})
+	headerButtons.append(headerStop, headerReload); header.append(headerText, headerButtons); document.body.prepend(header)
+}
+
 const startDisplaySubscription = async id => {
 	currentDisplay = id;
+	createSubscriptionHeader()
 	showCenteredLoading()
-	qSelect('#header').style.visibility = 'visible'
-	qSelect('#header').style.opacity = 1
-	qSelect('#header-text').innerHTML = id
 	socket.emit('subscribe-display', id, res => { // socket io 
 		console.log(res)
 	})
