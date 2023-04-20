@@ -18,13 +18,13 @@ var ValueType;
     ValueType[ValueType["folder"] = 0] = "folder";
     ValueType[ValueType["file"] = 1] = "file";
 })(ValueType = exports.ValueType || (exports.ValueType = {}));
-async function getSidebar() {
+const getSidebar = async () => {
     MongoDB_1.client.connect();
     var sidebar = [];
     await MongoDB_1.coll.find().forEach((e) => {
         sidebar.push((0, Machine_1.toSidebarData)(e));
     });
     return sidebar;
-}
+};
 exports.getSidebar = getSidebar;
 //# sourceMappingURL=sidebar.js.map

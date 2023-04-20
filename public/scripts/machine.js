@@ -16,7 +16,7 @@ class Machine {
     }
 }
 
-function newMachine() {
+const newMachine = _ => {
     let machineBoxInner = `
         <div id="new-machine-header" class="form-header">New machine</div>
         <div id="new-machine-Xout" class="form-Xout">✖</div>
@@ -29,8 +29,8 @@ function newMachine() {
     machineBox.id = 'new-machine'; machineBox.className = 'form-form';
     document.body.append(machineBox)
     qSelect('#new-machine-creation-date').value = formattedYYYYMMDD(new Date())
-    qSelect('#new-machine-Xout').addEventListener('click', function() {clearNewMachine()})
-    qSelect('#new-machine-submit').addEventListener('click', function() {
+    qSelect('#new-machine-Xout').addEventListener('click', _ => {clearNewMachine()})
+    qSelect('#new-machine-submit').addEventListener('click', _ => {
         let newMachineDate = qSelect('#new-machine-creation-date');
         let newMachineName = qSelect('#new-machine-name');
         let newMachineCreatedBy = qSelect('#new-machine-created-by')
@@ -43,7 +43,7 @@ function newMachine() {
     })
 }
 
-function clearNewMachine() {
+const clearNewMachine = _ => {
     let newMachine = qSelect('#new-machine')
     qSelect('#new-machine').remove();
     newMachine.childNodes.forEach(element => {
@@ -53,7 +53,7 @@ function clearNewMachine() {
 
 var newMachineElement = new Machine()
 
-async function submitMachine(machine) {
+const submitMachine = async machine => {
     // update id first
     const baseUrl = `http://localhost:8383/idfy/${qSelect('#new-machine-name').value}`
 

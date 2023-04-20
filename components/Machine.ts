@@ -18,7 +18,7 @@ export class Machine {
     }
 }
 
-export function toSidebarData(machine: Machine) {
+export const toSidebarData = (machine: Machine) => {
 
     let logData: SidebarData[] = [];
 

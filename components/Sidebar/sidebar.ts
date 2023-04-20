@@ -23,7 +23,7 @@ export enum ValueType {
     'file',
 }
 
-export async function getSidebar() {
+export const getSidebar = async () => {
 
     client.connect()
 

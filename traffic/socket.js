@@ -15,7 +15,7 @@ const initSock = () => {
         socket.on('log', arg => {
             console.log(arg);
         });
-        socket.on("disconnect", function () {
+        socket.on("disconnect", _ => {
             console.log("socket disconnect:", socket.id);
             if (subscription != undefined) {
                 subscription.terminate();
@@ -81,10 +81,10 @@ const initSock = () => {
                     subscription = newSubscription;
                     if (subscription != undefined)
                         subscription
-                            .on("keepalive", function () {
+                            .on("keepalive", () => {
                             console.log("OPCUA Subscription keep alive");
                         })
-                            .on("terminated", function () {
+                            .on("terminated", () => {
                             console.log("OPCUA Subscription ended");
                             subscription = undefined;
                         });

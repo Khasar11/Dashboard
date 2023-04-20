@@ -8,7 +8,7 @@ class Display {
         this.nodeObjects = nodeObjects;
     }
 }
-async function getDisplayData(from) {
+const getDisplayData = async (from) => {
     MongoDB_1.client.connect();
     let split = from.split('-');
     let retData;
@@ -26,12 +26,12 @@ async function getDisplayData(from) {
         };
     });
     return JSON.stringify(retData);
-}
+};
 exports.getDisplayData = getDisplayData;
 // takes in data object to set $.display.$ to
 // containing id, endpoint, nodeAddress fields
 // requests back an ok status
-async function setDisplayData(data) {
+const setDisplayData = async (data) => {
     MongoDB_1.client.connect();
     const split = data.id.split('-');
     const query = { id: split[0] };
@@ -45,7 +45,7 @@ async function setDisplayData(data) {
     const update4 = { $set: { 'display.password': data.password } };
     MongoDB_1.coll.updateOne(query, update4, options);
     return "display updated for " + split[0];
-}
+};
 exports.setDisplayData = setDisplayData;
 const lookupNodeIds = async (startpoint, session, nss) => {
     let lookupList = {};

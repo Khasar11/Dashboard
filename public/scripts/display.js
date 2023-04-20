@@ -52,12 +52,12 @@ Graph.cooldownTime(Infinity)
 
 var displayData = undefined
 
-function clearDisplayData() {
+const clearDisplayData = _ => {
 	qSelect('#display-data').remove()
 	currentDisplayData = null 
 }
 
-async function setDisplayData(id) {
+const setDisplayData = async id => {
 
 	let submission = {
 		id: id,
@@ -83,7 +83,7 @@ async function setDisplayData(id) {
 	clearDisplayData() 
 }
 
-async function modifyDisplay(id) {
+const modifyDisplay = async id => {
 	let formDisplayInner = `
     <div id="display-data-header" class="form-header">Display data</div>
     <div id="display-data-Xout" class="form-Xout">✖</div>
@@ -106,7 +106,7 @@ async function modifyDisplay(id) {
 	await updateDisplayData(id)
 }
 
-async function updateDisplayData(id) {
+const updateDisplayData = async id =>  {
 	const baseUrl = `http://localhost:8383/displayData/${id}`
 	let data = await fetch(baseUrl, {
 			method: 'GET'
@@ -149,6 +149,7 @@ const parseLinks = links => {
 }
 
 setInterval(() => {
+	if (currentDisplay == null) return;
 	socket.emit('log',currentDisplay)
 	if (currentDisplay != undefined) {
 		socket.emit('log', 'caching data')
@@ -167,6 +168,7 @@ const createSubscriptionHeader = _ => {
 	headerText.innerHTML = currentDisplay; headerStop.className = 'form-button'; headerStop.innerHTML = 'Stop'; headerStop.id = 'header-stop-subscription';
 	headerReload.className = 'form-button'; headerReload.innerHTML = 'Reload'; headerReload.id = 'header-reload-data';
 	headerStop.addEventListener('click', () => {
+		header.remove();
 		currentDisplay = undefined;
 		Graph.graphData(initData)
 		socket.emit('subscribe-terminate')
@@ -191,7 +193,7 @@ const startDisplaySubscription = async id => {
 		console.log(res)
 	})
 
-	let cachedLinks = cacheJS.get('display-'+currentDisplay+'-links')
+		let cachedLinks = cacheJS.get('display-'+currentDisplay+'-links')
 	let cachedNodes = cacheJS.get('display-'+currentDisplay+'-nodes')
 
 	if (cachedLinks != null && cachedNodes != null) {

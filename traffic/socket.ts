@@ -25,7 +25,7 @@ export const initSock = () => {
       console.log(arg)
     })
 
-    socket.on("disconnect", function () {
+    socket.on("disconnect", _ => {
       console.log("socket disconnect:", socket.id);
       if (subscription!= undefined) { subscription.terminate(); subscription = undefined };
       if (session     != undefined) { session.close(); session = undefined };
@@ -36,6 +36,7 @@ export const initSock = () => {
 
     socket.on("subscribe-display", async (arg, callback) => {
       let displayData = JSON.parse(await getDisplayData(arg));
+      if (displayData == null || displayData.endpoint == null || displayData.nodeAddress == null) { socket.emit('alert', 'No display for '+arg); return};
       const endpointUrl = displayData.endpoint;
       const baseNode = displayData.nodeAddress;
       const nss = baseNode.substring(0, baseNode.lastIndexOf("=") + 1);
@@ -95,10 +96,10 @@ export const initSock = () => {
             subscription = newSubscription;
             if (subscription != undefined)
               subscription
-                .on("keepalive", function () {
+                .on("keepalive", () => {
                   console.log("OPCUA Subscription keep alive");
                 })
-                .on("terminated", function () {
+                .on("terminated", () => {
                   console.log("OPCUA Subscription ended");
                   subscription = undefined;
                 });

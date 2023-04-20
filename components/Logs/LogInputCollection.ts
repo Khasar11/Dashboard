@@ -24,7 +24,7 @@ export class LogInputCollection {
     }
 }
 
-function logInputsToSidebarData(logs: (LogInput[] | LogInput)): SidebarData[] {
+const logInputsToSidebarData = (logs: (LogInput[] | LogInput)): SidebarData[] => {
     if (Array.isArray(logs)) {
         let data: SidebarData[] = [];
         logs.filter(e => e!=null).forEach(element => {

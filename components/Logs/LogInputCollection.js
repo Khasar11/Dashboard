@@ -18,7 +18,7 @@ class LogInputCollection {
     }
 }
 exports.LogInputCollection = LogInputCollection;
-function logInputsToSidebarData(logs) {
+const logInputsToSidebarData = (logs) => {
     if (Array.isArray(logs)) {
         let data = [];
         logs.filter(e => e != null).forEach(element => {
@@ -27,5 +27,5 @@ function logInputsToSidebarData(logs) {
         return data;
     }
     return [logs.toSidebarData()];
-}
+};
 //# sourceMappingURL=LogInputCollection.js.map

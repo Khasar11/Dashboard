@@ -13,7 +13,7 @@ class Machine {
     }
 }
 exports.Machine = Machine;
-function toSidebarData(machine) {
+const toSidebarData = (machine) => {
     let logData = [];
     machine.logs.forEach(element => {
         if (element != null) {
@@ -26,6 +26,6 @@ function toSidebarData(machine) {
         new sidebar_1.SidebarData('Display', machine.id + '-display', '', sidebar_1.ValueType.file),
         new sidebar_1.SidebarData('Logs', machine.id + '-logs', 'Log inputs', sidebar_1.ValueType.folder, logData)
     ]);
-}
+};
 exports.toSidebarData = toSidebarData;
 //# sourceMappingURL=Machine.js.map

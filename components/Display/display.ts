@@ -14,7 +14,7 @@ class Display { // object to return for GET method from browser, will turn autom
     }
 }
 
-export async function getDisplayData(from: string) {
+export const getDisplayData = async (from: string) => {
     client.connect()
     let split = from.split('-')
 
@@ -39,7 +39,7 @@ export async function getDisplayData(from: string) {
 // takes in data object to set $.display.$ to
 // containing id, endpoint, nodeAddress fields
 // requests back an ok status
-export async function setDisplayData(data: any) {
+export const setDisplayData = async (data: any) => {
     client.connect()
     const split = data.id.split('-')
 

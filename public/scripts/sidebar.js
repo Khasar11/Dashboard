@@ -2,7 +2,7 @@
 var undefined = NaN
 const stopParentEventClick = 'event.cancelBubble = true; if (event.stopPropagation) event.stopPropagation();  return false;'
 
-function JSONResolver(element) { // parse sidebar element to html element
+const JSONResolver = element => { // parse sidebar element to html element
   let split = element.id.split('-')
   if (element.type == '0') {
     let newElement = document.createElement('li');
@@ -60,7 +60,7 @@ function JSONResolver(element) { // parse sidebar element to html element
   return newElement;
 }
 
-function addButton(inner, onclick, appendTo) {
+const  addButton = (inner, onclick, appendTo) => {
   let btn = document.createElement('button');
   btn.innerHTML = inner;
   btn.className = inner+'-button';
@@ -79,7 +79,6 @@ async function getSidebar() { // get sidebar from server side
 
   if (qSelect('#main-sidebar') != null) {
     qSelect('#main-sidebar').remove();
-    saveSidebarExpasionStates()
   }
   var sidebar = document.createElement('ul')
   sidebar.id = 'main-sidebar'
@@ -97,7 +96,6 @@ async function getSidebar() { // get sidebar from server side
     sidebar.append(JSONResolver(element))
   })
   document.body.prepend(sidebar)
-  loadSidebarExpansionStates()
 
   // on click of file
   Array.from(document.getElementsByClassName('file')).forEach(file => {
@@ -113,20 +111,12 @@ async function getSidebar() { // get sidebar from server side
   await sortLogs();
 } 
 
-function saveSidebarExpasionStates() {
-  
-}
-
-function loadSidebarExpansionStates() {
-
-}
-
-async function sortLogs() {
+const sortLogs = async _ => {
   Array.from(document.getElementsByClassName('log-area-2')).forEach(element => { sortList(element); })
   Array.from(document.getElementsByClassName('log-area-3')).forEach(element => { sortList(element) })
 }
 
-async function sortList(ul) {
+const sortList = async ul => {
   var list, i, switching, shouldSwitch;
   list = ul;
   switching = true;
@@ -160,7 +150,7 @@ async function sortList(ul) {
 
 getSidebar();
 
-function peekFile(id) {
+const peekFile = id => {
   let postDash = id.split('-')[1];
   if (postDash == 'display') {
     startDisplaySubscription(id.split('-')[0]);
@@ -173,7 +163,7 @@ function peekFile(id) {
   }
 }
 
-function addLogAtLocation(id) {
+const addLogAtLocation = id => {
   addingLogInputTo = id.slice(0,-1);
   newLogInputCollection = new LogInputCollection()
   newLogInputCollection.id = addingLogInputTo+'-'+makeid(6)
