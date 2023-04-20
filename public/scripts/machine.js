@@ -16,43 +16,42 @@ class Machine {
     }
 }
 
-newMachine();
-
 function newMachine() {
-    let machineBox = qSelect('#new-machine')
-    machineBox.style.visibility = 'visible'
-    machineBox.style.opacity = 1;
+    let machineBoxInner = `
+        <div id="new-machine-header" class="form-header">New machine</div>
+        <div id="new-machine-Xout" class="form-Xout">✖</div>
+        <input id="new-machine-name" class="form-inputbox" type="text" placeholder="Machine name" oninput="this.setCustomValidity('Machine name')" required>
+        <input id="new-machine-creation-date" class="form-inputbox" type="date" required>
+        <input id="new-machine-created-by" class="form-inputbox" type="text" placeholder="Created by" oninput="this.setCustomValidity('Created by')" required>
+        <button id="new-machine-submit" class="form-button" type="button">Submit machine</button>`
+    let machineBox = document.createElement('form')
+    machineBox.innerHTML = machineBoxInner
+    machineBox.id = 'new-machine'; machineBox.className = 'form-form';
+    document.body.append(machineBox)
+    qSelect('#new-machine-creation-date').value = formattedYYYYMMDD(new Date())
+    qSelect('#new-machine-Xout').addEventListener('click', function() {clearNewMachine()})
+    qSelect('#new-machine-submit').addEventListener('click', function() {
+        let newMachineDate = qSelect('#new-machine-creation-date');
+        let newMachineName = qSelect('#new-machine-name');
+        let newMachineCreatedBy = qSelect('#new-machine-created-by')
+        newMachineElement = new Machine()
+        newMachineElement.createdBy = newMachineCreatedBy.value
+        newMachineElement.name = newMachineName.value
+        newMachineElement.creationDate = newMachineDate.value
+        if (newMachineDate.value == '' || newMachineName.value == '' || newMachineCreatedBy.value == '') { alert('Missing inputs'); return }
+        submitMachine()
+    })
 }
-
-clearNewMachine();
-
-qSelect('#new-machine-Xout').addEventListener('click', function() {clearNewMachine()})
 
 function clearNewMachine() {
     let newMachine = qSelect('#new-machine')
-    newMachine.style.opacity = 0
-    newMachine.style.visibility = 'hidden'
+    qSelect('#new-machine').remove();
     newMachine.childNodes.forEach(element => {
         element.value = null
     })
-    qSelect('#new-machine-creation-date').value = formattedYYYYMMDD(new Date())
 }
 
-qSelect('#new-machine-creation-date').value = formattedYYYYMMDD(new Date())
-
 var newMachineElement = new Machine()
-
-qSelect('#new-machine-submit').addEventListener('click', function() {
-    let newMachineDate = qSelect('#new-machine-creation-date');
-    let newMachineName = qSelect('#new-machine-name');
-    let newMachineCreatedBy = qSelect('#new-machine-created-by')
-    newMachineElement = new Machine()
-    newMachineElement.createdBy = newMachineCreatedBy.value
-    newMachineElement.name = newMachineName.value
-    newMachineElement.creationDate = newMachineDate.value
-    if (newMachineDate.value == '' || newMachineName.value == '' || newMachineCreatedBy.value == '') { alert('Missing inputs'); return }
-    submitMachine()
-})
 
 async function submitMachine(machine) {
     // update id first

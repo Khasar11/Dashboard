@@ -85,8 +85,6 @@
 #new-logs-entry {
     position: absolute;
     backdrop-filter: blur(3px);
-    visibility: hidden;
-    opacity: 0;
     left: 45vw;
     top: 40vh;
     display: flex;

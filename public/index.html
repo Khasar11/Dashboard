@@ -24,55 +24,10 @@
 
         <div id="display"></div>
 
-        <div class="form" id="logs-div"> <!-- shown when user is writing a log input -->
-            <div id="logs">
-                <section id="logs-div-header" class="outlined">
-                    <input type="date" id="logs-date" class="form-inputbox" name="log" required>
-                    <input id="logs-header-text" class="form-inputbox" type="text" placeholder="Title" required>
-                    <input id="logs-header-written-by" class="form-inputbox" type="text" placeholder="Writer" required>
-                    <div id="logs-div-X"><img id="logs-div-moveable" src="./move.png"></img></div>
-                    <div id="logs-div-id">null</div>
-                    <div id="logs-div-Xout" class="form-Xout">✖</div>
-                </section>
-                <section id="logs-body" class="outlined">
-                    <div id="logs-input" contenteditable="true" data-text="Input text/image(s)"></div>
-                </section>
-                <section id="logs-footer" class="outlined">
-                    <button id="logs-submit" class="form-button">Submit log</button>
-                </section>
-            </div>
-        </div>
-
-        <div id="new-logs-entry"> <!-- shown on push of new log button on main logs sidebar element -->
-            <div id="new-logs-div-Xout" class="form-Xout">✖</div>
-            <div id="new-logs">
-                <span id="new-logs-type">Select log type</span>
-                <text id="new-logs-value">Singular</text>
-                <div id="new-logs-type-dropdown">
-                    <p id="new-logs-singular" class="background-on-hover">Singular</p>
-                    <p id="new-logs-collection" class="background-on-hover">Collection</p>
-                </div>
-            </div>
-            <text id="new-logs-selected-adder-id"></text>
-            <input type="date" id="collection-date" class="form-inputbox">
-            <button id="new-log-continue" class="form-button">Continue</button>
-        </div>
-
-        <form id="new-machine" class="form-form"> <!-- shown on push of new machine button -->
-            <div id="new-machine-header" class="form-header">New machine</div>
-            <div id="new-machine-Xout" class="form-Xout">✖</div>
-            <input id="new-machine-name" class="form-inputbox" type="text" placeholder="Machine name" oninput="this.setCustomValidity('Machine name')" required>
-            <input id="new-machine-creation-date" class="form-inputbox" type="date" required>
-            <input id="new-machine-created-by" class="form-inputbox" type="text" placeholder="Created by" oninput="this.setCustomValidity('Created by')" required>
-            <button id="new-machine-submit" class="form-button" type="button">Submit machine</button>
-        </form>
-
         <script src="./lib/force-graph.min.js"></script>
         <script src="./lib/d3.js"></script>
         <script src="./lib/cacheJS.min.js"></script>
         <script src="./lib/socket.io.min.js"></script>
-
-
 
         <script src="./scripts/script.js"></script>
         <script src="./scripts/machine.js"></script>
