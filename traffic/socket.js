@@ -37,6 +37,11 @@ const initSock = () => {
         });
         socket.on("subscribe-display", async (arg, callback) => {
             let displayData = JSON.parse(await (0, Display_1.getDisplayData)(arg));
+            if (displayData == null || displayData.endpoint == null || displayData.nodeAddress == null) {
+                socket.emit('alert', 'No display for ' + arg);
+                return;
+            }
+            ;
             const endpointUrl = displayData.endpoint;
             const baseNode = displayData.nodeAddress;
             const nss = baseNode.substring(0, baseNode.lastIndexOf("=") + 1);
@@ -82,10 +87,10 @@ const initSock = () => {
                     if (subscription != undefined)
                         subscription
                             .on("keepalive", () => {
-                            console.log("OPCUA Subscription keep alive");
+                            console.log("OPCUA Subscription keep alive", socket.id);
                         })
                             .on("terminated", () => {
-                            console.log("OPCUA Subscription ended");
+                            console.log("OPCUA Subscription ended", socket.id);
                             subscription = undefined;
                         });
                     const delayedIterator = (i) => {
@@ -143,17 +148,17 @@ const initSock = () => {
                     subscription = undefined;
                     session = undefined;
                     client = undefined;
-                    console.log("OPCUA Client disconnect");
-                    socket.emit("alert", "OPCUA client disconnect");
+                    console.log("OPCUA Client disconnect", socket.id);
+                    socket.emit("alert", "OPCUA client disconnect", socket.id);
                 });
             }
             catch (err) {
-                console.log("An error occured in OPC-UA client connection ", err.message);
+                console.log("An error occured in OPC-UA client connection ", socket.id, err.message);
             }
             if (!terminated)
-                callback("Subscription start for " + arg);
+                callback("Subscription start for " + arg, socket.id);
             else
-                callback('Unable to connect to OPCUA');
+                callback('Unable to connect to OPCUA', socket.id);
         });
     });
 };

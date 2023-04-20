@@ -150,9 +150,7 @@ const parseLinks = links => {
 
 setInterval(() => {
 	if (currentDisplay == null) return;
-	socket.emit('log',currentDisplay)
 	if (currentDisplay != undefined) {
-		socket.emit('log', 'caching data')
 		cacheJS.set('display-'+currentDisplay+'-links', parsedLinks)
 		cacheJS.set('display-'+currentDisplay+'-nodes', nodes)
 	}

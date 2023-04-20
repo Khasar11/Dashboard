@@ -97,10 +97,10 @@ export const initSock = () => {
             if (subscription != undefined)
               subscription
                 .on("keepalive", () => {
-                  console.log("OPCUA Subscription keep alive");
+                  console.log("OPCUA Subscription keep alive", socket.id);
                 })
                 .on("terminated", () => {
-                  console.log("OPCUA Subscription ended");
+                  console.log("OPCUA Subscription ended", socket.id);
                   subscription = undefined;
                 });
 
@@ -168,17 +168,17 @@ export const initSock = () => {
           subscription = undefined;
           session = undefined;
           client = undefined;
-          console.log("OPCUA Client disconnect");
-          socket.emit("alert", "OPCUA client disconnect");
+          console.log("OPCUA Client disconnect", socket.id);
+          socket.emit("alert", "OPCUA client disconnect", socket.id);
         });
       } catch (err: any) {
         console.log(
-          "An error occured in OPC-UA client connection ",
+          "An error occured in OPC-UA client connection ", socket.id,
           err.message
         );
       }
-      if (!terminated) callback("Subscription start for " + arg);
-      else callback('Unable to connect to OPCUA')
+      if (!terminated) callback("Subscription start for " + arg, socket.id);
+      else callback('Unable to connect to OPCUA', socket.id)
     });
   });
 };
