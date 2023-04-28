@@ -138,6 +138,7 @@ const Resolver = async element => { // parse sidebar element recursively to html
   let idSplit = element.id.split('-')
   if (element.type) { // sidebar element is type file
     let wrapper = document.createElement('ul')
+    wrapper.setAttribute('identifier-id', element.id)
     wrapper.className = 'sidebar-file-wrapper'
     wrapper.setAttribute('date', element.name)
     let fileElement = document.createElement('li')
@@ -177,6 +178,7 @@ const Resolver = async element => { // parse sidebar element recursively to html
   let folderElementTitle = document.createElement('span')
   let folderWrapper = document.createElement('div')
   folderWrapper.className = 'sortable'
+  folderWrapper.setAttribute('identifier-id', element.id)
   folderElement.setAttribute('date', element.name)
   let flexWrapper = document.createElement('div')
   flexWrapper.className = 'sidebar-folder-wrapper'
@@ -185,10 +187,13 @@ const Resolver = async element => { // parse sidebar element recursively to html
   folderElement.classList.add('collapsed')
   flexWrapper.append(folderElementTitle)
   addHover(folderElement, element.hover)
-  if (idSplit[1] == 'logs') addButton('+', _ => {
+  if (idSplit[1] == 'logs') {
+    addButton('+', _ => {
     /* add brand new log */
     showLog(newEmptyLog(element.id))
-  }, flexWrapper)
+    }, flexWrapper)
+    folderWrapper.setAttribute('identifier', idSplit[0]+'-'+'logs')
+  }
   addToggle(folderElement)
   if (idSplit.length == 1) 
   addButton('-', _ => {
@@ -227,6 +232,7 @@ const getSidebar = async _ => { // get sidebar from server side
     }, labelWrapper)
     sidebar.append(labelWrapper)
     let wrapper = document.createElement('div')
+    wrapper.id = 'sidebar-main-wrapper'
     arg.forEach(async element => { // recursively append the folder content
       wrapper.append(await Promise.resolve(Resolver(element)))
     })
@@ -254,6 +260,78 @@ const keyToggle = (e, keyCode, clazz) => {
 
 getSidebar();
 
-socket.on('sidebar-update', sidebarUpdate => {
-  console.log(sidebarUpdate)
+
+/* snapshot from server (.ts)
+export class SidebarUpdateObject {
+    remove: boolean = false;
+    data: SidebarData;
+    constructor(data: any, remove: boolean ) {
+      this.remove = remove;
+      this.data = data;
+    }
+}
+*/
+socket.on('sidebar-update', async sidebarUpdate => {
+  let newSidebarElement = await Promise.resolve(Resolver(sidebarUpdate.data))
+  let replace = qSelect('[identifier-id="'+newSidebarElement.getAttribute('identifier-id')+'"]')
+  const split = (sidebarUpdate.data.id).split('-')
+  if (replace != null) {
+    if (sidebarUpdate.remove) {
+      if (split.length == 4) {
+        console.log('sub log removed', split.splice(0,3).join('-'))
+        socket.emit('get-sidebar-element', split.splice(0,3).join('-'), async callback => {
+        if (getByIdentifierId(split.splice(0,3).join('-')).children.length == 1) 
+          getByIdentifierId(split.splice(0,3).join('-')) = await Promise.resolve(callback)
+        else
+          replace.remove(); 
+        })
+        return;
+      }
+      console.log('remove')
+      replace.remove(); return; 
+    }
+    replace = newSidebarElement 
+  }
+  else { // add to dom
+    switch (split.length) {
+      case 1: { // machine level
+        qSelect('#sidebar-main-wrapper').append(newSidebarElement)
+        setTimeout(async _ => {
+          await sortLogs();
+        }, 20)
+        break;
+      }
+      case 2: { // unused for now
+        console.log('2')
+        break; 
+      }
+      case 3: { // log level
+        qSelect(`[identifier=${split[0]}-logs]`).append(newSidebarElement)
+        setTimeout(async _ => {
+          await sortLogs();
+        }, 20)
+        break;
+      }
+      case 4: { // sub log level 
+        console.log('4')
+        console.log(split.splice(0,3).join('-')) // failing to go further than this
+        socket.emit('get-sidebar-element', split.splice(0,3).join('-'), async callback => {
+          console.log(callback, 'awasd')
+          if (getByIdentifierId(split.splice(0,3).join('-')).children.length == 1) 
+            getByIdentifierId(split.splice(0,3).join('-')) = await Promise.resolve(callback)
+          else
+            getByIdentifierId(split.splice(0,3).join('-')).append(newSidebarElement)
+        })
+        setTimeout(async _ => {
+          await sortLogs();
+        }, 20)
+        break;
+      }
+    }
+  }
 })
+
+const getByIdentifierId = id => {
+  console.log(qSelect('[identifier-id="'+id+'"]'))
+  return qSelect('[identifier-id="'+id+'"]')
+}
