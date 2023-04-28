@@ -18,8 +18,13 @@ var ValueType;
     ValueType[ValueType["folder"] = 0] = "folder";
     ValueType[ValueType["file"] = 1] = "file";
 })(ValueType = exports.ValueType || (exports.ValueType = {}));
+function addDays(date, days) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
 const getSidebar = async () => {
-    MongoDB_1.client.connect();
+    MongoDB_1.mongoClient.connect();
     var sidebar = [];
     await MongoDB_1.coll.find().forEach((e) => {
         sidebar.push((0, Machine_1.toSidebarData)(e));

@@ -1,4 +1,4 @@
-import { LogInputCollection } from "./Logs/LogInputCollection";
+import { LogInput } from "./Logs/LogInput";
 import { SidebarData, ValueType } from "./Sidebar/sidebar";
 
 export class Machine {
@@ -6,10 +6,10 @@ export class Machine {
     name: string;
     id: string;
     createdBy: string;
-    creationDate: string;
-    logs: LogInputCollection[];
+    creationDate: Date;
+    logs: LogInput[];
 
-    constructor(name: string, id: string, createdBy: string, creationDate: string, logs: LogInputCollection[]) {
+    constructor(name: string, id: string, createdBy: string, creationDate: Date, logs: LogInput[]) {
         this.name = name;
         this.id = id;
         this.createdBy = createdBy;
@@ -24,15 +24,15 @@ export const toSidebarData = (machine: Machine) => {
 
     machine.logs.forEach(element => {
         if (element != null) {
-            let collect = new LogInputCollection(element.id, element.date, element.logs).toSidebarData()
+            let collect = new LogInput(element.id, element.data, element.date, element.header, element.writtenBy, element.logs).toSidebarData()
             logData.push(collect)
         }
     });
 
-    return new SidebarData(machine.name, machine.id, machine.creationDate, ValueType.folder,
+    return new SidebarData(machine.name, machine.id, new Date(machine.creationDate).toDateString() + ' | ' + machine.createdBy, ValueType.folder,
         [
-            new SidebarData('OEE', machine.id+'-oee', '', ValueType.file),
-            new SidebarData('Display', machine.id+'-display', '', ValueType.file),
+            new SidebarData('OEE', machine.id+'-oee', 'OEE data', ValueType.file),
+            new SidebarData('Display', machine.id+'-display', 'Display OPCUA subscription', ValueType.file),
             new SidebarData('Logs', machine.id+'-logs', 'Log inputs', ValueType.folder, logData)
         ]);
 }

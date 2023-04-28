@@ -18,9 +18,9 @@ class Machine {
 
 const newMachine = _ => {
     let machineBoxInner = `
-        <div id="new-machine-header" class="form-header">New machine</div>
+        <div id="new-machine-header" class="form-header">New data input</div>
         <div id="new-machine-Xout" class="form-Xout">✖</div>
-        <input id="new-machine-name" class="form-inputbox" type="text" placeholder="Machine name" oninput="this.setCustomValidity('Machine name')" required>
+        <input id="new-machine-name" class="form-inputbox" type="text" placeholder="Data name" oninput="this.setCustomValidity('Machine name')" required>
         <input id="new-machine-creation-date" class="form-inputbox" type="date" required>
         <input id="new-machine-created-by" class="form-inputbox" type="text" placeholder="Created by" oninput="this.setCustomValidity('Created by')" required>
         <button id="new-machine-submit" class="form-button" type="button">Submit machine</button>`
@@ -37,7 +37,7 @@ const newMachine = _ => {
         newMachineElement = new Machine()
         newMachineElement.createdBy = newMachineCreatedBy.value
         newMachineElement.name = newMachineName.value
-        newMachineElement.creationDate = newMachineDate.value
+        newMachineElement.creationDate = newMachineDate.valueAsDate
         if (newMachineDate.value == '' || newMachineName.value == '' || newMachineCreatedBy.value == '') { alert('Missing inputs'); return }
         submitMachine()
     })
@@ -49,35 +49,14 @@ const clearNewMachine = _ => {
     newMachine.childNodes.forEach(element => {
         element.value = null
     })
+    newMachineElement = new Machine()
 }
 
 var newMachineElement = new Machine()
 
 const submitMachine = async machine => {
-    // update id first
-    const baseUrl = `http://localhost:8383/idfy/${qSelect('#new-machine-name').value}`
-
-  let data = await fetch(baseUrl, {
-    method: 'GET'
-  }).then((response) => response.text())
-  .then(data => { return data; })
-  .catch(error => { console.error(error); });
-
-  newId = JSON.parse(data);
-
-  newMachineElement.id = newId.id;
-  newMachineElement.logs = []
-  console.log(newMachineElement)
-  console.log('new machine submitted')
-
-  fetch('http://localhost:8383/machineupsert/', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newMachineElement)
-  });
-
-  clearNewMachine();
-  getSidebar()
+    newMachineElement.id = qSelect('#new-machine-name').value;
+    newMachineElement.logs = []
+    socket.emit('machine-upsert', newMachineElement)
+    clearNewMachine();
 }

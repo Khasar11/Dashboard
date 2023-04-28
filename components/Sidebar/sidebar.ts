@@ -1,6 +1,6 @@
 
 import { Machine, toSidebarData } from "../Machine";
-import { client, coll } from "../MongoDB/MongoDB";
+import { mongoClient, coll } from "../MongoDB/MongoDB";
 
 export class SidebarData {
     name: string;
@@ -23,13 +23,18 @@ export enum ValueType {
     'file',
 }
 
+function addDays(date: Date, days:number) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
 export const getSidebar = async () => {
 
-    client.connect()
+    mongoClient.connect()
 
     var sidebar: SidebarData[] = []
-
-    await coll.find().forEach((e: Machine) => {
+    await coll.find().forEach((e: any) => {
         sidebar.push(toSidebarData(e))
     })
     

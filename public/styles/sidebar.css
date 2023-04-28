@@ -1,65 +1,52 @@
-ul, #main-sidebar {
-  list-style-type: none;
+:root {
+  --general-color: #1b1834;
+  --sidebar-text-color: white;
+  --sidebar-width: 20rem; 
 }
-#main-sidebar button:first-child {
-  margin-top: 1vh;
-  align-self: center;
-}
-/* Remove margins and padding from the parent ul */
-#main-sidebar {
-  margin: 0 0 0 0;
-  padding: 0 1rem 0 1rem;
-  position: absolute;
-  height: 100%;
-  top: 0;
-  background-color:rgba(73, 87, 115, 0.677);
-  backdrop-filter: blur(2px);
+
+.sidebar {
+  min-height: 102%;
+  width: var(--sidebar-width);
   font-family:Verdana, Geneva, Tahoma, sans-serif;
-  color: white;
   border-right: 1px solid black;
-  z-index: 2;
-}
-/* Style the caret/arrow */
-.title {
-  cursor: pointer;
-  user-select: none;
- /* Prevent text selection */
-}
-/* Create the caret/arrow with a unicode, and style it */
-.title::before {
-  content: "┗";
-  display: inline-block;
+  z-index: 20;
+  position: sticky;
+  margin: 0;
+  color: var(--sidebar-text-color);
   padding: 0;
-  margin-right: 5px;
-}
-.file span {
-  position:absolute;
-  background-color:rgba(50, 70, 111, 0.634);
-  box-shadow: 3px 3px rgba(0, 0, 0, 0.207);
-  padding: 0.33rem;
-  border-radius: 2px;
-  margin-left: 5vw;
-  width: auto;
-  top: 1vh;
-  top: 1dvh;
-  visibility: hidden;
-  opacity: 0;
-  backdrop-filter: blur(3px);
-  color: white;
-  z-index: 1;
-}
-.file {
+  background-color: var(--general-color);
+  overflow-x: hidden;
   user-select: none;
 }
-.file:hover, .title:hover {
-  transition: color 0.25s ease;
-  color:rgba(255, 255, 255, 0.7);
-}
-/* Hide the nested list */
-.nested {
-  display: none;
-}
-/* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
-.active {
+
+.sidebar * {
+  padding: 0.1em 0.2em 0 0.5em;
+  margin: 0;
+  text-decoration: none;
   display: block;
+}
+
+.hover-elem {
+  position: fixed;
+  color: var(--sidebar-text-color) !important; /* overwrite shown > span color */
+  left: var(--sidebar-width);
+  background-color: var(--general-color);
+  border: 5px solid var(--general-color);
+  border-bottom-right-radius: 1em;
+  border-top-right-radius: 1em;
+}
+
+.sidebar-file-wrapper { /* file wrapper allows for buttons (+-/M) in same line as text */
+  display: flex;
+}
+
+.sidebar-folder-wrapper { /* folder wrapper allows for buttons (+-/M) in same line as text */
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 1em;
+  padding: 0; /* remove padding that appears on left hand side of element */
+}
+
+.sidebar-file-wrapper:active, .sidebar-folder-wrapper:active {
+  color: rgb(210, 255, 217);
 }

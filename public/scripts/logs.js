@@ -1,71 +1,13 @@
-class LogInputCollection {
-  date = '';
-  id = '';
-  logs;
-
-  constructor(id, date, logs) {
-      this.date = date;
-      this.logs = logs;
-      this.id = id;
-  }
-}
 
 class LogInput {
-  id;
-  data;
-  date;
-  header;
-  writtenBy;
-
-  constructor(id, data, date, header, writtenBy) {
+  constructor(id,  data, date, header, writtenBy, logs) {
       this.id = id;
       this.data = data;
       this.date = date;
       this.header = header;
       this.writtenBy = writtenBy;
+      this.logs = logs;
   }
-}
-
-var currentLogInput;
-var addingLogInputTo;
-var removingLogInput;
-
-var newLogInputCollection;
-
-const showLog = async (logId) => {
-
-  const baseUrl = `http://localhost:8383/logs/${logId}`
-
-  currentLogInput = logId;
-
-  let data = await fetch(baseUrl, {
-          method: 'GET'
-      }).then((response) => response.text())
-      .then(data => {
-          return data;
-      })
-      .catch(error => {
-          console.error(error);
-      });
-
-  showAddNonCollection()
-
-  let split = logId.split('-')
-  addingLogInputTo = split[0]+'-'+split[1]+'-'+split[2]
-  let log = JSON.parse(data);
-  let dateTimePicker = qSelect('#logs-date')
-  let header = qSelect('#logs-header-text')
-  let writtenBy = qSelect('#logs-header-written-by')
-  let dataField = qSelect('#logs-input')
-  let idField = qSelect('#logs-div-id')
-  idField.innerHTML = log.id;
-  dataField.innerHTML = log.data
-  header.value = log.header
-  writtenBy.value = log.writtenBy;
-  dateTimePicker.value = log.date.split('T')[0];
-  let logDiv = qSelect('#logs-div')
-  logDiv.style.visibility = 'visible'
-  logDiv.style.opacity = 1;
 }
 
 dragElement = elmnt => {
@@ -90,7 +32,6 @@ dragElement = elmnt => {
       // otherwise, move the DIV from anywhere inside the DIV:
       elmnt.onmousedown = dragMouseDown;
   }
-
   const elementDrag = e => {
       e = e || window.event;
       e.preventDefault();
@@ -103,7 +44,6 @@ dragElement = elmnt => {
       elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
       elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
   }
-
   const closeDragElement = _ => {
       // stop moving when mouse button is released:
       document.onmouseup = null;
@@ -111,179 +51,76 @@ dragElement = elmnt => {
   }
 }
 
-const showAddNonCollection = id => {
-  let logsDivInner = `<div id="logs">
-        <section id="logs-div-header" class="outlined">
-            <input type="date" id="logs-date" class="form-inputbox" name="log" required>
-            <input id="logs-header-text" class="form-inputbox" type="text" placeholder="Title" required>
-            <input id="logs-header-written-by" class="form-inputbox" type="text" placeholder="Writer" required>
-            <div id="logs-div-X"><img id="logs-div-moveable" src="./move.png"></img></div>
-            <div id="logs-div-id">null</div>
-            <div id="logs-div-Xout" class="form-Xout">✖</div>
-        </section>
-        <section id="logs-body" class="outlined">
-            <div id="logs-input" contenteditable="true" data-text="Input text/image(s)"></div>
-        </section>
-        <section id="logs-footer" class="outlined">
-            <button id="logs-submit" class="form-button">Submit log</button>
-        </section>
-    </div>`
-    let logsDivNew = document.createElement('div')
-    logsDivNew.innerHTML = logsDivInner
-    logsDivNew.id = 'logs-div'
-    logsDivNew.className = 'form'
-    document.body.append(logsDivNew)
-    // Make the DIV element draggable:
-    dragElement(qSelect("#logs-div"));
-    qSelect('#logs-div-id').innerHTML = id + '-' + makeid(6)
-    qSelect("#logs-div-Xout").addEventListener("click", _ => qSelect('#logs-div').remove());
-    if (newLogInputCollection != undefined) {
-      newLogInputCollection.logs = new LogInput()
-      newLogInputCollection.logs.id = newLogInputCollection.id
-      updateLogInputUI(newLogInputCollection.logs)
-      qSelect('#logs-submit').addEventListener(('click'), _ => {
-        let dateTimePicker = qSelect('#logs-date')
-        let header = qSelect('#logs-header-text')
-        let writtenBy = qSelect('#logs-header-written-by')
-        let dataField = qSelect('#logs-input')
-        let idField = qSelect('#logs-div-id')
-      
-        if (addingLogInputTo != null && addingLogInputTo.split('-')[1] == 'log') {
-            let logInput = new LogInput(idField.innerHTML,
-                dataField.innerHTML,
-                dateTimePicker.value == '' ? formattedYYYYMMDD(new Date()) : dateTimePicker.value,
-                header.value,
-                writtenBy.value)
-            appendLog(logInput, addingLogInputTo)
-            addingLogInputTo = null
-            newLogInputCollection = null
-            return;
-        }
-        newLogInputCollection.logs.header = header.value
-        newLogInputCollection.logs.writtenBy = writtenBy.value
-        newLogInputCollection.logs.data = dataField.innerHTML
-        newLogInputCollection.logs.id = idField.innerHTML
-        if (dataField.innerHTML == '' || header.value == '' || writtenBy.value == '' || idField.innerHTML == '') {
-            alert('Missing inputs');
-            return
-        }
-        newLogInputCollection.date = formattedYYYYMMDD(new Date())
-        newLogInputCollection.logs.date = dateTimePicker.value == '' ? formattedYYYYMMDD(new Date()) : dateTimePicker.value
-        submitLogCollection()
-      })
-    }
+const showLog = logInput => { // create log box and update with data from log input
+
+  // remove old 
+  let old = qSelect('#log-container-'+logInput.id);
+  if (old != null) old.remove();
+
+  let logXout = document.createElement('div')
+  logXout.className = 'form-Xout'
+  logXout.innerHTML = '✖'
+  logXout.addEventListener('click', _ => { // x out this log view
+    logContainer.remove()
+  })
+  let logHeaderDateField = document.createElement('input')
+  logHeaderDateField.type = 'date'
+  logHeaderDateField.value = formattedYYYYMMDD(new Date(logInput.date))
+  let logHeaderTitle = document.createElement('input')
+  logHeaderTitle.value = logInput.header
+  logHeaderTitle.placeholder = 'Title'
+  let logHeaderWrittenBy = document.createElement('input')
+  logHeaderWrittenBy.value = logInput.writtenBy
+  logHeaderWrittenBy.placeholder = 'Author'
+  let logHeaderId = document.createElement('p')
+  logHeaderId.textContent = logInput.id
+  logHeaderId.className = 'fixed-top-small-grayed'
+  let logContenteditable = document.createElement('div')
+  logContenteditable.contentEditable = true
+  logContenteditable.innerHTML = logInput.data
+  let logFooterSubmit = document.createElement('button')
+  logFooterSubmit.textContent = 'Submit'
+  logFooterSubmit.addEventListener('click', _ => { // submit to server
+    upsertLog(new LogInput(logHeaderId.textContent, logContenteditable.innerHTML, logHeaderDateField.valueAsDate, logHeaderTitle.value, logHeaderWrittenBy.value, []))
+    logContainer.remove()
+  })
+  let logHeader = document.createElement('div')
+  logHeader.className = 'log-header'
+  logHeader.append(logHeaderId, logHeaderDateField,  logHeaderTitle, logHeaderWrittenBy, logXout)
+  let logContent = document.createElement('div')
+  logContent.append(logContenteditable)
+  let logFooter = document.createElement('div')
+  logFooter.className = 'footer'
+  logFooter.append(logFooterSubmit)
+  let logContainer = document.createElement('div')
+  logContainer.id = 'log-container-'+logInput.id
+  logContainer.className = 'form-form'
+  let logMoveable = document.createElement('div')
+  logMoveable.className = 'top-left'
+  logMoveable.id = logContainer.id+'-moveable' // add -moveable to make this the focus of later dragElement()
+  logMoveable.innerHTML = '-'
+  logContainer.append(logMoveable, logHeader, logContent, logFooter)
+  document.body.append(logContainer)
+  logHeaderTitle.focus()
+  dragElement(logContainer) // make top let - drag button of container
 }
 
-const showAddCollection = _ => {
-  qSelect('#new-logs-entry') != null ? qSelect('#new-logs-entry').remove() : null;
-  qSelect('#logs-div') != null ? qSelect('#logs-div').remove() : null;
-  let logDivInner = `
-  <div id="new-logs-div-Xout" class="form-Xout">✖</div>
-  <div id="new-logs">
-      <span id="new-logs-type">Select log type</span>
-      <text id="new-logs-value">Singular</text>
-      <div id="new-logs-type-dropdown">
-          <p id="new-logs-singular" class="background-on-hover">Singular</p>
-          <p id="new-logs-collection" class="background-on-hover">Collection</p>
-      </div>
-  </div>
-  <text id="new-logs-selected-adder-id"></text>
-  <input type="date" id="collection-date" class="form-inputbox">
-  <button id="new-log-continue" class="form-button">Continue</button>`
-  let logDiv = document.createElement('div')
-  logDiv.innerHTML = logDivInner;
-  logDiv.id = 'new-logs-entry'
-  document.body.append(logDiv)
-  qSelect('#collection-date').value = formattedYYYYMMDD(new Date())
+const clearLogContainer = _ => {
+  qSelect('log-container').remove()
+}
 
-  qSelect("#new-logs-singular").addEventListener('click', _ => {
-    qSelect("#new-logs-value").innerHTML = 'Singular'
-    let coldate = qSelect('#collection-date')
-    coldate.style.visibility = 'hidden'
-    coldate.style.opacity = 0
-  })
-  
-  qSelect("#new-logs-collection").addEventListener('click', _ => {
-    qSelect("#new-logs-value").innerHTML = 'Collection'
-    let coldate = qSelect('#collection-date')
-    qSelect('#collection-date').value = formattedYYYYMMDD(new Date())
-    coldate.style.visibility = 'visible'
-    coldate.style.opacity = 1
-  })
-  
-  qSelect('#new-log-continue').addEventListener('click', _ => {
-    let val = qSelect("#new-logs-value").innerHTML
-    if (val == 'Collection') {
-        newLogInputCollection.logs = []
-        newLogInputCollection.date = qSelect('#collection-date').value
-        submitLogCollection(newLogInputCollection)
-    }
-    if (val == 'Singular') {
-        newLogInputCollection.logs = new LogInput()
-        newLogInputCollection.logs.id = newLogInputCollection.id
-        updateLogInputUI(newLogInputCollection.logs)
-        let logDiv = qSelect('#logs-div')
-        logDiv.style.visibility = 'visible'
-        logDiv.style.opacity = 1;
-    }
-    qSelect('#new-logs-entry').remove();
-  })
-  
-  qSelect('#new-logs-div-Xout').addEventListener('click', _ => {
-    qSelect('#new-logs-entry').remove()
-    addingLogInputTo = null
-    newLogInputCollection = null
+const showLogInput = async (logId) => {
+  socket.emit('request-log', logId, log => {
+    showLog(log)
   })
 }
 
-const updateLogInputUI = logInput => {
-  let dateTimePicker = qSelect('#logs-date')
-  let header = qSelect('#logs-header-text')
-  let writtenBy = qSelect('#logs-header-written-by')
-  let dataField = qSelect('#logs-input')
-  let idField = qSelect('#logs-div-id')
-  dateTimePicker.value = formattedYYYYMMDD(new Date())
-  header.value = logInput.header === undefined ? null : logInput.header
-  dataField.innerHTML = logInput.data === undefined ? null : logInput.data
-  writtenBy.value = logInput.writtenBy === undefined ? null : logInput.writtenBy
-  idField.innerHTML = logInput.id === undefined ? null : logInput.id + '-' + makeid(6)
+const upsertLog = async logInput => {
+  socket.emit('append-log', logInput) // upsert log to log collection
 }
 
-const appendLog = async (logInput, origin) => {
-  fetch('http://localhost:8383/logupsert/', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(logInput)
-  });
-
-  getSidebar()
-}
-
-const submitLogCollection = async _ => {
-  fetch('http://localhost:8383/logcolupsert/', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newLogInputCollection)
-  });
-
-  getSidebar()
-}
-
-const remEntry = async (id, origin) => {
-  if (confirm(`Do you really want to delete '${id}'?`) == true) {
-      fetch('http://localhost:8383/removeentry/', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: origin == null ? JSON.stringify({id}) : JSON.stringify({origin: id})
-      });
-      setTimeout(()=> { 
-        getSidebar()
-      }, 1000);
+const remEntry = async (id) => { // remove entry by id
+  if (confirm(`Do you really want to delete '${id}'?`)) {
+    socket.emit('remove-entry', {id: id})
   }
 }

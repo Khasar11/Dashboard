@@ -9,7 +9,7 @@ class Display {
     }
 }
 const getDisplayData = async (from) => {
-    MongoDB_1.client.connect();
+    MongoDB_1.mongoClient.connect();
     let split = from.split('-');
     let retData;
     await MongoDB_1.coll.find({ id: split[0] }).forEach((machine) => {
@@ -25,14 +25,14 @@ const getDisplayData = async (from) => {
             password: ''
         };
     });
-    return JSON.stringify(retData);
+    return retData;
 };
 exports.getDisplayData = getDisplayData;
 // takes in data object to set $.display.$ to
 // containing id, endpoint, nodeAddress fields
 // requests back an ok status
 const setDisplayData = async (data) => {
-    MongoDB_1.client.connect();
+    MongoDB_1.mongoClient.connect();
     const split = data.id.split('-');
     const query = { id: split[0] };
     const update = { $set: { 'display.endpoint': data.endpoint } };

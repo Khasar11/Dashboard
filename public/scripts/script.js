@@ -33,3 +33,7 @@ var socket = io();
 socket.on('alert', async (arg, callback) => {
   alert(arg)
 })
+
+const setCaret = (elem, caret) => {
+  elem.setSelectionRange(caret, caret);
+}

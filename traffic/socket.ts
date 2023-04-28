@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 import { io } from "../server";
-import { getDisplayData, lookupNodeIds } from "../components/Display/Display";
+import { getDisplayData, lookupNodeIds, setDisplayData } from "../components/Display/Display";
 import {
   AttributeIds,
   BrowseResult,
@@ -10,16 +10,195 @@ import {
   TimestampsToReturn,
   UserTokenType,
 } from "node-opcua";
+import { getSidebar } from "../components/Sidebar/sidebar";
+import { mongoClient as mongoClient, coll } from "../components/MongoDB/MongoDB";
+import { LogInput } from "../components/Logs/LogInput";
+import { Machine, toSidebarData } from "../components/Machine";
+
+
+const fixId = (old: string) => {
+  return String(old).replaceAll('-', '_').replaceAll(' ', '_')
+}
+
+class SidebarUpdateObject {
+  remove: boolean = false;
+  data: any;
+  constructor(data: any, remove: boolean ) {
+    this.remove = remove;
+    this.data = data;
+  }
+}
+
+class SidebarUpdate {
+  remove: boolean = false;
+  id: string;
+  constructor(id: string, remove: boolean) {
+    this.id = id;
+    this.remove = remove;
+  }
+}
 
 export const initSock = () => {
   var allClients: Socket[] = [];
+
+  const sendSidebarUpdateByID = async (update: SidebarUpdate) => {
+    const split = update.id.split('-')
+    const from = String(update.id).substring(0, String(update.id).lastIndexOf("-"))
+    let machine = coll.find({id: update.id})
+    switch(split.length) {
+      case 1: { // machine
+        io.emit('sidebar-update', new SidebarUpdateObject(toSidebarData(machine as unknown as Machine), update.remove));
+        break;
+      }
+      case 2: { // logs or display or oee
+        // unused for now
+        break;
+      }
+      case 3: { // log input
+        (machine as unknown as Machine).logs.forEach((log: LogInput) => {
+          if (log.id == update.id) {
+            io.emit('sidebar-update', new SidebarUpdateObject(log.toSidebarData(), update.remove))
+          }
+        })
+        break;
+      }
+      case 4: { // sub log 
+        (machine as unknown as Machine).logs.forEach((log: LogInput) => {
+          if (log.id == from)
+            log.logs.forEach((subLog: LogInput) => {
+              if (subLog.id == update.id) {
+                io.emit('sidebar-update', new SidebarUpdateObject(subLog.toSidebarData(), update.remove))
+              }
+            })
+        })
+        break;
+      }
+    }
+  }
+
   io.sockets.on("connection", (socket: Socket) => {
+
     allClients.push(socket);
     console.log("socket connect:", socket.id);
 
-    let client: OPCUAClient | undefined = undefined;
+    let OPCClient: OPCUAClient | undefined = undefined;
     let subscription: ClientSubscription | undefined = undefined;
     let session: ClientSession | undefined = undefined;
+
+    socket.on('write-display-data', submission => {
+      setDisplayData(submission)
+    })
+
+    socket.on('request-sidebar', (x, callback) => {
+      const sidebarPromise = Promise.resolve(getSidebar());
+      sidebarPromise.then((value) => {
+        callback(value)
+      });
+    })
+
+    socket.on('request-displayData', async (id, callback) => {
+      callback(await getDisplayData(id))
+    })
+
+    socket.on('request-log', async (id, callback) => {
+      let split = id.split('-')
+      const from = String(id).substring(0, String(id).lastIndexOf("-"))
+      mongoClient.connect()
+
+      switch (split.length) {
+        // cannot remove layer 2 elements so skipping
+        case 3: { // log input from machine
+          await coll.find({id: split[0]}).forEach(machine => machine.logs.forEach((log: LogInput) =>
+            log.id == id ? callback(log) : undefined
+          ))
+          break;
+        }
+        case 4: { // sub log from log input of machine
+          await coll.find({id: split[0]}).forEach(machine => machine.logs.forEach((log: LogInput) => 
+            log.id == from ? log.logs.forEach((subLog: LogInput) => 
+              subLog.id == id ? callback(subLog) : undefined) 
+            : undefined
+          ))
+          break;
+        }
+      }
+    })
+
+    socket.on('remove-entry', async entry => {
+      const split = entry.id.split('-')
+      const removeFrom = String(entry.id).substring(0, String(entry.id).lastIndexOf("-"))
+    
+      switch (split.length) {
+        case 1: { // remove machine
+          await coll.deleteOne({id: split[0]})
+          break;
+        }
+        // cannot remove layer 2 elements so skipping
+        case 3: { // remove log input from machine
+          await coll.findOneAndUpdate({id: split[0]}, 
+                                      {$pull: {'logs': entry}})
+          break;
+        }
+        case 4: { // remove sub log from log input of machine
+          await coll.findOneAndUpdate({id: split[0]}, 
+                                    { $pull : { 'logs.$[log].logs' : entry }}, 
+                                    { arrayFilters : [{ 'log.id' : removeFrom}]});
+          break;
+        }
+      }
+      sendSidebarUpdateByID(new SidebarUpdate(entry.id, true))
+    })
+
+    socket.on('machine-upsert', machine => {
+      machine.id = fixId(machine.id)
+      mongoClient.connect()
+      const query = { id: machine.id };
+      const update = { $set: machine };
+      const options = { upsert: true };
+      coll.updateOne(query, update, options);
+
+      sendSidebarUpdateByID(new SidebarUpdate(machine.id, false))
+
+    })
+
+    socket.on('append-log', async logInput => {  // submit of log input to machine with {machineId: LogInput}
+      let appendTo = String(logInput.id).substring(0, String(logInput.id).lastIndexOf("-"))
+      let split = logInput.id.split('-')
+
+      let oldLog;
+      let oldSubLog;
+
+      mongoClient.connect()
+      if (split.length == 3) {
+        await coll.find({id: split[0]}).forEach((machine: any) => machine.logs.forEach((log: LogInput) => {
+          if (log.id == logInput.id) {
+            oldLog = log;
+            logInput.logs = log.logs;
+          } // fetch sub points so we dont need the client to always know about them
+        }))
+        // upsert the log input
+        await coll.findOneAndUpdate({id: split[0]}, 
+                                    {$pull: {'logs': oldLog}})
+        await coll.findOneAndUpdate({id: split[0]}, 
+                                    {$push: {'logs': logInput}})
+      }
+      if (split.length == 4) {
+        // upsert the sub log
+        await coll.find({id: split[0]}).forEach((machine: any) => machine.logs.forEach((log: LogInput) => {
+          if (log.id == appendTo) log.logs.forEach((subLog: LogInput) => 
+            subLog.id == logInput.id ? (oldSubLog = subLog) : undefined)
+        }))
+        await coll.findOneAndUpdate({id: split[0], 'logs.id': appendTo}, 
+                                    { $pull : { 'logs.$[log].logs' : oldSubLog }}, 
+                                    { arrayFilters : [{ 'log.id' : appendTo}]});
+        await coll.findOneAndUpdate({id: split[0], 'logs.id': appendTo}, 
+                                    { $push : { 'logs.$[log].logs' : logInput }}, 
+                                    { arrayFilters : [{ 'log.id' : appendTo}]})
+      }
+
+      sendSidebarUpdateByID(new SidebarUpdate(logInput.id, false))
+
+    })
 
     socket.on('log', arg => {
       console.log(arg)
@@ -29,20 +208,20 @@ export const initSock = () => {
       console.log("socket disconnect:", socket.id);
       if (subscription!= undefined) { subscription.terminate(); subscription = undefined };
       if (session     != undefined) { session.close(); session = undefined };
-      if (client      != undefined) {client.disconnect(); client = undefined };
+      if (OPCClient      != undefined) {OPCClient.disconnect(); OPCClient = undefined };
       var i = allClients.indexOf(socket);
       allClients.splice(i, 1);
     });
 
     socket.on("subscribe-display", async (arg, callback) => {
-      let displayData = JSON.parse(await getDisplayData(arg));
+      let displayData = await getDisplayData(arg);
       if (displayData == null || displayData.endpoint == null || displayData.nodeAddress == null) { socket.emit('alert', 'No display for '+arg); return};
       const endpointUrl = displayData.endpoint;
       const baseNode = displayData.nodeAddress;
       const nss = baseNode.substring(0, baseNode.lastIndexOf("=") + 1);
-      client = OPCUAClient.create({ endpointMustExist: false });
+      OPCClient = OPCUAClient.create({ endpointMustExist: false });
       let terminated: boolean = false;
-      client.on("backoff", (retry: number, delay: number) => {
+      OPCClient.on("backoff", (retry: number, delay: number) => {
         console.log(
           " cannot connect to endpoint retry = ",
           retry,
@@ -50,19 +229,19 @@ export const initSock = () => {
           delay / 1000,
           "seconds"
         );
-        socket.emit('alert', 'Error on OPCUA client initialization on server side, are you sure you have a connection route to the destination?')
+        socket.emit('alert', 'Error on OPCUA OPCClient initialization on server side, are you sure you have a connection route to the destination?')
         socket.emit("subscribe-update", undefined); // to reomve the loading bar
-        console.log('OPCUA client terminated for', socket.id)
+        console.log('OPCUA OPCClient terminated for', socket.id)
         subscription?.terminate();
-        if (client  != undefined) client.disconnect();
+        if (OPCClient  != undefined) OPCClient.disconnect();
         terminated = true;
       });
 
       if (terminated) return;
 
       try {
-        await client.connect(endpointUrl);
-        session = await client.createSession({
+        await OPCClient.connect(endpointUrl);
+        session = await OPCClient.createSession({
           userName: "tine",
           password: "Melkebart_2021%&",
           type: UserTokenType.UserName,
@@ -164,16 +343,16 @@ export const initSock = () => {
         socket.on("subscribe-terminate", () => {
           if (subscription!= undefined) subscription.terminate();
           if (session     != undefined) session.close();
-          if (client      != undefined) client.disconnect();
+          if (OPCClient      != undefined) OPCClient.disconnect();
           subscription = undefined;
           session = undefined;
-          client = undefined;
-          console.log("OPCUA Client disconnect", socket.id);
-          socket.emit("alert", "OPCUA client disconnect", socket.id);
+          OPCClient = undefined;
+          console.log("OPCUA OPCClient disconnect", socket.id);
+          socket.emit("alert", "OPCUA OPCClient disconnect", socket.id);
         });
       } catch (err: any) {
         console.log(
-          "An error occured in OPC-UA client connection ", socket.id,
+          "An error occured in OPC-UA OPCClient connection ", socket.id,
           err.message
         );
       }

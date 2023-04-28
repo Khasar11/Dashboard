@@ -1,6 +1,6 @@
 
 import { BrowseResult, ClientSession } from "node-opcua";
-import { client, coll } from "../MongoDB/MongoDB";
+import { mongoClient, coll } from "../MongoDB/MongoDB";
 import { Link } from './Link';
 import { NodeObject } from './NodeObject';
 
@@ -15,7 +15,7 @@ class Display { // object to return for GET method from browser, will turn autom
 }
 
 export const getDisplayData = async (from: string) => {
-    client.connect()
+    mongoClient.connect()
     let split = from.split('-')
 
     let retData: any;
@@ -33,14 +33,14 @@ export const getDisplayData = async (from: string) => {
             password: ''
         }
     })
-    return JSON.stringify(retData)
+    return retData
 }
 
 // takes in data object to set $.display.$ to
 // containing id, endpoint, nodeAddress fields
 // requests back an ok status
 export const setDisplayData = async (data: any) => {
-    client.connect()
+    mongoClient.connect()
     const split = data.id.split('-')
 
     const query = { id: split[0]};

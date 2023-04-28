@@ -1,4 +1,10 @@
 
+:root {
+    --button-color: #00d882;
+    --button-color-active: #00975a;
+    --highlight-color: rgb(141, 255, 202);
+}
+
 html, body {
     margin: 0;
     padding: 0;
@@ -15,10 +21,6 @@ html, body {
     user-select: none;
 }
 
-.form-Xout:hover {
-    cursor: crosshair;
-}
-
 .form-form {
     position: absolute;
     font-family:Verdana, Geneva, Tahoma, sans-serif;
@@ -33,11 +35,7 @@ html, body {
     backdrop-filter: blur(3px);
 }
 
-.form-inputbox:focus {
-    border: 3px solid #555;
-}
-
-.form-inputbox {
+.form-inputbox, .form-form input {
     margin-top: 1.5vh;
     padding: 0.25rem;
     border: 3px solid #d5d5d5;
@@ -46,8 +44,31 @@ html, body {
     outline: transparent;
 }
 
-.form-form:hover {
-    outline: 3px solid #555;
+div[contentEditable=true] {
+    padding: 0.2em;
+    min-height: 25vh;
+    min-width: 90%;
+    background-color: white;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    border: 1px dashed black;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+div[contentEditable=true]:focus {
+    outline: 1px solid black;
+    border: 1px solid rgba(0, 0, 0, 0);
+}
+
+div[contentEditable=true] img {
+    max-width: 50vw;
+    max-height: 50vh;
+    resize: both;
+}
+
+.form-form:focus, .form-form input:focus {
+    outline: none;
+    border: 3px solid #555;
 }
 
 .form-header {
@@ -57,4 +78,82 @@ html, body {
     border-bottom: 1px dashed black;
     width: 82%;
     text-align: center;
+}
+
+.top-left {
+    position: fixed;
+    top: -0.075rem;
+    left: 0.025rem;
+    cursor: crosshair;
+    filter: blur(0.33px);
+    user-select: none;
+}
+
+.fixed-top-small-grayed {
+    position: fixed;
+    top: -0.885rem;
+    color: gray;
+}
+
+.form-form .footer {
+    text-align: center;
+}
+
+.collapsed ul, .collapsed li, .collapsed button {
+    visibility: hidden;
+    display: none;
+}
+
+.sidebar-folder-wrapper button {
+    visibility: visible;
+    display: block;
+}
+
+.shown > .sidebar-folder-wrapper {
+    color:var(--highlight-color);
+}
+
+.shown {
+    border-left: 1px dashed var(--highlight-color);
+}
+
+.selected {
+    color:rgb(255, 234, 141);
+}
+
+.resizable { 
+    background: cyan; 
+    position: relative; 
+}
+.resizer { 
+    width: 0.1vw; 
+    height: 4vh; 
+    background: rgba(255, 255, 255, 0.767); 
+    position:absolute; 
+    border-top-left-radius: 0.5em;
+    border-bottom-left-radius: 0.5em;
+    right: 0; 
+    top: 50%; 
+    cursor: se-resize; 
+}
+
+.wrapper {
+    display: flex;
+}
+
+.forced-button {
+    background-color: var(--button-color);
+    border: none;
+    border-radius: 1em;
+    border-right: 0.2em solid var(--button-color);
+    width: auto;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    font-size: 1em;
+}
+
+.forced-button:active {
+    background-color: var(--button-color-active);
+    border-right: 0.2em solid var(--button-color-active);
 }

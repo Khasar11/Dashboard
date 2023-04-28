@@ -67,18 +67,7 @@ const setDisplayData = async id => {
 		password:    encodeURIComponent(qSelect('#display-data-opc-password').value)
 	}
 
-	let actSubmission = JSON.stringify(submission)
-
-	const baseUrl = `http://localhost:8383/writeDisplayData/${actSubmission}`
-	fetch(baseUrl, {
-			method: 'GET'
-		}).then((response) => response.text())
-		.then(data => {
-			return data;
-		})
-		.catch(error => {
-			console.error(error);
-		});
+	socket.emit('write-display-data', submission)
 
 	clearDisplayData() 
 }
@@ -107,23 +96,13 @@ const modifyDisplay = async id => {
 }
 
 const updateDisplayData = async id =>  {
-	const baseUrl = `http://localhost:8383/displayData/${id}`
-	let data = await fetch(baseUrl, {
-			method: 'GET'
-		}).then((response) => response.text())
-		.then(data => {
-			return data;
-		})
-		.catch(error => {
-			console.error(error);
-		});
-
-	const returnData = JSON.parse(JSON.parse(data));
-
-	qSelect("#display-data-endpturl").value = returnData["endpoint"]
-	qSelect("#display-data-opc-adr").value = returnData["nodeAddress"]
-	qSelect("#display-data-opc-username").value = returnData["username"]
-	qSelect("#display-data-opc-password").value = returnData["password"]
+	socket.emit('request-displayData', id, returnData => {
+		if (returnData == null) { alert('an unknown error occured, no data to display'); clearDisplayData(); return;}
+		qSelect("#display-data-endpturl").value = returnData["endpoint"]
+		qSelect("#display-data-opc-adr").value = returnData["nodeAddress"]
+		qSelect("#display-data-opc-username").value = returnData["username"]
+		qSelect("#display-data-opc-password").value = returnData["password"]
+	})
 } 
 
 var nodes 	 = [];
@@ -191,7 +170,7 @@ const startDisplaySubscription = async id => {
 		console.log(res)
 	})
 
-		let cachedLinks = cacheJS.get('display-'+currentDisplay+'-links')
+	let cachedLinks = cacheJS.get('display-'+currentDisplay+'-links')
 	let cachedNodes = cacheJS.get('display-'+currentDisplay+'-nodes')
 
 	if (cachedLinks != null && cachedNodes != null) {
