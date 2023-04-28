@@ -10,7 +10,7 @@ import {
   TimestampsToReturn,
   UserTokenType,
 } from "node-opcua";
-import { getSidebar } from "../components/Sidebar/sidebar";
+import { SidebarUpdate, SidebarUpdateObject, getSidebar } from "../components/Sidebar/sidebar";
 import { mongoClient as mongoClient, coll } from "../components/MongoDB/MongoDB";
 import { LogInput } from "../components/Logs/LogInput";
 import { Machine, toSidebarData } from "../components/Machine";
@@ -20,54 +20,47 @@ const fixId = (old: string) => {
   return String(old).replaceAll('-', '_').replaceAll(' ', '_')
 }
 
-class SidebarUpdateObject {
-  remove: boolean = false;
-  data: any;
-  constructor(data: any, remove: boolean ) {
-    this.remove = remove;
-    this.data = data;
-  }
-}
-
-class SidebarUpdate {
-  remove: boolean = false;
-  id: string;
-  constructor(id: string, remove: boolean) {
-    this.id = id;
-    this.remove = remove;
-  }
-}
-
 export const initSock = () => {
   var allClients: Socket[] = [];
 
   const sendSidebarUpdateByID = async (update: SidebarUpdate) => {
     const split = update.id.split('-')
     const from = String(update.id).substring(0, String(update.id).lastIndexOf("-"))
-    let machine = coll.find({id: update.id})
+    let machine: Machine = new Machine('undefined', 'undefined', 'undefined', new Date(), []);
+    await coll.find({id: split[0]}).forEach((loopMachine: any) => machine = loopMachine) 
+    console.log('sidebar update')
     switch(split.length) {
       case 1: { // machine
-        io.emit('sidebar-update', new SidebarUpdateObject(toSidebarData(machine as unknown as Machine), update.remove));
+        console.log('1')
+        io.emit('sidebar-update', new SidebarUpdateObject(toSidebarData(machine), update.remove));
         break;
       }
       case 2: { // logs or display or oee
         // unused for now
+        console.log('2')
         break;
       }
       case 3: { // log input
-        (machine as unknown as Machine).logs.forEach((log: LogInput) => {
-          if (log.id == update.id) {
-            io.emit('sidebar-update', new SidebarUpdateObject(log.toSidebarData(), update.remove))
-          }
+        console.log('3')
+        machine.logs.forEach((log: LogInput) => {
+          if (log.id == update.id)
+            io.emit('sidebar-update', new SidebarUpdateObject(
+              new LogInput(log.id, log.data, new Date(log.date), log.header, log.writtenBy, log.logs).toSidebarData(), 
+              update.remove)
+            )
         })
         break;
       }
       case 4: { // sub log 
-        (machine as unknown as Machine).logs.forEach((log: LogInput) => {
+        console.log('4')
+        machine.logs.forEach((log: LogInput) => {
           if (log.id == from)
             log.logs.forEach((subLog: LogInput) => {
               if (subLog.id == update.id) {
-                io.emit('sidebar-update', new SidebarUpdateObject(subLog.toSidebarData(), update.remove))
+                io.emit('sidebar-update', new SidebarUpdateObject(
+                  new LogInput(subLog.id, subLog.data, new Date(subLog.date), subLog.header, subLog.writtenBy, subLog.logs).toSidebarData(), 
+                  update.remove)
+                )
               }
             })
         })
@@ -94,6 +87,37 @@ export const initSock = () => {
       sidebarPromise.then((value) => {
         callback(value)
       });
+    })
+
+    socket.on('get-sidebar-element', (id, callback) => {
+      const split = id.split('-')
+
+      switch (split.length) {
+        case 1: { // machine
+          coll.find({id: id}).forEach((machine: any) => callback(toSidebarData(machine)))
+          break;
+        }
+        case 3: { // log input
+          coll.find({id: split[0]}).forEach((machine: any) => machine.logs.forEach((log: LogInput) => {
+            if (log.id == id) callback(
+                new LogInput(log.id, log.data, new Date(log.date), log.header, log.writtenBy, log.logs).toSidebarData()
+              )
+          }))
+          break;
+        }
+        case 4: { // sub log
+          coll.find({id: split[0]}).forEach((machine: any) => machine.logs.forEach((log: LogInput) => {
+            if (log.id == split[0]+'-'+split[1]+'-'+split[2])
+              log.logs.forEach((subLog: LogInput) => {
+                if (subLog.id == id) callback(
+                  new LogInput(subLog.id, subLog.data, new Date(subLog.date), 
+                               subLog.header, subLog.writtenBy, subLog.logs).toSidebarData()
+                  );
+              })
+          }))
+          break;
+        }
+      }
     })
 
     socket.on('request-displayData', async (id, callback) => {
@@ -128,6 +152,8 @@ export const initSock = () => {
       const split = entry.id.split('-')
       const removeFrom = String(entry.id).substring(0, String(entry.id).lastIndexOf("-"))
     
+      sendSidebarUpdateByID(new SidebarUpdate(entry.id, true)) // remove
+
       switch (split.length) {
         case 1: { // remove machine
           await coll.deleteOne({id: split[0]})
@@ -146,7 +172,6 @@ export const initSock = () => {
           break;
         }
       }
-      sendSidebarUpdateByID(new SidebarUpdate(entry.id, true))
     })
 
     socket.on('machine-upsert', machine => {

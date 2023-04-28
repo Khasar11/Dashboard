@@ -6,53 +6,45 @@ const Display_1 = require("../components/Display/Display");
 const node_opcua_1 = require("node-opcua");
 const sidebar_1 = require("../components/Sidebar/sidebar");
 const MongoDB_1 = require("../components/MongoDB/MongoDB");
+const LogInput_1 = require("../components/Logs/LogInput");
 const Machine_1 = require("../components/Machine");
 const fixId = (old) => {
     return String(old).replaceAll('-', '_').replaceAll(' ', '_');
 };
-class SidebarUpdateObject {
-    constructor(data, remove) {
-        this.remove = false;
-        this.remove = remove;
-        this.data = data;
-    }
-}
-class SidebarUpdate {
-    constructor(id, remove) {
-        this.remove = false;
-        this.id = id;
-        this.remove = remove;
-    }
-}
 const initSock = () => {
     var allClients = [];
     const sendSidebarUpdateByID = async (update) => {
         const split = update.id.split('-');
         const from = String(update.id).substring(0, String(update.id).lastIndexOf("-"));
-        let machine = MongoDB_1.coll.find({ id: update.id });
+        let machine = new Machine_1.Machine('undefined', 'undefined', 'undefined', new Date(), []);
+        await MongoDB_1.coll.find({ id: split[0] }).forEach((loopMachine) => machine = loopMachine);
+        console.log('sidebar update');
         switch (split.length) {
             case 1: { // machine
-                server_1.io.emit('sidebar-update', new SidebarUpdateObject((0, Machine_1.toSidebarData)(machine), update.remove));
+                console.log('1');
+                server_1.io.emit('sidebar-update', new sidebar_1.SidebarUpdateObject((0, Machine_1.toSidebarData)(machine), update.remove));
                 break;
             }
             case 2: { // logs or display or oee
                 // unused for now
+                console.log('2');
                 break;
             }
             case 3: { // log input
+                console.log('3');
                 machine.logs.forEach((log) => {
-                    if (log.id == update.id) {
-                        server_1.io.emit('sidebar-update', new SidebarUpdateObject(log.toSidebarData(), update.remove));
-                    }
+                    if (log.id == update.id)
+                        server_1.io.emit('sidebar-update', new sidebar_1.SidebarUpdateObject(new LogInput_1.LogInput(log.id, log.data, new Date(log.date), log.header, log.writtenBy, log.logs).toSidebarData(), update.remove));
                 });
                 break;
             }
             case 4: { // sub log 
+                console.log('4');
                 machine.logs.forEach((log) => {
                     if (log.id == from)
                         log.logs.forEach((subLog) => {
                             if (subLog.id == update.id) {
-                                server_1.io.emit('sidebar-update', new SidebarUpdateObject(subLog.toSidebarData(), update.remove));
+                                server_1.io.emit('sidebar-update', new sidebar_1.SidebarUpdateObject(new LogInput_1.LogInput(subLog.id, subLog.data, new Date(subLog.date), subLog.header, subLog.writtenBy, subLog.logs).toSidebarData(), update.remove));
                             }
                         });
                 });
@@ -74,6 +66,32 @@ const initSock = () => {
             sidebarPromise.then((value) => {
                 callback(value);
             });
+        });
+        socket.on('get-sidebar-element', (id, callback) => {
+            const split = id.split('-');
+            switch (split.length) {
+                case 1: { // machine
+                    MongoDB_1.coll.find({ id: id }).forEach((machine) => callback((0, Machine_1.toSidebarData)(machine)));
+                    break;
+                }
+                case 3: { // log input
+                    MongoDB_1.coll.find({ id: split[0] }).forEach((machine) => machine.logs.forEach((log) => {
+                        if (log.id == id)
+                            callback(new LogInput_1.LogInput(log.id, log.data, new Date(log.date), log.header, log.writtenBy, log.logs).toSidebarData());
+                    }));
+                    break;
+                }
+                case 4: { // sub log
+                    MongoDB_1.coll.find({ id: split[0] }).forEach((machine) => machine.logs.forEach((log) => {
+                        if (log.id == split[0] + '-' + split[1] + '-' + split[2])
+                            log.logs.forEach((subLog) => {
+                                if (subLog.id == id)
+                                    callback(new LogInput_1.LogInput(subLog.id, subLog.data, new Date(subLog.date), subLog.header, subLog.writtenBy, subLog.logs).toSidebarData());
+                            });
+                    }));
+                    break;
+                }
+            }
         });
         socket.on('request-displayData', async (id, callback) => {
             callback(await (0, Display_1.getDisplayData)(id));
@@ -98,6 +116,7 @@ const initSock = () => {
         socket.on('remove-entry', async (entry) => {
             const split = entry.id.split('-');
             const removeFrom = String(entry.id).substring(0, String(entry.id).lastIndexOf("-"));
+            sendSidebarUpdateByID(new sidebar_1.SidebarUpdate(entry.id, true)); // remove
             switch (split.length) {
                 case 1: { // remove machine
                     await MongoDB_1.coll.deleteOne({ id: split[0] });
@@ -113,7 +132,6 @@ const initSock = () => {
                     break;
                 }
             }
-            sendSidebarUpdateByID(new SidebarUpdate(entry.id, true));
         });
         socket.on('machine-upsert', machine => {
             machine.id = fixId(machine.id);
@@ -122,7 +140,7 @@ const initSock = () => {
             const update = { $set: machine };
             const options = { upsert: true };
             MongoDB_1.coll.updateOne(query, update, options);
-            sendSidebarUpdateByID(new SidebarUpdate(machine.id, false));
+            sendSidebarUpdateByID(new sidebar_1.SidebarUpdate(machine.id, false));
         });
         socket.on('append-log', async (logInput) => {
             let appendTo = String(logInput.id).substring(0, String(logInput.id).lastIndexOf("-"));
@@ -150,7 +168,7 @@ const initSock = () => {
                 await MongoDB_1.coll.findOneAndUpdate({ id: split[0], 'logs.id': appendTo }, { $pull: { 'logs.$[log].logs': oldSubLog } }, { arrayFilters: [{ 'log.id': appendTo }] });
                 await MongoDB_1.coll.findOneAndUpdate({ id: split[0], 'logs.id': appendTo }, { $push: { 'logs.$[log].logs': logInput } }, { arrayFilters: [{ 'log.id': appendTo }] });
             }
-            sendSidebarUpdateByID(new SidebarUpdate(logInput.id, false));
+            sendSidebarUpdateByID(new sidebar_1.SidebarUpdate(logInput.id, false));
         });
         socket.on('log', arg => {
             console.log(arg);

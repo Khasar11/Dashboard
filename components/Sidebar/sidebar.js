@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSidebar = exports.ValueType = exports.SidebarData = void 0;
+exports.getSidebar = exports.ValueType = exports.SidebarUpdate = exports.SidebarUpdateObject = exports.SidebarData = void 0;
 const Machine_1 = require("../Machine");
 const MongoDB_1 = require("../MongoDB/MongoDB");
 class SidebarData {
@@ -13,6 +13,22 @@ class SidebarData {
     }
 }
 exports.SidebarData = SidebarData;
+class SidebarUpdateObject {
+    constructor(data, remove) {
+        this.remove = false;
+        this.remove = remove;
+        this.data = data;
+    }
+}
+exports.SidebarUpdateObject = SidebarUpdateObject;
+class SidebarUpdate {
+    constructor(id, remove) {
+        this.remove = false;
+        this.id = id;
+        this.remove = remove;
+    }
+}
+exports.SidebarUpdate = SidebarUpdate;
 var ValueType;
 (function (ValueType) {
     ValueType[ValueType["folder"] = 0] = "folder";

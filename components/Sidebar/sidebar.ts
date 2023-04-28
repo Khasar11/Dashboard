@@ -18,6 +18,24 @@ export class SidebarData {
     }
 }
 
+export class SidebarUpdateObject {
+    remove: boolean = false;
+    data: SidebarData;
+    constructor(data: any, remove: boolean ) {
+      this.remove = remove;
+      this.data = data;
+    }
+}
+  
+export class SidebarUpdate {
+    remove: boolean = false;
+    id: string;
+    constructor(id: string, remove: boolean) {
+      this.id = id;
+      this.remove = remove;
+    }
+}
+
 export enum ValueType {
     'folder',
     'file',
