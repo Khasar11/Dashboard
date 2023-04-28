@@ -2,6 +2,9 @@
 
 **Readonly dashboard for OPC server connected machinery, web based**
 
+![image](https://user-images.githubusercontent.com/67635910/233319565-ce0f0a9e-6759-4b11-833e-bc9b37be6ee7.png)
+Image from simple display view of a crushing machine
+
 **Functionality:**
 
 ****
