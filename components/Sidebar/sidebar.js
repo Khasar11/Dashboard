@@ -1,8 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSidebar = exports.ValueType = exports.SidebarUpdate = exports.SidebarUpdateObject = exports.SidebarData = void 0;
+exports.getSidebar = exports.SidebarData = exports.ValueType = void 0;
 const Machine_1 = require("../Machine");
 const MongoDB_1 = require("../MongoDB/MongoDB");
+var ValueType;
+(function (ValueType) {
+    ValueType[ValueType["folder"] = 0] = "folder";
+    ValueType[ValueType["file"] = 1] = "file";
+})(ValueType = exports.ValueType || (exports.ValueType = {}));
 class SidebarData {
     constructor(name, id, hover, type, data) {
         this.name = name;
@@ -13,37 +18,18 @@ class SidebarData {
     }
 }
 exports.SidebarData = SidebarData;
-class SidebarUpdateObject {
-    constructor(data, remove) {
-        this.remove = false;
-        this.remove = remove;
-        this.data = data;
-    }
-}
-exports.SidebarUpdateObject = SidebarUpdateObject;
-class SidebarUpdate {
-    constructor(id, remove) {
-        this.remove = false;
-        this.id = id;
-        this.remove = remove;
-    }
-}
-exports.SidebarUpdate = SidebarUpdate;
-var ValueType;
-(function (ValueType) {
-    ValueType[ValueType["folder"] = 0] = "folder";
-    ValueType[ValueType["file"] = 1] = "file";
-})(ValueType = exports.ValueType || (exports.ValueType = {}));
-function addDays(date, days) {
-    var result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-}
 const getSidebar = async () => {
     MongoDB_1.mongoClient.connect();
     var sidebar = [];
-    await MongoDB_1.coll.find().forEach((e) => {
-        sidebar.push((0, Machine_1.toSidebarData)(e));
+    await MongoDB_1.coll.find().forEach((machine) => {
+        if (machine.belonging != null) {
+            if (sidebar.find(elem => elem.id == machine.belonging) == null)
+                sidebar.push(new SidebarData(machine.belonging, undefined, '', ValueType.folder, [(0, Machine_1.toSidebarData)(machine)]));
+            else
+                sidebar[sidebar.findIndex(elem => elem.id == machine.belonging)].data?.push((0, Machine_1.toSidebarData)(machine));
+        }
+        else
+            sidebar.push((0, Machine_1.toSidebarData)(machine));
     });
     return sidebar;
 };

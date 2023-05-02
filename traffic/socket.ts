@@ -10,10 +10,12 @@ import {
   TimestampsToReturn,
   UserTokenType,
 } from "node-opcua";
-import { SidebarUpdate, SidebarUpdateObject, getSidebar } from "../components/Sidebar/sidebar";
+import { getSidebar } from "../components/Sidebar/sidebar";
 import { mongoClient as mongoClient, coll } from "../components/MongoDB/MongoDB";
 import { LogInput } from "../components/Logs/LogInput";
 import { Machine, toSidebarData } from "../components/Machine";
+import { SidebarUpdate } from "../components/Sidebar/SidebarUpdate";
+import { SidebarUpdateObject } from "../components/Sidebar/SidebarUpdateObject";
 
 
 const fixId = (old: string) => {
@@ -26,7 +28,7 @@ export const initSock = () => {
   const sendSidebarUpdateByID = async (update: SidebarUpdate) => {
     const split = update.id.split('-')
     const from = String(update.id).substring(0, String(update.id).lastIndexOf("-"))
-    let machine: Machine = new Machine('undefined', 'undefined', 'undefined', new Date(), []);
+    let machine: Machine = new Machine('undefined', 'undefined', 'undefined', new Date(), [], undefined);
     await coll.find({id: split[0]}).forEach((loopMachine: any) => machine = loopMachine) 
     switch(split.length) {
       case 1: { // machine

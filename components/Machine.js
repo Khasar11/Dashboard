@@ -4,12 +4,13 @@ exports.toSidebarData = exports.Machine = void 0;
 const LogInput_1 = require("./Logs/LogInput");
 const sidebar_1 = require("./Sidebar/sidebar");
 class Machine {
-    constructor(name, id, createdBy, creationDate, logs) {
+    constructor(name, id, createdBy, creationDate, logs, belonging) {
         this.name = name;
         this.id = id;
         this.createdBy = createdBy;
         this.creationDate = creationDate;
         this.logs = logs;
+        this.belonging = belonging;
     }
 }
 exports.Machine = Machine;

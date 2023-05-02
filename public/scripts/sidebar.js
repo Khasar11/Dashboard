@@ -20,7 +20,13 @@ const sortList = async ul => { // sort ul by 'date' attribute
       shouldSwitch = false;
       /* Check if the next item should
       switch place with the current item: */
-      if (new Date(b[i].getAttribute("date")) < new Date(b[i + 1].getAttribute("date"))) {
+      if (b[i].getAttribute("date") != null && new Date(b[i].getAttribute("date")) < new Date(b[i + 1].getAttribute("date"))) {
+        /* If next item is date lower than current item,
+        mark as a switch and break the loop: */
+        shouldSwitch = true;
+        break;
+      }
+      if (b[i].getAttribute("name") != null && b[i].getAttribute("name") > b[i + 1].getAttribute("name")) {
         /* If next item is date lower than current item,
         mark as a switch and break the loop: */
         shouldSwitch = true;
@@ -135,7 +141,7 @@ export class SidebarData {
   data?: SidebarData[];
 } */
 const Resolver = async element => { // parse sidebar element recursively to html element
-  let idSplit = element.id.split('-')
+  let idSplit = element.id != undefined ? element.id.split('-') : undefined
   if (element.type) { // sidebar element is type file
     let wrapper = document.createElement('ul')
     wrapper.setAttribute('identifier-id', element.id)
@@ -185,10 +191,11 @@ const Resolver = async element => { // parse sidebar element recursively to html
   flexWrapper.className = 'sidebar-folder-wrapper'
   folderElementTitle.innerText = element.name
   folderElement.className = 'sidebar-folder'
+  folderElement.setAttribute('name', element.name)
   folderElement.classList.add('collapsed')
   flexWrapper.append(folderElementTitle)
   addHover(folderElement, element.hover)
-  if (idSplit[1] == 'logs') {
+  if (idSplit != undefined && idSplit[1] == 'logs') {
     addButton('+', _ => {
     /* add brand new log */
     showLog(newEmptyLog(element.id))
@@ -196,18 +203,22 @@ const Resolver = async element => { // parse sidebar element recursively to html
     folderWrapper.setAttribute('identifier', idSplit[0]+'-'+'logs')
   }
   addToggle(folderElement)
-  if (idSplit.length == 1) 
-  addButton('-', _ => {
-    /* remove machine */
-    remEntry(element.id)
-  }, flexWrapper)
-  if (idSplit[1] == 'log') {
+  if (idSplit != undefined && idSplit.length == 1) 
+    addButton('-', _ => {
+      /* remove machine */
+      remEntry(element.id)
+    }, flexWrapper)
+  if (idSplit != undefined && idSplit[1] == 'log') {
     addAndRemoveButtons(flexWrapper, element.id)
     folderElementTitle.addEventListener('click', _ => {
       /* view log that also has bulletpoints */
       showLogInput(element.id)
     })
   }
+  if (idSplit == undefined) 
+    addButton('-', _ => {
+      showLog(newEmptyLog(element.id))
+    },flexWrapper)
   element.data.forEach(async subElement => {
     folderWrapper.append(await Promise.resolve(Resolver(subElement))) // recursion of resolved sub element
   })
@@ -232,7 +243,8 @@ const getSidebar = async _ => { // get sidebar from server side
       newMachine()
     }, labelWrapper)
     sidebar.append(labelWrapper)
-    let wrapper = document.createElement('div')
+    let wrapper = document.createElement('ul')
+    wrapper.className = 'sortable'
     wrapper.id = 'sidebar-main-wrapper'
     arg.forEach(async element => { // recursively append the folder content
       wrapper.append(await Promise.resolve(Resolver(element)))

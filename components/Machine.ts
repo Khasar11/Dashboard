@@ -8,13 +8,15 @@ export class Machine {
     createdBy: string;
     creationDate: Date;
     logs: LogInput[];
+    belonging: string | undefined;
 
-    constructor(name: string, id: string, createdBy: string, creationDate: Date, logs: LogInput[]) {
+    constructor(name: string, id: string, createdBy: string, creationDate: Date, logs: LogInput[], belonging: string | undefined) {
         this.name = name;
         this.id = id;
         this.createdBy = createdBy;
         this.creationDate = creationDate;
         this.logs = logs;
+        this.belonging = belonging;
     }
 }
 

@@ -92,7 +92,7 @@ const showLog = logInput => { // create log box and update with data from log in
   let logFooter = document.createElement('div')
   logFooter.className = 'footer'
   logFooter.append(logFooterSubmit)
-  let logContainer = document.createElement('div')
+  let logContainer = document.createElement('form')
   logContainer.id = 'log-container-'+logInput.id
   logContainer.className = 'form-form'
   let logMoveable = document.createElement('div')
