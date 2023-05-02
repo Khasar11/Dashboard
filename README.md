@@ -5,6 +5,9 @@
 ![image](https://user-images.githubusercontent.com/67635910/233319565-ce0f0a9e-6759-4b11-833e-bc9b37be6ee7.png)
 Image from simple display view of a crushing machine
 
+![image](https://user-images.githubusercontent.com/67635910/235786330-05ffea40-4927-4aaa-a297-cb76b1194570.png)
+Image from simple sidebar (only example)
+
 **Functionality:**
 
 ****
