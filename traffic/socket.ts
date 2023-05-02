@@ -28,7 +28,6 @@ export const initSock = () => {
     const from = String(update.id).substring(0, String(update.id).lastIndexOf("-"))
     let machine: Machine = new Machine('undefined', 'undefined', 'undefined', new Date(), []);
     await coll.find({id: split[0]}).forEach((loopMachine: any) => machine = loopMachine) 
-    console.log('sidebar update')
     switch(split.length) {
       case 1: { // machine
         console.log('1')
@@ -152,7 +151,7 @@ export const initSock = () => {
       const split = entry.id.split('-')
       const removeFrom = String(entry.id).substring(0, String(entry.id).lastIndexOf("-"))
     
-      sendSidebarUpdateByID(new SidebarUpdate(entry.id, true)) // remove
+      sendSidebarUpdateByID(new SidebarUpdate(entry.id, true))
 
       switch (split.length) {
         case 1: { // remove machine
@@ -182,8 +181,7 @@ export const initSock = () => {
       const options = { upsert: true };
       coll.updateOne(query, update, options);
 
-      sendSidebarUpdateByID(new SidebarUpdate(machine.id, false))
-
+      setTimeout(() => sendSidebarUpdateByID(new SidebarUpdate(machine.id, false)), 2)
     })
 
     socket.on('append-log', async logInput => {  // submit of log input to machine with {machineId: LogInput}
@@ -221,7 +219,7 @@ export const initSock = () => {
                                     { arrayFilters : [{ 'log.id' : appendTo}]})
       }
 
-      sendSidebarUpdateByID(new SidebarUpdate(logInput.id, false))
+      setTimeout(() => sendSidebarUpdateByID(new SidebarUpdate(logInput.id, false)), 2)
 
     })
 

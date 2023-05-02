@@ -180,6 +180,7 @@ const Resolver = async element => { // parse sidebar element recursively to html
   folderWrapper.className = 'sortable'
   folderWrapper.setAttribute('identifier-id', element.id)
   folderElement.setAttribute('date', element.name)
+  folderElement.setAttribute('identifier-id', element.id+'-header')
   let flexWrapper = document.createElement('div')
   flexWrapper.className = 'sidebar-folder-wrapper'
   folderElementTitle.innerText = element.name
@@ -278,23 +279,24 @@ socket.on('sidebar-update', async sidebarUpdate => {
   if (replace != null) {
     if (sidebarUpdate.remove) {
       if (split.length == 4) {
-        console.log('sub log removed', split.splice(0,3).join('-'))
-        socket.emit('get-sidebar-element', split.splice(0,3).join('-'), async callback => {
-        if (getByIdentifierId(split.splice(0,3).join('-')).children.length == 1) 
-          getByIdentifierId(split.splice(0,3).join('-')) = await Promise.resolve(callback)
-        else
-          replace.remove(); 
+        let parentLog = split.splice(0,3).join('-');
+        socket.emit('get-sidebar-element', parentLog, async callback => {
+          if (getByIdentifierId(parentLog).children.length == 0) {
+            let folderToFile = await Promise.resolve(Resolver(callback))
+            getByIdentifierId(parentLog+'-header').replaceWith(folderToFile)
+            return;
+          }
         })
-        return;
       }
-      console.log('remove')
-      replace.remove(); return; 
+      replace.remove(); 
+      return; 
     }
     replace = newSidebarElement 
   }
   else { // add to dom
     switch (split.length) {
       case 1: { // machine level
+        console.log(newSidebarElement)
         qSelect('#sidebar-main-wrapper').append(newSidebarElement)
         setTimeout(async _ => {
           await sortLogs();
@@ -313,14 +315,17 @@ socket.on('sidebar-update', async sidebarUpdate => {
         break;
       }
       case 4: { // sub log level 
+        let parentId = split.splice(0,3).join('-');
         console.log('4')
-        console.log(split.splice(0,3).join('-')) // failing to go further than this
-        socket.emit('get-sidebar-element', split.splice(0,3).join('-'), async callback => {
-          console.log(callback, 'awasd')
-          if (getByIdentifierId(split.splice(0,3).join('-')).children.length == 1) 
-            getByIdentifierId(split.splice(0,3).join('-')) = await Promise.resolve(callback)
-          else
-            getByIdentifierId(split.splice(0,3).join('-')).append(newSidebarElement)
+        console.log(parentId) // failing to go further than this
+        socket.emit('get-sidebar-element', parentId, async callback => {
+          let folderReplace = await Promise.resolve(Resolver(callback))
+          let updByCallback = false;
+          if (!getByIdentifierId(parentId).getAttribute('identifier-id').includes('-header')) {
+            getByIdentifierId(parentId).replaceWith(folderReplace)
+            updByCallback = true
+          }
+          if (!updByCallback) getByIdentifierId(parentId+'-header').append(newSidebarElement)
         })
         setTimeout(async _ => {
           await sortLogs();
@@ -332,6 +337,5 @@ socket.on('sidebar-update', async sidebarUpdate => {
 })
 
 const getByIdentifierId = id => {
-  console.log(qSelect('[identifier-id="'+id+'"]'))
   return qSelect('[identifier-id="'+id+'"]')
 }

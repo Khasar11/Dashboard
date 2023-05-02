@@ -18,7 +18,6 @@ const initSock = () => {
         const from = String(update.id).substring(0, String(update.id).lastIndexOf("-"));
         let machine = new Machine_1.Machine('undefined', 'undefined', 'undefined', new Date(), []);
         await MongoDB_1.coll.find({ id: split[0] }).forEach((loopMachine) => machine = loopMachine);
-        console.log('sidebar update');
         switch (split.length) {
             case 1: { // machine
                 console.log('1');
@@ -116,7 +115,7 @@ const initSock = () => {
         socket.on('remove-entry', async (entry) => {
             const split = entry.id.split('-');
             const removeFrom = String(entry.id).substring(0, String(entry.id).lastIndexOf("-"));
-            sendSidebarUpdateByID(new sidebar_1.SidebarUpdate(entry.id, true)); // remove
+            sendSidebarUpdateByID(new sidebar_1.SidebarUpdate(entry.id, true));
             switch (split.length) {
                 case 1: { // remove machine
                     await MongoDB_1.coll.deleteOne({ id: split[0] });
@@ -140,7 +139,7 @@ const initSock = () => {
             const update = { $set: machine };
             const options = { upsert: true };
             MongoDB_1.coll.updateOne(query, update, options);
-            sendSidebarUpdateByID(new sidebar_1.SidebarUpdate(machine.id, false));
+            setTimeout(() => sendSidebarUpdateByID(new sidebar_1.SidebarUpdate(machine.id, false)), 2);
         });
         socket.on('append-log', async (logInput) => {
             let appendTo = String(logInput.id).substring(0, String(logInput.id).lastIndexOf("-"));
@@ -168,7 +167,7 @@ const initSock = () => {
                 await MongoDB_1.coll.findOneAndUpdate({ id: split[0], 'logs.id': appendTo }, { $pull: { 'logs.$[log].logs': oldSubLog } }, { arrayFilters: [{ 'log.id': appendTo }] });
                 await MongoDB_1.coll.findOneAndUpdate({ id: split[0], 'logs.id': appendTo }, { $push: { 'logs.$[log].logs': logInput } }, { arrayFilters: [{ 'log.id': appendTo }] });
             }
-            sendSidebarUpdateByID(new sidebar_1.SidebarUpdate(logInput.id, false));
+            setTimeout(() => sendSidebarUpdateByID(new sidebar_1.SidebarUpdate(logInput.id, false)), 2);
         });
         socket.on('log', arg => {
             console.log(arg);
