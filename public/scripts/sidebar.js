@@ -261,7 +261,6 @@ const keyToggle = (e, keyCode, clazz) => {
 
 getSidebar();
 
-
 /* snapshot from server (.ts)
 export class SidebarUpdateObject {
     remove: boolean = false;
@@ -270,8 +269,7 @@ export class SidebarUpdateObject {
       this.remove = remove;
       this.data = data;
     }
-}
-*/
+}*/
 socket.on('sidebar-update', async sidebarUpdate => {
   let newSidebarElement = await Promise.resolve(Resolver(sidebarUpdate.data))
   let replace = qSelect('[identifier-id="'+newSidebarElement.getAttribute('identifier-id')+'"]')
@@ -283,7 +281,7 @@ socket.on('sidebar-update', async sidebarUpdate => {
         socket.emit('get-sidebar-element', parentLog, async callback => {
           if (getByIdentifierId(parentLog).children.length == 0) {
             let folderToFile = await Promise.resolve(Resolver(callback))
-            getByIdentifierId(parentLog+'-header').replaceWith(folderToFile)
+            getByIdentifierId(parentLog+'-header').replaceWith(folderToFile) // turn folder to file
             return;
           }
         })
@@ -296,7 +294,6 @@ socket.on('sidebar-update', async sidebarUpdate => {
   else { // add to dom
     switch (split.length) {
       case 1: { // machine level
-        console.log(newSidebarElement)
         qSelect('#sidebar-main-wrapper').append(newSidebarElement)
         setTimeout(async _ => {
           await sortLogs();
@@ -316,13 +313,11 @@ socket.on('sidebar-update', async sidebarUpdate => {
       }
       case 4: { // sub log level 
         let parentId = split.splice(0,3).join('-');
-        console.log('4')
-        console.log(parentId) // failing to go further than this
         socket.emit('get-sidebar-element', parentId, async callback => {
           let folderReplace = await Promise.resolve(Resolver(callback))
           let updByCallback = false;
           if (!getByIdentifierId(parentId).getAttribute('identifier-id').includes('-header')) {
-            getByIdentifierId(parentId).replaceWith(folderReplace)
+            getByIdentifierId(parentId).replaceWith(folderReplace) // turn file to folder
             updByCallback = true
           }
           if (!updByCallback) getByIdentifierId(parentId+'-header').append(newSidebarElement)
