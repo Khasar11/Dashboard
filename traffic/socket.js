@@ -22,8 +22,7 @@ const initSock = () => {
         await MongoDB_1.coll.find({ id: split[0] }).forEach((loopMachine) => machine = loopMachine);
         switch (split.length) {
             case 1: { // machine
-                console.log('1');
-                server_1.io.emit('sidebar-update', new SidebarUpdateObject_1.SidebarUpdateObject((0, Machine_1.toSidebarData)(machine), update.remove));
+                server_1.io.emit('sidebar-update', new SidebarUpdateObject_1.SidebarUpdateObject((0, Machine_1.toSidebarData)(machine), update.remove, machine.belonging));
                 break;
             }
             case 2: { // logs or display or oee
@@ -32,7 +31,6 @@ const initSock = () => {
                 break;
             }
             case 3: { // log input
-                console.log('3');
                 machine.logs.forEach((log) => {
                     if (log.id == update.id)
                         server_1.io.emit('sidebar-update', new SidebarUpdateObject_1.SidebarUpdateObject(new LogInput_1.LogInput(log.id, log.data, new Date(log.date), log.header, log.writtenBy, log.logs).toSidebarData(), update.remove));
@@ -40,7 +38,6 @@ const initSock = () => {
                 break;
             }
             case 4: { // sub log 
-                console.log('4');
                 machine.logs.forEach((log) => {
                     if (log.id == from)
                         log.logs.forEach((subLog) => {

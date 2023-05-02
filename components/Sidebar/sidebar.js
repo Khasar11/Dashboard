@@ -23,10 +23,11 @@ const getSidebar = async () => {
     var sidebar = [];
     await MongoDB_1.coll.find().forEach((machine) => {
         if (machine.belonging != null) {
-            if (sidebar.find(elem => elem.id == machine.belonging) == null)
-                sidebar.push(new SidebarData(machine.belonging, undefined, '', ValueType.folder, [(0, Machine_1.toSidebarData)(machine)]));
+            if (sidebar.find(elem => elem.name == machine.belonging) == null)
+                sidebar.push(new SidebarData(machine.belonging, `$divider-` + machine.belonging, '', ValueType.folder, [(0, Machine_1.toSidebarData)(machine)]));
             else
-                sidebar[sidebar.findIndex(elem => elem.id == machine.belonging)].data?.push((0, Machine_1.toSidebarData)(machine));
+                sidebar[sidebar.findIndex(elem => elem.name == machine.belonging)]
+                    .data?.push((0, Machine_1.toSidebarData)(machine));
         }
         else
             sidebar.push((0, Machine_1.toSidebarData)(machine));

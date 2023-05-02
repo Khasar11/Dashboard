@@ -30,11 +30,20 @@ export const getSidebar = async () => {
     var sidebar: SidebarData[] = []
     await coll.find().forEach((machine: any) => {
         if (machine.belonging != null ) {
-            if (sidebar.find(elem => elem.id == machine.belonging) == null)
-                sidebar.push(new SidebarData(machine.belonging, undefined, '', ValueType.folder, [toSidebarData(machine)]))
-            else
-                sidebar[sidebar.findIndex(elem => elem.id == machine.belonging)].data?.push(toSidebarData(machine))
-        } else sidebar.push(toSidebarData(machine))
+            if (sidebar.find(elem => elem.name == machine.belonging) == null)
+                sidebar.push(
+                    new SidebarData(
+                        machine.belonging, 
+                        `$divider-`+machine.belonging, 
+                        '', 
+                        ValueType.folder, 
+                        [toSidebarData(machine)]
+                        )
+                    )
+            else 
+                sidebar[sidebar.findIndex(elem => elem.name == machine.belonging)]
+                    .data?.push(toSidebarData(machine))
+        } else sidebar.push(toSidebarData(machine));
     })
     
     return sidebar

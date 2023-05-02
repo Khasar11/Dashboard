@@ -57,12 +57,14 @@ const addHover = (element, text) => {
   element.addEventListener('mouseover', e => {
     e.stopPropagation()
     qSelect('.hover-elem') != null ? qSelect('.hover-elem').remove() : undefined;
-    let hoverElem = document.createElement('span')
-    hoverElem.innerText = text
-    hoverElem.className = 'hover-elem'
-    hoverElem.style.opacity = 0;
-    element.prepend(hoverElem)
-    hoverElem.style.opacity = 1;
+    if (text) {
+      let hoverElem = document.createElement('span')
+      hoverElem.innerText = text
+      hoverElem.className = 'hover-elem'
+      hoverElem.style.opacity = 0;
+      element.prepend(hoverElem)
+      hoverElem.style.opacity = 1;
+    }
   })
   element.addEventListener('mouseleave', e => {
     e.stopPropagation()
@@ -140,6 +142,16 @@ export class SidebarData {
   type: ValueType;
   data?: SidebarData[];
 } */
+
+class SidebarData {
+  constructor(name, id, hover, type, data) {
+    this.name = name;
+    this.id = id;
+    this.hover = hover
+    this.type = type;
+    this.data = data;
+  }
+}
 const Resolver = async element => { // parse sidebar element recursively to html element
   let idSplit = element.id != undefined ? element.id.split('-') : undefined
   if (element.type) { // sidebar element is type file
@@ -203,7 +215,7 @@ const Resolver = async element => { // parse sidebar element recursively to html
     folderWrapper.setAttribute('identifier', idSplit[0]+'-'+'logs')
   }
   addToggle(folderElement)
-  if (idSplit != undefined && idSplit.length == 1) 
+  if (idSplit != undefined && idSplit.length == 1 && !idSplit[0].includes('$divider')) 
     addButton('-', _ => {
       /* remove machine */
       remEntry(element.id)
@@ -215,9 +227,9 @@ const Resolver = async element => { // parse sidebar element recursively to html
       showLogInput(element.id)
     })
   }
-  if (idSplit == undefined) 
-    addButton('-', _ => {
-      showLog(newEmptyLog(element.id))
+  if (idSplit[0].includes('$divider')) 
+    addButton('+', _ => {
+      newMachine(new Machine(undefined, undefined, undefined, undefined, undefined, element.name))
     },flexWrapper)
   element.data.forEach(async subElement => {
     folderWrapper.append(await Promise.resolve(Resolver(subElement))) // recursion of resolved sub element
@@ -275,12 +287,14 @@ getSidebar();
 
 /* snapshot from server (.ts)
 export class SidebarUpdateObject {
-    remove: boolean = false;
-    data: SidebarData;
-    constructor(data: any, remove: boolean ) {
-      this.remove = remove;
-      this.data = data;
-    }
+  remove: boolean = false;
+  data: SidebarData;
+  belonging: string | undefined
+  constructor(data: any, remove: boolean, belinging: string | undefined = undefined) {
+    this.remove = remove;
+    this.data = data;
+    this.belonging = belinging;
+  }
 }*/
 socket.on('sidebar-update', async sidebarUpdate => {
   let newSidebarElement = await Promise.resolve(Resolver(sidebarUpdate.data))
@@ -298,6 +312,11 @@ socket.on('sidebar-update', async sidebarUpdate => {
           }
         })
       }
+      let parent = replace.parentNode;
+      if (parent.getAttribute('identifier-id').includes('$divider') && // to remove folder if folder turns out empty
+        parent.children.length == 1) {
+        getByIdentifierId(`$divider-${sidebarUpdate.belonging}-header`).remove()
+      }
       replace.remove(); 
       return; 
     }
@@ -306,7 +325,21 @@ socket.on('sidebar-update', async sidebarUpdate => {
   else { // add to dom
     switch (split.length) {
       case 1: { // machine level
-        qSelect('#sidebar-main-wrapper').append(newSidebarElement)
+        if (sidebarUpdate?.belonging != undefined) { // belonging to anything?
+          let done = false;
+          if (getByIdentifierId('$divider-'+sidebarUpdate.belonging) == undefined) { // make folder if it doesnt exist
+            let folder = new SidebarData(
+                              sidebarUpdate.belonging, 
+                              `$divider-`+sidebarUpdate.belonging,
+                              '',
+                              0,
+                              [sidebarUpdate.data])
+            qSelect('#sidebar-main-wrapper').append(await Promise.resolve(Resolver(folder)))
+            done = true;
+          }
+          if (!done) getByIdentifierId('$divider-'+sidebarUpdate.belonging).append(newSidebarElement)
+        } else // not belonging to anything
+          qSelect('#sidebar-main-wrapper').append(newSidebarElement)
         setTimeout(async _ => {
           await sortLogs();
         }, 20)

@@ -32,8 +32,7 @@ export const initSock = () => {
     await coll.find({id: split[0]}).forEach((loopMachine: any) => machine = loopMachine) 
     switch(split.length) {
       case 1: { // machine
-        console.log('1')
-        io.emit('sidebar-update', new SidebarUpdateObject(toSidebarData(machine), update.remove));
+        io.emit('sidebar-update', new SidebarUpdateObject(toSidebarData(machine), update.remove, machine.belonging));
         break;
       }
       case 2: { // logs or display or oee
@@ -42,7 +41,6 @@ export const initSock = () => {
         break;
       }
       case 3: { // log input
-        console.log('3')
         machine.logs.forEach((log: LogInput) => {
           if (log.id == update.id)
             io.emit('sidebar-update', new SidebarUpdateObject(
@@ -53,7 +51,6 @@ export const initSock = () => {
         break;
       }
       case 4: { // sub log 
-        console.log('4')
         machine.logs.forEach((log: LogInput) => {
           if (log.id == from)
             log.logs.forEach((subLog: LogInput) => {

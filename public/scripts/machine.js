@@ -1,13 +1,11 @@
 
 class Machine {
-
     name;
     id;
     createdBy;
     creationDate;
     logs;
     belonging;
-
     constructor(name, id, createdBy, creationDate, logs, belonging) {
         this.name = name;
         this.id = id;
@@ -18,7 +16,7 @@ class Machine {
     }
 }
 
-const newMachine = _ => {
+const newMachine = machine => {
     let machineBoxInner = `
         <div id="new-machine-header" class="form-header">New data input</div>
         <div id="new-machine-Xout" class="form-Xout">✖</div>
@@ -31,6 +29,7 @@ const newMachine = _ => {
     machineBox.innerHTML = machineBoxInner
     machineBox.id = 'new-machine'; machineBox.className = 'form-form';
     document.body.append(machineBox)
+    machine != undefined ? qSelect('#new-machine-belonging').value = machine.belonging : undefined
     qSelect('#new-machine-creation-date').value = formattedYYYYMMDD(new Date())
     qSelect('#new-machine-Xout').addEventListener('click', _ => {clearNewMachine()})
     qSelect('#new-machine-submit').addEventListener('click', _ => {

@@ -21,9 +21,7 @@ export class Machine {
 }
 
 export const toSidebarData = (machine: Machine) => {
-
     let logData: SidebarData[] = [];
-
     machine.logs.forEach(element => {
         if (element != null) {
             let collect = new LogInput(element.id, element.data, element.date, element.header, element.writtenBy, element.logs).toSidebarData()
