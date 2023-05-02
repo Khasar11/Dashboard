@@ -115,6 +115,7 @@ div[contentEditable=true] img {
 
 .shown {
     border-left: 1px dashed var(--highlight-color);
+    border-bottom-left-radius: 0.75rem;
 }
 
 .selected {

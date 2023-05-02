@@ -50,3 +50,9 @@
 .sidebar-file-wrapper:active, .sidebar-folder-wrapper:active {
   color: rgb(210, 255, 217);
 }
+
+#sidebar-header {
+  margin-left: 0.5em;
+  border-top-left-radius: 0.5rem;;
+  border-left: 1px dashed var(--highlight-color);
+}

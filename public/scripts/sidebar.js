@@ -247,6 +247,7 @@ const getSidebar = async _ => { // get sidebar from server side
     sidebar.className = 'sidebar'
     let labelWrapper = document.createElement('div')
     labelWrapper.className = 'sidebar-file-wrapper'
+    labelWrapper.id = 'sidebar-header'
     let label = document.createElement('span');
     label.innerHTML= 'Data'
     labelWrapper.append(label)
