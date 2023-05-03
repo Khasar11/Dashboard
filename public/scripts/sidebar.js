@@ -83,7 +83,7 @@ const toggle = element => {
 }
 
 const addToggle = element => {
-  element.addEventListener('dblclick', e => { // toggle visibility
+  element.addEventListener('click', e => { // toggle visibility
     e.stopPropagation()
     toggle(element)
   })
@@ -167,7 +167,7 @@ const Resolver = async element => { // parse sidebar element recursively to html
       addButton('M', _ => {
         idSplit[1] == 'display' ? modifyDisplay(element.id) : console.log('modify oee')
       }, wrapper)
-      wrapper.addEventListener('click', e => {
+      wrapper.addEventListener('dblclick', e => {
         e.stopPropagation();
         // view display here
         startDisplaySubscription(idSplit[1])
@@ -222,7 +222,7 @@ const Resolver = async element => { // parse sidebar element recursively to html
     }, flexWrapper)
   if (idSplit != undefined && idSplit[1] == 'log') {
     addAndRemoveButtons(flexWrapper, element.id)
-    folderElementTitle.addEventListener('click', _ => {
+    folderElementTitle.addEventListener('dblclick', _ => {
       /* view log that also has bulletpoints */
       showLogInput(element.id)
     })
