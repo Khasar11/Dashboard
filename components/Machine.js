@@ -23,6 +23,7 @@ const toSidebarData = (machine) => {
         }
     });
     return new sidebar_1.SidebarData(machine.name, machine.id, new Date(machine.creationDate).toDateString() + ' | ' + machine.createdBy, sidebar_1.ValueType.folder, [
+        new sidebar_1.SidebarData('Files', machine.id + '-files', 'File storage', sidebar_1.ValueType.file),
         new sidebar_1.SidebarData('OEE', machine.id + '-oee', 'OEE data', sidebar_1.ValueType.file),
         new sidebar_1.SidebarData('Display', machine.id + '-display', 'Display OPCUA subscription', sidebar_1.ValueType.file),
         new sidebar_1.SidebarData('Logs', machine.id + '-logs', 'Log inputs', sidebar_1.ValueType.folder, logData)

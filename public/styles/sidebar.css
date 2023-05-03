@@ -47,12 +47,12 @@
   padding: 0; /* remove padding that appears on left hand side of element */
 }
 
-.sidebar-file-wrapper:active, .sidebar-folder-wrapper:active {
+.sidebar-file-wrapper:hover, .sidebar-folder-wrapper:active, .sidebar-folder-wrapper:hover {
   color: rgb(210, 255, 217);
 }
 
 #sidebar-header {
   margin-left: 0.5em;
-  border-top-left-radius: 0.5rem;;
-  border-left: 1px dashed var(--highlight-color);
+  background: var(--highlight-color);
+  background: linear-gradient(90deg, var(--general-color) 0.1%, var(--highlight-color) 0.1%, var(--general-color) 2%);
 }

@@ -152,7 +152,7 @@ class SidebarData {
     this.data = data;
   }
 }
-const Resolver = async element => { // parse sidebar element recursively to html element
+const sidebarResolver = async element => { // parse sidebar element recursively to html element
   let idSplit = element.id != undefined ? element.id.split('-') : undefined
   if (element.type) { // sidebar element is type file
     let wrapper = document.createElement('ul')
@@ -163,14 +163,22 @@ const Resolver = async element => { // parse sidebar element recursively to html
     fileElement.innerText = element.name
     fileElement.className = 'sidebar-file'
     wrapper.append(fileElement)
+    wrapper.addEventListener('click', e => e.stopPropagation())
     if (idSplit[1] == 'display' || idSplit[1] == 'oee' ) {
       addButton('M', _ => {
         idSplit[1] == 'display' ? modifyDisplay(element.id) : console.log('modify oee')
       }, wrapper)
-      wrapper.addEventListener('dblclick', e => {
+      wrapper.addEventListener('click', e => {
         e.stopPropagation();
         // view display here
-        startDisplaySubscription(idSplit[1])
+        idSplit[1] == 'display' ? startDisplaySubscription(idSplit[0]) : console.log('view oee')
+      })
+    }
+    if (idSplit[1] == 'files') {
+      wrapper.addEventListener('click', e => {
+        e.stopPropagation();
+        // view file storage here
+        console.log('files')
       })
     }
     if (idSplit[1] == 'log' ) { 
@@ -232,7 +240,7 @@ const Resolver = async element => { // parse sidebar element recursively to html
       newMachine(new Machine(undefined, undefined, undefined, undefined, undefined, element.name))
     },flexWrapper)
   element.data.forEach(async subElement => {
-    folderWrapper.append(await Promise.resolve(Resolver(subElement))) // recursion of resolved sub element
+    folderWrapper.append(await Promise.resolve(sidebarResolver(subElement))) // recursion of resolved sub element
   })
   folderElement.append(flexWrapper, folderWrapper)
   return folderElement
@@ -260,7 +268,7 @@ const getSidebar = async _ => { // get sidebar from server side
     wrapper.className = 'sortable'
     wrapper.id = 'sidebar-main-wrapper'
     arg.forEach(async element => { // recursively append the folder content
-      wrapper.append(await Promise.resolve(Resolver(element)))
+      wrapper.append(await Promise.resolve(sidebarResolver(element)))
     })
     addDrag(sidebar) 
     sidebar.append(wrapper)
@@ -298,7 +306,7 @@ export class SidebarUpdateObject {
   }
 }*/
 socket.on('sidebar-update', async sidebarUpdate => {
-  let newSidebarElement = await Promise.resolve(Resolver(sidebarUpdate.data))
+  let newSidebarElement = await Promise.resolve(sidebarResolver(sidebarUpdate.data))
   let replace = qSelect('[identifier-id="'+newSidebarElement.getAttribute('identifier-id')+'"]')
   const split = (sidebarUpdate.data.id).split('-')
   if (replace != null) {
@@ -307,7 +315,7 @@ socket.on('sidebar-update', async sidebarUpdate => {
         let parentLog = split.splice(0,3).join('-');
         socket.emit('get-sidebar-element', parentLog, async callback => {
           if (getByIdentifierId(parentLog).children.length == 0) {
-            let folderToFile = await Promise.resolve(Resolver(callback))
+            let folderToFile = await Promise.resolve(sidebarResolver(callback))
             getByIdentifierId(parentLog+'-header').replaceWith(folderToFile) // turn folder to file
             return;
           }
@@ -335,7 +343,7 @@ socket.on('sidebar-update', async sidebarUpdate => {
                               '',
                               0,
                               [sidebarUpdate.data])
-            qSelect('#sidebar-main-wrapper').append(await Promise.resolve(Resolver(folder)))
+            qSelect('#sidebar-main-wrapper').append(await Promise.resolve(sidebarResolver(folder)))
             done = true;
           }
           if (!done) getByIdentifierId('$divider-'+sidebarUpdate.belonging).append(newSidebarElement)
@@ -360,7 +368,7 @@ socket.on('sidebar-update', async sidebarUpdate => {
       case 4: { // sub log level 
         let parentId = split.splice(0,3).join('-');
         socket.emit('get-sidebar-element', parentId, async callback => {
-          let folderReplace = await Promise.resolve(Resolver(callback))
+          let folderReplace = await Promise.resolve(sidebarResolver(callback))
           let updByCallback = false;
           if (!getByIdentifierId(parentId).getAttribute('identifier-id').includes('-header')) {
             getByIdentifierId(parentId).replaceWith(folderReplace) // turn file to folder

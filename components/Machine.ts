@@ -31,6 +31,7 @@ export const toSidebarData = (machine: Machine) => {
 
     return new SidebarData(machine.name, machine.id, new Date(machine.creationDate).toDateString() + ' | ' + machine.createdBy, ValueType.folder,
         [
+            new SidebarData('Files', machine.id+'-files', 'File storage', ValueType.file),
             new SidebarData('OEE', machine.id+'-oee', 'OEE data', ValueType.file),
             new SidebarData('Display', machine.id+'-display', 'Display OPCUA subscription', ValueType.file),
             new SidebarData('Logs', machine.id+'-logs', 'Log inputs', ValueType.folder, logData)

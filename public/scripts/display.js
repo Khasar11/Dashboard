@@ -163,51 +163,57 @@ const createSubscriptionHeader = _ => {
 }
 
 const startDisplaySubscription = async id => {
-	currentDisplay = id;
-	createSubscriptionHeader()
-	showCenteredLoading()
-	socket.emit('subscribe-display', id, res => { // socket io 
-		console.log(res)
-	})
-
-	let cachedLinks = cacheJS.get('display-'+currentDisplay+'-links')
-	let cachedNodes = cacheJS.get('display-'+currentDisplay+'-nodes')
-
-	if (cachedLinks != null && cachedNodes != null) {
-		nodes = cachedNodes
-		Graph.graphData({
-			nodes: nodes,
-			links: cachedLinks
+	socket.emit('request-displayData', id, returnData => { 
+		if (returnData['endpoint'] == '' || returnData['nodeAddress'] == '') {
+			alert(`No display for ${id}`)
+			return;
+		}
+		currentDisplay = id;
+		createSubscriptionHeader()
+		showCenteredLoading()
+		socket.emit('subscribe-display', id, res => { // socket io 
+			console.log(res)
 		})
-	}
 
-	socket.on('subscribe-link', arg => {
-		const tryFind = nodeLinks.findIndex(x => x.source == arg.source && x.target == arg.target)
-		if (tryFind == -1) nodeLinks.push(arg)
-		else nodeLinks[tryFind] = arg
-		parsedLinks = parseLinks(nodeLinks)
-		let redoLinkage = false;
-		for (let i=0; i<parsedLinks.length; i++) 
-			if (cachedLinks == null || cachedLinks[i] == null || (parsedLinks[i].source != cachedLinks[i].source.id || parsedLinks[i].target != cachedLinks[i].target.id))
-				redoLinkage = true; 
-		Graph.graphData({
-			nodes: Graph.graphData().nodes,
-			links: !redoLinkage ? Graph.graphData().links : parsedLinks
-		}) 
-	})
+		let cachedLinks = cacheJS.get('display-'+currentDisplay+'-links')
+		let cachedNodes = cacheJS.get('display-'+currentDisplay+'-nodes')
 
-	socket.on('subscribe-update', arg => { // waiting for server to send data from opc 
-		if (qSelect('#loading-grid') != null) qSelect('#loading-grid').remove() // removes loading grid on 
-		if (arg == undefined) return;
-		const tryFind = nodes.findIndex(x => x.key == arg[0]);
-		if (arg[1].includes('.') && arg[1].includes('E+'))
-			nodeUpsertSimple({id: tryFind != -1 ? tryFind : nodes.length, key: arg[0], value: ((arg[1])/10).toFixed(5)}, tryFind)
-		else 
-			nodeUpsertSimple({id: nodes.length, key: arg[0], value: arg[1]}, tryFind)
+		if (cachedLinks != null && cachedNodes != null) {
+			nodes = cachedNodes
+			Graph.graphData({
+				nodes: nodes,
+				links: cachedLinks
+			})
+		}
 
-		Graph.graphData({
-			nodes: nodes,
-			links: Graph.graphData().links
+		socket.on('subscribe-link', arg => {
+			const tryFind = nodeLinks.findIndex(x => x.source == arg.source && x.target == arg.target)
+			if (tryFind == -1) nodeLinks.push(arg)
+			else nodeLinks[tryFind] = arg
+			parsedLinks = parseLinks(nodeLinks)
+			let redoLinkage = false;
+			for (let i=0; i<parsedLinks.length; i++) 
+				if (cachedLinks == null || cachedLinks[i] == null || (parsedLinks[i].source != cachedLinks[i].source.id || parsedLinks[i].target != cachedLinks[i].target.id))
+					redoLinkage = true; 
+			Graph.graphData({
+				nodes: Graph.graphData().nodes,
+				links: !redoLinkage ? Graph.graphData().links : parsedLinks
+			}) 
+		})
+
+		socket.on('subscribe-update', arg => { // waiting for server to send data from opc 
+			if (qSelect('#loading-grid') != null) qSelect('#loading-grid').remove() // removes loading grid on 
+			if (arg == undefined) return;
+			const tryFind = nodes.findIndex(x => x.key == arg[0]);
+			if (arg[1].includes('.') && arg[1].includes('E+'))
+				nodeUpsertSimple({id: tryFind != -1 ? tryFind : nodes.length, key: arg[0], value: ((arg[1])/10).toFixed(5)}, tryFind)
+			else 
+				nodeUpsertSimple({id: nodes.length, key: arg[0], value: arg[1]}, tryFind)
+
+			Graph.graphData({
+				nodes: nodes,
+				links: Graph.graphData().links
+			})
 		})
 	})
 }
