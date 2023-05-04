@@ -1,6 +1,6 @@
-import { toSidebarData } from "./Machine"
-import { coll, mongoClient } from "./MongoDB/MongoDB"
-import { StructuredDataElement, ValueType } from "./StructuredData/StructuredDataElement"
+import { toSidebarData } from "../Machine/Machine"
+import { coll, mongoClient } from "../MongoDB/MongoDB"
+import { StructuredDataElement, ValueType } from "../StructuredData/StructuredDataElement"
 
 export const getSidebar = async () => {
 

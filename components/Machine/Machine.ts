@@ -1,5 +1,5 @@
-import { LogInput } from "./Logs/LogInput";
-import { StructuredDataElement, ValueType } from "./StructuredData/StructuredDataElement";
+import { LogInput } from "../Logs/LogInput";
+import { StructuredDataElement, ValueType } from "../StructuredData/StructuredDataElement";
 
 export class Machine {
 

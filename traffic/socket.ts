@@ -10,10 +10,10 @@ import {
   TimestampsToReturn,
   UserTokenType,
 } from "node-opcua";
-import { getSidebar } from "../components/Sidebar";
+import { getSidebar } from "../components/Sidebar/Sidebar";
 import { mongoClient as mongoClient, coll } from "../components/MongoDB/MongoDB";
 import { LogInput } from "../components/Logs/LogInput";
-import { Machine, toSidebarData } from "../components/Machine";
+import { Machine, toSidebarData } from "../components/Machine/Machine";
 import { StructuredUpdate } from "../components/StructuredData/StructuredUpdate";
 import { StructuredUpdateObject } from "../components/StructuredData/StructuredUpdateObject";
 
