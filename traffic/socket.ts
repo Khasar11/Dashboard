@@ -16,6 +16,7 @@ import { LogInput } from "../components/Logs/LogInput";
 import { Machine, toSidebarData } from "../components/Machine/Machine";
 import { StructuredUpdate } from "../components/StructuredData/StructuredUpdate";
 import { StructuredUpdateObject } from "../components/StructuredData/StructuredUpdateObject";
+import { getFileStorage } from "../components/FileStorage/FileStorage";
 
 
 const fixId = (old: string) => {
@@ -87,8 +88,8 @@ export const initSock = () => {
       });
     })
 
-    socket.on('request-folder-info', (id, callback) => {
-
+    socket.on('request-folder-info', async (id, callback) => {
+      callback(await getFileStorage(id))
     })
 
     socket.on('get-sidebar-element', (id, callback) => {

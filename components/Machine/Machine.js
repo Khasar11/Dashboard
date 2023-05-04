@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.toSidebarData = exports.Machine = void 0;
-const LogInput_1 = require("./Logs/LogInput");
-const StructuredDataElement_1 = require("./StructuredData/StructuredDataElement");
+const LogInput_1 = require("../Logs/LogInput");
+const StructuredDataElement_1 = require("../StructuredData/StructuredDataElement");
 class Machine {
     constructor(name, id, createdBy, creationDate, logs, belonging) {
         this.name = name;

@@ -4,12 +4,13 @@ exports.initSock = void 0;
 const server_1 = require("../server");
 const Display_1 = require("../components/Display/Display");
 const node_opcua_1 = require("node-opcua");
-const Sidebar_1 = require("../components/Sidebar");
+const Sidebar_1 = require("../components/Sidebar/Sidebar");
 const MongoDB_1 = require("../components/MongoDB/MongoDB");
 const LogInput_1 = require("../components/Logs/LogInput");
-const Machine_1 = require("../components/Machine");
+const Machine_1 = require("../components/Machine/Machine");
 const StructuredUpdate_1 = require("../components/StructuredData/StructuredUpdate");
 const StructuredUpdateObject_1 = require("../components/StructuredData/StructuredUpdateObject");
+const FileStorage_1 = require("../components/FileStorage/FileStorage");
 const fixId = (old) => {
     return String(old).replaceAll('-', '_').replaceAll(' ', '_');
 };
@@ -65,7 +66,8 @@ const initSock = () => {
                 callback(value);
             });
         });
-        socket.on('request-folder-info', (id, callback) => {
+        socket.on('request-folder-info', async (id, callback) => {
+            callback(await (0, FileStorage_1.getFileStorage)(id));
         });
         socket.on('get-sidebar-element', (id, callback) => {
             const split = id.split('-');

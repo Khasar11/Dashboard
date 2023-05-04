@@ -178,7 +178,7 @@ const sidebarResolver = async element => { // parse sidebar element recursively 
       wrapper.addEventListener('click', e => {
         e.stopPropagation();
         // view file storage here
-        console.log('files')
+        viewFolder(idSplit[0])
       })
     }
     if (idSplit[1] == 'log' ) { 
