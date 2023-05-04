@@ -4,12 +4,12 @@ exports.initSock = void 0;
 const server_1 = require("../server");
 const Display_1 = require("../components/Display/Display");
 const node_opcua_1 = require("node-opcua");
-const sidebar_1 = require("../components/Sidebar/sidebar");
+const Sidebar_1 = require("../components/Sidebar");
 const MongoDB_1 = require("../components/MongoDB/MongoDB");
 const LogInput_1 = require("../components/Logs/LogInput");
 const Machine_1 = require("../components/Machine");
-const SidebarUpdate_1 = require("../components/Sidebar/SidebarUpdate");
-const SidebarUpdateObject_1 = require("../components/Sidebar/SidebarUpdateObject");
+const StructuredUpdate_1 = require("../components/StructuredData/StructuredUpdate");
+const StructuredUpdateObject_1 = require("../components/StructuredData/StructuredUpdateObject");
 const fixId = (old) => {
     return String(old).replaceAll('-', '_').replaceAll(' ', '_');
 };
@@ -22,7 +22,7 @@ const initSock = () => {
         await MongoDB_1.coll.find({ id: split[0] }).forEach((loopMachine) => machine = loopMachine);
         switch (split.length) {
             case 1: { // machine
-                server_1.io.emit('sidebar-update', new SidebarUpdateObject_1.SidebarUpdateObject((0, Machine_1.toSidebarData)(machine), update.remove, machine.belonging));
+                server_1.io.emit('sidebar-update', new StructuredUpdateObject_1.StructuredUpdateObject((0, Machine_1.toSidebarData)(machine), update.remove, machine.belonging));
                 break;
             }
             case 2: { // logs or display or oee
@@ -33,7 +33,7 @@ const initSock = () => {
             case 3: { // log input
                 machine.logs.forEach((log) => {
                     if (log.id == update.id)
-                        server_1.io.emit('sidebar-update', new SidebarUpdateObject_1.SidebarUpdateObject(new LogInput_1.LogInput(log.id, log.data, new Date(log.date), log.header, log.writtenBy, log.logs).toSidebarData(), update.remove));
+                        server_1.io.emit('sidebar-update', new StructuredUpdateObject_1.StructuredUpdateObject(new LogInput_1.LogInput(log.id, log.data, new Date(log.date), log.header, log.writtenBy, log.logs).toSidebarData(), update.remove));
                 });
                 break;
             }
@@ -42,7 +42,7 @@ const initSock = () => {
                     if (log.id == from)
                         log.logs.forEach((subLog) => {
                             if (subLog.id == update.id) {
-                                server_1.io.emit('sidebar-update', new SidebarUpdateObject_1.SidebarUpdateObject(new LogInput_1.LogInput(subLog.id, subLog.data, new Date(subLog.date), subLog.header, subLog.writtenBy, subLog.logs).toSidebarData(), update.remove));
+                                server_1.io.emit('sidebar-update', new StructuredUpdateObject_1.StructuredUpdateObject(new LogInput_1.LogInput(subLog.id, subLog.data, new Date(subLog.date), subLog.header, subLog.writtenBy, subLog.logs).toSidebarData(), update.remove));
                             }
                         });
                 });
@@ -60,10 +60,12 @@ const initSock = () => {
             (0, Display_1.setDisplayData)(submission);
         });
         socket.on('request-sidebar', (x, callback) => {
-            const sidebarPromise = Promise.resolve((0, sidebar_1.getSidebar)());
+            const sidebarPromise = Promise.resolve((0, Sidebar_1.getSidebar)());
             sidebarPromise.then((value) => {
                 callback(value);
             });
+        });
+        socket.on('request-folder-info', (id, callback) => {
         });
         socket.on('get-sidebar-element', (id, callback) => {
             const split = id.split('-');
@@ -114,7 +116,7 @@ const initSock = () => {
         socket.on('remove-entry', async (entry) => {
             const split = entry.id.split('-');
             const removeFrom = String(entry.id).substring(0, String(entry.id).lastIndexOf("-"));
-            sendSidebarUpdateByID(new SidebarUpdate_1.SidebarUpdate(entry.id, true));
+            sendSidebarUpdateByID(new StructuredUpdate_1.StructuredUpdate(entry.id, true));
             switch (split.length) {
                 case 1: { // remove machine
                     await MongoDB_1.coll.deleteOne({ id: split[0] });
@@ -138,7 +140,7 @@ const initSock = () => {
             const update = { $set: machine };
             const options = { upsert: true };
             MongoDB_1.coll.updateOne(query, update, options);
-            setTimeout(() => sendSidebarUpdateByID(new SidebarUpdate_1.SidebarUpdate(machine.id, false)), 2);
+            setTimeout(() => sendSidebarUpdateByID(new StructuredUpdate_1.StructuredUpdate(machine.id, false)), 2);
         });
         socket.on('append-log', async (logInput) => {
             let appendTo = String(logInput.id).substring(0, String(logInput.id).lastIndexOf("-"));
@@ -166,7 +168,7 @@ const initSock = () => {
                 await MongoDB_1.coll.findOneAndUpdate({ id: split[0], 'logs.id': appendTo }, { $pull: { 'logs.$[log].logs': oldSubLog } }, { arrayFilters: [{ 'log.id': appendTo }] });
                 await MongoDB_1.coll.findOneAndUpdate({ id: split[0], 'logs.id': appendTo }, { $push: { 'logs.$[log].logs': logInput } }, { arrayFilters: [{ 'log.id': appendTo }] });
             }
-            setTimeout(() => sendSidebarUpdateByID(new SidebarUpdate_1.SidebarUpdate(logInput.id, false)), 2);
+            setTimeout(() => sendSidebarUpdateByID(new StructuredUpdate_1.StructuredUpdate(logInput.id, false)), 2);
         });
         socket.on('log', arg => {
             console.log(arg);
@@ -198,8 +200,8 @@ const initSock = () => {
                 return;
             }
             ;
-            const endpointUrl = displayData.endpoint;
-            const baseNode = displayData.nodeAddress;
+            const endpointUrl = decodeURIComponent(displayData.endpoint);
+            const baseNode = decodeURIComponent(displayData.nodeAddress);
             const nss = baseNode.substring(0, baseNode.lastIndexOf("=") + 1);
             OPCClient = node_opcua_1.OPCUAClient.create({ endpointMustExist: false });
             let terminated = false;
@@ -218,8 +220,8 @@ const initSock = () => {
             try {
                 await OPCClient.connect(endpointUrl);
                 session = await OPCClient.createSession({
-                    userName: "tine",
-                    password: "Melkebart_2021%&",
+                    userName: decodeURIComponent(displayData.username),
+                    password: decodeURIComponent(displayData.password),
                     type: node_opcua_1.UserTokenType.UserName,
                 });
                 const dashBrowser = (await session.browse(baseNode));
@@ -309,7 +311,8 @@ const initSock = () => {
                 });
             }
             catch (err) {
-                console.log("An error occured in OPC-UA OPCClient connection ", socket.id, err.message);
+                socket.emit('alert', ("An error occured in OPC-UA OPCClient connection " + socket.id + ' ' +
+                    err.message));
             }
             if (!terminated)
                 callback("Subscription start for " + arg, socket.id);

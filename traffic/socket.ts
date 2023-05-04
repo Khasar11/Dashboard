@@ -10,12 +10,12 @@ import {
   TimestampsToReturn,
   UserTokenType,
 } from "node-opcua";
-import { getSidebar } from "../components/Sidebar/sidebar";
+import { getSidebar } from "../components/Sidebar";
 import { mongoClient as mongoClient, coll } from "../components/MongoDB/MongoDB";
 import { LogInput } from "../components/Logs/LogInput";
 import { Machine, toSidebarData } from "../components/Machine";
-import { SidebarUpdate } from "../components/Sidebar/SidebarUpdate";
-import { SidebarUpdateObject } from "../components/Sidebar/SidebarUpdateObject";
+import { StructuredUpdate } from "../components/StructuredData/StructuredUpdate";
+import { StructuredUpdateObject } from "../components/StructuredData/StructuredUpdateObject";
 
 
 const fixId = (old: string) => {
@@ -25,14 +25,14 @@ const fixId = (old: string) => {
 export const initSock = () => {
   var allClients: Socket[] = [];
 
-  const sendSidebarUpdateByID = async (update: SidebarUpdate) => {
+  const sendSidebarUpdateByID = async (update: StructuredUpdate) => {
     const split = update.id.split('-')
     const from = String(update.id).substring(0, String(update.id).lastIndexOf("-"))
     let machine: Machine = new Machine('undefined', 'undefined', 'undefined', new Date(), [], undefined);
     await coll.find({id: split[0]}).forEach((loopMachine: any) => machine = loopMachine) 
     switch(split.length) {
       case 1: { // machine
-        io.emit('sidebar-update', new SidebarUpdateObject(toSidebarData(machine), update.remove, machine.belonging));
+        io.emit('sidebar-update', new StructuredUpdateObject(toSidebarData(machine), update.remove, machine.belonging));
         break;
       }
       case 2: { // logs or display or oee
@@ -43,7 +43,7 @@ export const initSock = () => {
       case 3: { // log input
         machine.logs.forEach((log: LogInput) => {
           if (log.id == update.id)
-            io.emit('sidebar-update', new SidebarUpdateObject(
+            io.emit('sidebar-update', new StructuredUpdateObject(
               new LogInput(log.id, log.data, new Date(log.date), log.header, log.writtenBy, log.logs).toSidebarData(), 
               update.remove)
             )
@@ -55,7 +55,7 @@ export const initSock = () => {
           if (log.id == from)
             log.logs.forEach((subLog: LogInput) => {
               if (subLog.id == update.id) {
-                io.emit('sidebar-update', new SidebarUpdateObject(
+                io.emit('sidebar-update', new StructuredUpdateObject(
                   new LogInput(subLog.id, subLog.data, new Date(subLog.date), subLog.header, subLog.writtenBy, subLog.logs).toSidebarData(), 
                   update.remove)
                 )
@@ -85,6 +85,10 @@ export const initSock = () => {
       sidebarPromise.then((value) => {
         callback(value)
       });
+    })
+
+    socket.on('request-folder-info', (id, callback) => {
+
     })
 
     socket.on('get-sidebar-element', (id, callback) => {
@@ -150,7 +154,7 @@ export const initSock = () => {
       const split = entry.id.split('-')
       const removeFrom = String(entry.id).substring(0, String(entry.id).lastIndexOf("-"))
     
-      sendSidebarUpdateByID(new SidebarUpdate(entry.id, true))
+      sendSidebarUpdateByID(new StructuredUpdate(entry.id, true))
 
       switch (split.length) {
         case 1: { // remove machine
@@ -180,7 +184,7 @@ export const initSock = () => {
       const options = { upsert: true };
       coll.updateOne(query, update, options);
 
-      setTimeout(() => sendSidebarUpdateByID(new SidebarUpdate(machine.id, false)), 2)
+      setTimeout(() => sendSidebarUpdateByID(new StructuredUpdate(machine.id, false)), 2)
     })
 
     socket.on('append-log', async logInput => {  // submit of log input to machine with {machineId: LogInput}
@@ -218,7 +222,7 @@ export const initSock = () => {
                                     { arrayFilters : [{ 'log.id' : appendTo}]})
       }
 
-      setTimeout(() => sendSidebarUpdateByID(new SidebarUpdate(logInput.id, false)), 2)
+      setTimeout(() => sendSidebarUpdateByID(new StructuredUpdate(logInput.id, false)), 2)
 
     })
 
@@ -238,8 +242,8 @@ export const initSock = () => {
     socket.on("subscribe-display", async (arg, callback) => {
       let displayData = await getDisplayData(arg);
       if (displayData == null || displayData.endpoint == null || displayData.nodeAddress == null) { socket.emit('alert', 'No display for '+arg); return};
-      const endpointUrl = displayData.endpoint;
-      const baseNode = displayData.nodeAddress;
+      const endpointUrl = decodeURIComponent(displayData.endpoint);
+      const baseNode = decodeURIComponent(displayData.nodeAddress);
       const nss = baseNode.substring(0, baseNode.lastIndexOf("=") + 1);
       OPCClient = OPCUAClient.create({ endpointMustExist: false });
       let terminated: boolean = false;
@@ -264,8 +268,8 @@ export const initSock = () => {
       try {
         await OPCClient.connect(endpointUrl);
         session = await OPCClient.createSession({
-          userName: "tine",
-          password: "Melkebart_2021%&",
+          userName: decodeURIComponent(displayData.username),
+          password: decodeURIComponent(displayData.password),
           type: UserTokenType.UserName,
         });
 
@@ -373,13 +377,13 @@ export const initSock = () => {
           socket.emit("alert", "OPCUA OPCClient disconnect", socket.id);
         });
       } catch (err: any) {
-        console.log(
-          "An error occured in OPC-UA OPCClient connection ", socket.id,
-          err.message
+        socket.emit('alert',
+          ("An error occured in OPC-UA OPCClient connection "+ socket.id + ' ' +
+          err.message)
         );
       }
       if (!terminated) callback("Subscription start for " + arg, socket.id);
       else callback('Unable to connect to OPCUA', socket.id)
     });
-  });
+  }); 
 };

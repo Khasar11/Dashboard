@@ -1,7 +1,12 @@
 
 const viewFolder = id => {
-  const folderWrapper = document.createElement('div')
   socket.emit('request-folder-info', id, callback => {
-    
+    const folderWrapper = document.createElement('div')
+    const headerWrapper = document.createElement('div')
+    const bodyWrapper = document.createElement('div')
+
+
+
+    folderWrapper.append(headerWrapper, bodyWrapper)
   })
 }

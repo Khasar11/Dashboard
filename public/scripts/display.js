@@ -8,7 +8,7 @@ const initData = {
 }
 
 const display = qSelect('#display')
-const Graph = ForceGraph()(display)
+let Graph = ForceGraph()(display)
 		.graphData(initData)
 		.nodeLabel(d => { return d.key+' : '+d.value})
     .onNodeDragEnd(node => {
@@ -98,10 +98,10 @@ const modifyDisplay = async id => {
 const updateDisplayData = async id =>  {
 	socket.emit('request-displayData', id, returnData => {
 		if (returnData == null) { alert('an unknown error occured, no data to display'); clearDisplayData(); return;}
-		qSelect("#display-data-endpturl").value = returnData["endpoint"]
-		qSelect("#display-data-opc-adr").value = returnData["nodeAddress"]
-		qSelect("#display-data-opc-username").value = returnData["username"]
-		qSelect("#display-data-opc-password").value = returnData["password"]
+		qSelect("#display-data-endpturl").value = decodeURIComponent(returnData["endpoint"])
+		qSelect("#display-data-opc-adr").value = decodeURIComponent(returnData["nodeAddress"])
+		qSelect("#display-data-opc-username").value = decodeURIComponent(returnData["username"])
+		qSelect("#display-data-opc-password").value = decodeURIComponent(returnData["password"])
 	})
 } 
 

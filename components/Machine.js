@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.toSidebarData = exports.Machine = void 0;
 const LogInput_1 = require("./Logs/LogInput");
-const sidebar_1 = require("./Sidebar/sidebar");
+const StructuredDataElement_1 = require("./StructuredData/StructuredDataElement");
 class Machine {
     constructor(name, id, createdBy, creationDate, logs, belonging) {
         this.name = name;
@@ -22,11 +22,11 @@ const toSidebarData = (machine) => {
             logData.push(collect);
         }
     });
-    return new sidebar_1.SidebarData(machine.name, machine.id, new Date(machine.creationDate).toDateString() + ' | ' + machine.createdBy, sidebar_1.ValueType.folder, [
-        new sidebar_1.SidebarData('Files', machine.id + '-files', 'File storage', sidebar_1.ValueType.file),
-        new sidebar_1.SidebarData('OEE', machine.id + '-oee', 'OEE data', sidebar_1.ValueType.file),
-        new sidebar_1.SidebarData('Display', machine.id + '-display', 'Display OPCUA subscription', sidebar_1.ValueType.file),
-        new sidebar_1.SidebarData('Logs', machine.id + '-logs', 'Log inputs', sidebar_1.ValueType.folder, logData)
+    return new StructuredDataElement_1.StructuredDataElement(machine.name, machine.id, new Date(machine.creationDate).toDateString() + ' | ' + machine.createdBy, StructuredDataElement_1.ValueType.folder, [
+        new StructuredDataElement_1.StructuredDataElement('Files', machine.id + '-files', 'File storage', StructuredDataElement_1.ValueType.file),
+        new StructuredDataElement_1.StructuredDataElement('OEE', machine.id + '-oee', 'OEE data', StructuredDataElement_1.ValueType.file),
+        new StructuredDataElement_1.StructuredDataElement('Display', machine.id + '-display', 'Display OPCUA subscription', StructuredDataElement_1.ValueType.file),
+        new StructuredDataElement_1.StructuredDataElement('Logs', machine.id + '-logs', 'Log inputs', StructuredDataElement_1.ValueType.folder, logData)
     ]);
 };
 exports.toSidebarData = toSidebarData;

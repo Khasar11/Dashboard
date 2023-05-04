@@ -1,4 +1,4 @@
-export class SidebarUpdate {
+export class StructuredUpdate {
   remove: boolean = false;
   id: string;
   constructor(id: string, remove: boolean) {

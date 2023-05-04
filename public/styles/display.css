@@ -22,11 +22,17 @@
 }
 
 #display {
-    position: fixed;
+    position:fixed;
     padding: 0;
+    top: 0;
     margin: 0;
     width: 100%;
     height: 100%;
+}
+
+.force-graph-container, .force-graph-container canvas {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .node-circle.fixed {

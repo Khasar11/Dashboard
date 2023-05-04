@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SidebarUpdate = void 0;
-class SidebarUpdate {
+exports.StructuredUpdate = void 0;
+class StructuredUpdate {
     constructor(id, remove) {
         this.remove = false;
         this.id = id;
         this.remove = remove;
     }
 }
-exports.SidebarUpdate = SidebarUpdate;
-//# sourceMappingURL=SidebarUpdate.js.map
+exports.StructuredUpdate = StructuredUpdate;
+//# sourceMappingURL=StructuredUpdate.js.map

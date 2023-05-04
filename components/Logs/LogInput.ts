@@ -1,5 +1,5 @@
 
-import { SidebarData, ValueType } from "../Sidebar/sidebar";
+import { StructuredDataElement, ValueType } from "../StructuredData/StructuredDataElement";
 
 export class LogInput {
     id: string;
@@ -19,7 +19,7 @@ export class LogInput {
     }
 
     toSidebarData() {
-        let data = new SidebarData(
+        let data = new StructuredDataElement(
             new Date(this.date).toDateString(),
             this.id, 
             this.header, 

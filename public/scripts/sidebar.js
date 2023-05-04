@@ -295,14 +295,14 @@ const keyToggle = (e, keyCode, clazz) => {
 getSidebar();
 
 /* snapshot from server (.ts)
-export class SidebarUpdateObject {
+export class StructuredUpdateObject {
   remove: boolean = false;
-  data: SidebarData;
+  data: StructuredDataElement;
   belonging: string | undefined
-  constructor(data: any, remove: boolean, belinging: string | undefined = undefined) {
+  constructor(data: any, remove: boolean, belonging: string | undefined = undefined) {
     this.remove = remove;
     this.data = data;
-    this.belonging = belinging;
+    this.belonging = belonging;
   }
 }*/
 socket.on('sidebar-update', async sidebarUpdate => {

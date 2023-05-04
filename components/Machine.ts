@@ -1,5 +1,5 @@
 import { LogInput } from "./Logs/LogInput";
-import { SidebarData, ValueType } from "./Sidebar/sidebar";
+import { StructuredDataElement, ValueType } from "./StructuredData/StructuredDataElement";
 
 export class Machine {
 
@@ -21,7 +21,7 @@ export class Machine {
 }
 
 export const toSidebarData = (machine: Machine) => {
-    let logData: SidebarData[] = [];
+    let logData: StructuredDataElement[] = [];
     machine.logs.forEach(element => {
         if (element != null) {
             let collect = new LogInput(element.id, element.data, element.date, element.header, element.writtenBy, element.logs).toSidebarData()
@@ -29,11 +29,11 @@ export const toSidebarData = (machine: Machine) => {
         }
     });
 
-    return new SidebarData(machine.name, machine.id, new Date(machine.creationDate).toDateString() + ' | ' + machine.createdBy, ValueType.folder,
+    return new StructuredDataElement(machine.name, machine.id, new Date(machine.creationDate).toDateString() + ' | ' + machine.createdBy, ValueType.folder,
         [
-            new SidebarData('Files', machine.id+'-files', 'File storage', ValueType.file),
-            new SidebarData('OEE', machine.id+'-oee', 'OEE data', ValueType.file),
-            new SidebarData('Display', machine.id+'-display', 'Display OPCUA subscription', ValueType.file),
-            new SidebarData('Logs', machine.id+'-logs', 'Log inputs', ValueType.folder, logData)
+            new StructuredDataElement('Files', machine.id+'-files', 'File storage', ValueType.file),
+            new StructuredDataElement('OEE', machine.id+'-oee', 'OEE data', ValueType.file),
+            new StructuredDataElement('Display', machine.id+'-display', 'Display OPCUA subscription', ValueType.file),
+            new StructuredDataElement('Logs', machine.id+'-logs', 'Log inputs', ValueType.folder, logData)
         ]);
 }
