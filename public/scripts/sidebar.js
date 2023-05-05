@@ -178,7 +178,7 @@ const sidebarResolver = async element => { // parse sidebar element recursively 
       wrapper.addEventListener('click', e => {
         e.stopPropagation();
         // view file storage here
-        viewFolder(idSplit[0])
+        getFolder(idSplit[0])
       })
     }
     if (idSplit[1] == 'log' ) { 
@@ -272,7 +272,7 @@ const getSidebar = async _ => { // get sidebar from server side
     })
     addDrag(sidebar) 
     sidebar.append(wrapper)
-    document.body.prepend(sidebar) // insert the sidebar at beginning of body
+    qSelect('#main-wrapper').prepend(sidebar) // insert the sidebar at beginning of body
     sidebar.addEventListener('keydown', e => { // Add tab toggling of elements
       keyToggle(e, 'ArrowRight', 'collapsed')
       keyToggle(e, 'ArrowLeft', 'shown')

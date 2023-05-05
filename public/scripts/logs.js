@@ -100,7 +100,7 @@ const showLog = logInput => { // create log box and update with data from log in
   logMoveable.id = logContainer.id+'-moveable' // add -moveable to make this the focus of later dragElement()
   logMoveable.innerHTML = '-'
   logContainer.append(logMoveable, logHeader, logContent, logFooter)
-  document.body.append(logContainer)
+  qSelect('#main-view').append(logContainer)
   logHeaderTitle.focus()
   dragElement(logContainer) // make top let - drag button of container
 }

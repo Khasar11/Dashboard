@@ -28,12 +28,12 @@
 
 .hover-elem {
   position: fixed;
-  color: var(--sidebar-text-color) !important; /* overwrite shown > span color */
   left: var(--sidebar-width);
+  top: 1em;
+  color: var(--sidebar-text-color) !important; /* overwrite shown > span color */
   background-color: var(--general-color);
   border: 5px solid var(--general-color);
-  border-bottom-right-radius: 1em;
-  border-top-right-radius: 1em;
+  border-radius: 1em;
 }
 
 .sidebar-file-wrapper { /* file wrapper allows for buttons (+-/M) in same line as text */
