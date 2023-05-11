@@ -47,11 +47,11 @@ Image from simple sidebar (only example)
 ****
 >**PLC data:**    
 > _1. DType_   
->    >1.  tag _String[**10**]_   
->    >2.  value _String[**22**]_  
->    >3.  links _Array[**0..3**] of String[**10**]_
->    >    >1. links[0] _String[**10**]_   
->    >    >2. links[1] _String[**10**]_   
->    >    >3. links[2] _String[**10**]_   
->    >    >4. links[3] _String[**10**]_   
+>    >1.  tag _String_   
+>    >2.  value _String_  
+>    >3.  links _Array of String_
+>    >    >1. links[0] _String_   
+>    >    >2. links[1] _String_   
+>    >    >3. links[2] _String_   
+>    >    >4. links[3] _String_   
 ****
