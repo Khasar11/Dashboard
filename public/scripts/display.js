@@ -235,3 +235,91 @@ const fixColorKey = dvalue => {
 	if (dvalue == '-') return 'black'
 	return '#636363'
 }
+
+/* PNR
+1,		Rå melk
+2,		Termisert rå melk
+3,		Rå fløte
+4,		Mellomprodukt 10% Creme Fraiche
+5,		Mellomprodukt Naturell yoghurt 3 %
+6,		Mellomprodukt Fruktyoghurt
+7,		Mellomprodukt Naturell yoghurt 3 %(ikke i bruk)
+8,		Mellomprodukt Sprett yoghurt (ikke i bruk)
+9,		Mellomprodukt Biola (ikke i bruk)
+10,		Mellomprodukt Mild&Lett yoghurt (ikke i bruk)
+11,		Mellomprodukt 18 % Creme Fraiche
+13,		Supplerings Fløte
+17,		Dyrefôr
+18,		Restmelk
+20,		2% melk til industri
+21,		Helmelk
+22,		Melk til Mellomprodukt Naturell yoghurt 3 %
+23,		Lettmelk
+24,		Skummet melk
+25,		Ekstra lettmelk
+26,		Melk til Mellomprodukt fruktyoghurt
+27,		Melk til Mellomprodukt Naturell yoghurt 3 %(ikke i bruk)
+28,		Melk til Mellomprodukt Sprett (ikke i bruk)
+29,		Melk til Mellomprodukt Biola (ikke i bruk)
+30,		Melk til Mild&Lett yoghurt (ikke i bruk)
+31,		Kremfløte
+32,		Fløte til supplering
+33,		Fløte til lagring/repasteurisering
+34,		Økologisk fløte til lagring/repasteurisering
+35,		Fløte til 10% Creme Fraiche mellomprodukt
+36,		Fløte til 18% Creme Fraiche mellomprodukt
+41,		Seterrømme
+42,		Lettrømme
+43,		Creme Fraiche
+44,		Økologisk Lettrømme
+45,		10% Creme Fraiche
+46,		18% Creme Fraiche
+51,		Økologisk Kefir
+52,		Skummet Kultur
+53,		Kulturmelk
+55,		Biola (ikke i bruk)
+61,		Naturell yoghurt 3 %
+62,		Fruktyoghurt
+63,		Naturell yoghurt 3 % (ikke i bruk)
+64,		Sprett yoghurt (ikke i bruk)
+66,		Mild&Lett yoghurt (ikke i bruk)
+72,		Original appelsinjuice
+73,		Supri Frukt- og Grønnsaksjuice 
+76,		IsTe fersken
+77,		Original eplejuice
+79,		Sprett epledrikk (ikke i bruk)
+80,		Tropisk orginal m/ eple og appelsin
+81,		Økologisk Eplejuice (ikke i bruk)
+82,		Original appelsinjuice m/fruktkjøtt
+83,		Sprett tropisk drikk (ikke i bruk)
+84,		Økologisk appelsinjuice (ikke i bruk)
+85,		Konsentrat appelsinjuice
+88,		IsTe lime
+88,		Konsentrat IsTe lime
+89,		Konsentrat IsTe fersken
+90,		Konsentrat eplejuice (var også til Sprett epledrikk)
+93,		Konsentrat Tropisk orginal (skal tilsettes eple og app)
+94,		Konsentrat Lett eple fruktdrikk (ikke i bruk)
+95,		Konsentrat appelsinjuice m/fruktkjøtt
+96,		Konsentrat tropisk juice (var også til Sprett tropisk drikk)
+97,		Konsentrat øko appelsinjuice  (ikke i bruk)
+101,	Økologisk rå melk
+103,	Økologisk rå fløte
+105,	Mellomprodukt økologisk Naturell yoghurt
+113,	Økologisk Suppleringsfløte
+121,	Økologisk Helmelk
+122,	Melk til økologisk Naturell yoghurt
+123,	Økologisk Lettmelk
+124,	Økologisk Skummet melk
+125,	Økologisk Ekstra lettmelk
+131,	Økologisk kremfløte
+161,	Økologisk Naturell yoghurt
+270,	Eple sydtyrol /mango
+271,	Sydtyrol Bringebær sesong
+273,	Premium appelsinjuice m/fruktkjøtt (NFC)
+274,	Premium grapejuice (NFC) (ikke i bruk)
+275,	Grape/app NFC
+278,	Presset tropisk (ikke i bruk)
+280,	Hardangerjuice (Presset Eple frå Hardanger)
+281,	Tyroljuice
+*/

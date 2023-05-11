@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { io } from "../server";
+import { fileDir, io } from "../server";
 import { getDisplayData, lookupNodeIds, setDisplayData } from "../components/Display/Display";
 import {
   AttributeIds,
@@ -17,6 +17,7 @@ import { Machine, toSidebarData } from "../components/Machine/Machine";
 import { StructuredUpdate } from "../components/StructuredData/StructuredUpdate";
 import { StructuredUpdateObject } from "../components/StructuredData/StructuredUpdateObject";
 import { getFileStorage } from "../components/FileStorage/FileStorage";
+import { writeFile } from "fs";
 
 
 const fixId = (old: string) => {
@@ -76,6 +77,12 @@ export const initSock = () => {
     let OPCClient: OPCUAClient | undefined = undefined;
     let subscription: ClientSubscription | undefined = undefined;
     let session: ClientSession | undefined = undefined;
+
+    socket.on('file-upload', (data, callback) => {
+      writeFile(`${fileDir}/public/storage/${data.id}/${data.name}`, data.data, err => {
+        callback(err)
+      })
+    })
 
     socket.on('write-display-data', submission => {
       setDisplayData(submission)

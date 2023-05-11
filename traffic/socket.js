@@ -11,6 +11,7 @@ const Machine_1 = require("../components/Machine/Machine");
 const StructuredUpdate_1 = require("../components/StructuredData/StructuredUpdate");
 const StructuredUpdateObject_1 = require("../components/StructuredData/StructuredUpdateObject");
 const FileStorage_1 = require("../components/FileStorage/FileStorage");
+const fs_1 = require("fs");
 const fixId = (old) => {
     return String(old).replaceAll('-', '_').replaceAll(' ', '_');
 };
@@ -57,6 +58,12 @@ const initSock = () => {
         let OPCClient = undefined;
         let subscription = undefined;
         let session = undefined;
+        socket.on('file-upload', (data, callback) => {
+            (0, fs_1.writeFile)(`${server_1.fileDir}/public/storage/${data.id}/${data.name}`, data.data, err => {
+                callback(err);
+                console.log(err);
+            });
+        });
         socket.on('write-display-data', submission => {
             (0, Display_1.setDisplayData)(submission);
         });

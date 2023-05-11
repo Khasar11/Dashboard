@@ -12,7 +12,7 @@ const socket_1 = require("./traffic/socket");
 exports.app = (0, express_1.default)();
 exports.port = 8383;
 exports.server = http_1.default.createServer(exports.app);
-exports.io = new socket_io_1.Server(exports.server);
+exports.io = new socket_io_1.Server(exports.server, { maxHttpBufferSize: 600e6 });
 exports.fileDir = process.cwd();
 exports.app.use(express_1.default.static('public'));
 exports.app.use(express_1.default.json({ limit: '100mb' }));
